@@ -1,0 +1,600 @@
+﻿<!-- Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Office Click-To-Run Configuration XML Editor</title>
+
+    <link rel="stylesheet" href="components/Table/Table.min.css"/>
+    <link rel="stylesheet" href="components/Button/Button.min.css" />
+    <link rel="stylesheet" href="components/TextField/TextField.min.css"/>
+    <link rel="stylesheet" href="components/Toggle/Toggle.min.css"/>
+    <link rel="stylesheet" href="components/DatePicker/DatePicker.css"/>
+    <link rel="stylesheet" href="components/NavBar/NavBar.min.css">
+    <link rel="stylesheet" href="components/CommandBar/CommandBar.min.css">
+    <link rel="stylesheet" href="components/Callout/Callout.min.css">
+    <link rel="stylesheet" href="components/Dialog/Dialog.min.css">
+    <link href="stylesheets/typeahead.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="components/Panel/Panel.min.css">
+    <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.min.css">
+    <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.components.min.css">
+
+    <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./components/TextField/Jquery.TextField.js"></script>
+    <script type="text/javascript" src="./components/NavBar/Jquery.NavBar.js"></script>
+    <script type="text/javascript" src="./components/CommandBar/Jquery.CommandBar.js"></script>
+    <script type="text/javascript" src="./Scripts/vkbeautify.0.99.00.beta.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    
+
+    <style type="text/css">
+        body {
+            margin: 0px 0px;
+        }
+
+        h1 {
+            padding: 8px;
+        }
+
+        #componentWrapper {
+            width: 100%;
+            height: 100%;
+        }
+
+        .ms-Table.is-open {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .ms-Dialog {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .ms-NavBar-item .ms-Table {
+            position: absolute;
+        }
+
+        .ms-Table .ms-Table {
+            position: absolute;
+        }
+
+        .option-panel{
+            display:none;
+        }
+
+        .visible{
+            display:block;
+        }
+
+        .custom-cmditem {
+            line-height: 46px;
+            padding: 0 6px;
+            min-width: 22px;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+            margin-right: 8px;
+            color: #0078d7;
+            height: 50px;
+            outline: none;
+            vertical-align: top;
+        }
+        
+        .ms-Callout{
+            width:450px;
+        }
+
+        .headerText {
+            font-family: "SegoeUI-SemiLight-final","Segoe UI SemiLight","Segoe UI WPC Semilight","Segoe UI",Segoe,Tahoma,Helvetica,Arial,sans-serif;
+            font-size: 22px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .twitter-typeahead {
+            width: 100%;
+        }
+
+        .ms-CommandBarItem:hover {
+          /*background-color: #004578;*/
+          color: #0078d7;
+          -webkit-transition: background 0.5s linear;
+          -moz-transition: background 0.5s linear;
+          -ms-transition: background 0.5s linear;
+          -o-transition: background 0.5s linear;
+          transition: background 0.5s linear;
+        }
+
+        .ms-CommandBarItemTop:hover {
+            background-color: #004578;
+          color: #0078d7;
+          -webkit-transition: background 0.5s linear;
+          -moz-transition: background 0.5s linear;
+          -ms-transition: background 0.5s linear;
+          -o-transition: background 0.5s linear;
+          transition: background 0.5s linear;
+        }
+
+        .Editor-Column {
+            padding-right: 8px;
+            padding-left: 8px;
+        }
+
+        #box
+        {
+            width: 150px;
+            height: 150px;
+            background: #FFF;
+            border: red dotted 5px;
+            text-align: center;
+            position: absolute;
+            margin-left: -75px;
+            margin-top: -75px;
+            left: 50%;
+            top: 50%;
+            z-index: 20;
+            display: none;
+        }
+ 
+        #screen
+        {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #000;
+        }
+
+        .ms-ListItem-tertiaryText {
+          overflow:visible;
+          text-overflow:ellipsis-word;
+          white-space:normal;
+          display: block;
+        }
+
+        .ms-ListItem-primaryText {
+          color: #212121;
+          font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
+          font-size: 18px;
+          padding-right: 80px;
+          position: relative;
+          top: -4px;
+        }
+
+        .ms-Dropdown-items {
+            max-height: 200px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="ms-bgColor-themeDarker ms-CommandBar" style="background-color:#0072c5;color:#4c9cd6;height: 50px;">
+        <div class="ms-CommandBar-sideCommands">
+            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly ms-CommandBarItemTop" style="border-left:1px solid #4c9cd6;
+                             border-right:1px solid #4c9cd6; margin-right:-5px;height: 50px;width:50px" title="About">
+                <div class="ms-CommandBarItem-linkWrapper">
+                    <div class="ms-CommandBarItem-link" onclick="showAbout()">
+                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--question ms-fontColor-white" style="font-size: 20px;margin-top: 15px"></span>
+                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular ms-fontColor-white">About</span>
+                    </div>
+                </div>
+            </div>
+            <div id="menuGitHubIssues" class="ms-CommandBarItem ms-CommandBarItem--iconOnly ms-CommandBarItemTop" style="border-left:1px solid #4c9cd6;border-right:1px solid #4c9cd6;
+                            margin-right:-5px;height: 50px;width:50px" title="Issues">
+                <div class= "ms-commandbaritem-linkwrapper">
+                    <div class="ms-CommandBarItem-link">
+                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--support ms-fontColor-white" style="font-size: 20px;margin-top: 15px"></span>
+                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular ms-fontColor-white">Issues</span>
+                    </div>
+                </div>
+            </div>
+            <div id="menuViewOnGitHub" class="ms-CommandBarItem ms-CommandBarItem--iconOnly ms-CommandBarItemTop" style="border-right:1px solid #4c9cd6;
+                            border-left:1px solid #4c9cd6;margin-right:-5px;height: 50px;width:50px" title="View on GitHub">
+                <div id="btviewongithub" class="ms-CommandBarItem-linkWrapper">
+                    <div class="ms-CommandBarItem-link">
+                        <img class="ms-CommandBarItem-icon ms-Icon ms-fontColor-white" style="font-size: 20px;margin-top: 13px" src="images/github24.png">
+                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular ms-fontColor-white">View On GitHub</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ms-CommandBar-mainArea">
+            <div class="custom-cmditem">
+                <span class="ms-font-l ms-font-weight-regular ms-fontColor-white headerText" style="height:100%;width:100%;margin:0px 0px 0px 15px;border-right:1px solid #4c9cd6; padding-right:15px;">Office 365 ProPlus</span>
+            </div>
+            <div class="custom-cmditem">
+                <span class="ms-font-l ms-font-weight-regular ms-fontColor-white headerText" style="height:100%;width:100%;margin:0px 0px 0px 0px;">Configuration XML Editor</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="componentWrapper">
+        <div class="ms-Grid">
+            <div class="ms-Grid-row">
+                <table cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="vertical-align: top;">
+                            <div id="menuColumn" class="Editor-Column" style="width: 300px;">
+                                <div id="menuSec" style="border-right: solid 1px #e5e3e3;height:500px;">
+
+                                    <br />
+
+                                    <div class="ms-Table">
+                                        <div class="ms-Table-row">
+                                            <span class="ms-font-xl">Version</span>
+                                        </div>
+                                        <div id="office2016Select" class="ms-Table-row is-selected navrowversion">
+                                            <span class="ms-Table-cell" onclick="setVersionPanel('office2016Select')">Office 365 ProPlus (2016)</span>
+                                        </div>
+                                        <div id="office2013Select" class="ms-Table-row navrowversion">
+                                            <span class="ms-Table-cell" onclick="setVersionPanel('office2013Select')">Office 365 ProPlus (2013)</span>
+                                        </div>
+                                    </div>
+
+                                    <br />
+
+                                    <div class="ms-Table">
+                                        <div class="ms-Table-row">
+                                            <span class="ms-font-xl">Section</span>
+                                        </div>
+                                        <!--<div id="addProductRow" class="ms-Table-row  is-selected navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('AddProductPanel', 'addProductRow')">Add Product</span>
+                                        </div>
+                                        <div id="removeProductRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('RemoveProductPanel', 'removeProductRow')">Remove Product</span>
+                                        </div>
+                                        <div id="updatesRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('UpdatesPanel', 'updatesRow')">Updates</span>
+                                        </div>
+                                        <div id="displayRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('DisplayPanel', 'displayRow')">Display</span>
+                                        </div>
+                                        <div id="loggingRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('LoggingPanel', 'loggingRow')">Logging</span>
+                                        </div>
+                                        <div id="propertiesRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('PropertiesPanel', 'propertiesRow')">Properties</span>
+                                        </div>-->
+                                        <div id="templatesRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('TemplatesPanel', 'templatesRow')">Office</span>
+                                        </div>
+                                        <div id="templatesRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('TemplatesPanel', 'templatesRow')">Visio</span>
+                                        </div>
+                                        <div id="templatesRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('TemplatesPanel', 'templatesRow')">Outlook</span>
+                                        </div>
+                                        <div id="templatesRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('TemplatesPanel', 'templatesRow')">IDK</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="vertical-align: top;">
+                            <div id="configColumn" class="Editor-Column" style="width: 450px;">
+                                <!-- Start Templates Panel -->
+                                <div id="TemplatesPanel" class="option-panel">
+                                    <h1 class="ms-font-xxl">Templates</h1>
+                                    <ul class="ms-List">
+                                        <div id="proPlusRetail" class="ms-ListItem is-unread is-selectable" href="./templates/0365ProPlusRetail.xml" onclick="setTemplate(this)">
+                                            <span class="ms-ListItem-primaryText">Office 365 ProPlus</span>
+                                            <span class="ms-ListItem-tertiaryText" style="word-wrap:break-word;">Silent install of 32-Bit Office 365 ProPlus with Updates and Logging enabled</span>
+                                            <div class="ms-ListItem-selectionTarget js-toggleSelection"></div>
+                                        </div>
+                                        <div id="proPlusBusiness" class="ms-ListItem is-unread is-selectable" href="./templates/0365ProPlusBusiness.xml" onclick="setTemplate(this)">
+                                            <span class="ms-ListItem-primaryText">Office 365 for Business</span>
+                                            <span class="ms-ListItem-tertiaryText">Silent install of 32-Bit Office 365 for Business with Updates and Logging enabled</span>
+                                            <div class="ms-ListItem-selectionTarget js-toggleSelection"></div>
+                                        </div>
+                                        <div id="proPlusRetailVisio" class="ms-ListItem is-unread is-selectable" href="./templates/O365ProPlusRetailwVisio.xml" onclick="setTemplate(this)">
+                                            <span class="ms-ListItem-primaryText">Office 365 ProPlus with Visio</span>
+                                            <span class="ms-ListItem-tertiaryText">Silent install of 32-Bit Office 365 ProPlus with Visio with Updates and Logging enabled</span>
+                                            <div class="ms-ListItem-selectionTarget js-toggleSelection"></div>
+                                        </div>
+                                    </ul>
+                                </div>
+                                <!-- End Templates Panel -->
+                            </div>
+                        </td>
+                        <td style="vertical-align: top;">
+                            <div id="xmlSection" class="Editor-Column" style="width: 500px;">
+                                <div id="xmlSec" style="border-left: solid 1px #e5e3e3;height:500px;">
+                                    <div class="ms-CommandBar" style="min-width: 500px">
+
+                                        <div class="ms-CommandBar-sideCommands" style="float: left;text-align: left;">
+                                            <div class="ms-CommandBarItem">
+                                                <div class="ms-CommandBarItem-linkWrapper" onclick="clickUpload();">
+                                                    <div class="ms-CommandBarItem-link">
+                                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--upload"></span>
+                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Import</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ms-CommandBarItem">
+                                                <div class="ms-CommandBarItem-linkWrapper" onclick="download()">
+                                                    <div class="ms-CommandBarItem-link">
+                                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--download"></span>
+                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Export</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ms-CommandBarItem">
+                                                <div class="ms-CommandBarItem-linkWrapper">
+                                                    <div class="ms-CommandBarItem-link" onclick="clearXml();">
+                                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--reload"></span>
+                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Reset</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ms-CommandBarItem">
+                                                <div class="ms-CommandBarItem-linkWrapper">
+                                                    <div class="ms-CommandBarItem-link" onclick="sendMail()" style="position: relative">
+                                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--mail"></span>
+                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Email</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ms-CommandBarItem">
+                                                <div class="ms-CommandBarItem-linkWrapper">
+                                                    <div class="ms-CommandBarItem-link js-togglePanel" onclick="openCommentDialog()" style="position: relative">
+                                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--chat"></span>
+                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Comment</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                            
+
+                                        </div>
+
+                                    </div>
+                                    <div class="ms-TextField" style="margin-top:10px;margin-left: 30px;">
+                                        <textarea id="xmlText" class="ms-TextField-field ms-TextField--multiline"
+                                                  style="height:800px;font-size: 23px;border-width: 0;overflow-y: auto" readonly></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+        <form id="fileuploadform" style="width:200px;display: none;width: 100px;">
+            <input type="file" id="fileInput" size="10">
+        </form>
+                
+    </div>
+    
+    <div class="ms-Panel">
+        <div class="ms-Overlay ms-Overlay--dark js-togglePanel"></div>
+        <div class="ms-Panel-main">
+            <div class="ms-Panel-commands">
+                <div class="ms-CommandBar">
+                    <div class="ms-CommandBar-sideCommands">
+                        <div class="ms-CommandBarItem">
+                            <div class="ms-CommandBarItem-linkWrapper">
+                                <div class="ms-CommandBarItem-link js-togglePanel" onclick="addComment()" style="position: relative">
+                                    <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--save"></span>
+                                    <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Save</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ms-CommandBarItem">
+                            <div class="ms-CommandBarItem-linkWrapper">
+                                <div class="ms-CommandBarItem-link js-togglePanel" onclick="deleteComment()" style="position: relative">
+                                    <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--trash"></span>
+                                    <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Delete</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ms-CommandBarItem">
+                            <div class="ms-CommandBarItem-linkWrapper">
+                                <div class="ms-CommandBarItem-link js-togglePanel" style="position: relative">
+                                    <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--xCircle"></span>
+                                    <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Cancel</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ms-Panel-contentInner">
+                <p class="ms-Dialog-subText" style="font-size: 14px">Add a comment to the XML file</p>
+                <p class="ms-Dialog-subText">Comment:</p>
+                <textarea id="commentText" class="ms-TextField-field ms-TextField--multiline"
+                          style="height:300px;font-size: 16px;overflow-y: auto"></textarea>
+            </div>
+        </div>
+    </div>
+    
+    <div id="confirmDelete" class="ms-Dialog" style="display:none;position:fixed;width:100%;top:-100%">
+        <div class="ms-Overlay"></div>
+        <div class="ms-Dialog-main">
+            <button class="ms-Dialog-button ms-Dialog-button--close">
+                <i class="ms-Icon ms-Icon--x"></i>
+            </button>
+            <div class="ms-Dialog-header">
+                <p class="ms-Dialog-title">All emails together</p>
+            </div>
+            <div class="ms-Dialog-inner">
+                <div class="ms-Dialog-content">
+                    <p class="ms-Dialog-subText">Your Inbox has changed. No longer does it include favorites, it is a singular destination for your emails.</p>
+                    <div class="ms-ChoiceField">
+                        <input id="demo-checkbox-unselected1" class="ms-ChoiceField-input" type="checkbox">
+                        <label for="demo-checkbox-unselected1" class="ms-ChoiceField-field"><span class="ms-Label">Option1</span></label>
+                    </div>
+                    <div class="ms-ChoiceField">
+                        <input id="demo-checkbox-unselected2" class="ms-ChoiceField-input" type="checkbox">
+                        <label for="demo-checkbox-unselected2" class="ms-ChoiceField-field"><span class="ms-Label">Option2</span></label>
+                    </div>
+                </div>
+                <div class="ms-Dialog-actions">
+                    <div class="ms-Dialog-actionsRight">
+                        <button class="ms-Dialog-action ms-Button ms-Button--primary">
+                            <span class="ms-Button-label">Save</span>
+                        </button>
+                        <button class="ms-Dialog-action ms-Button">
+                            <span class="ms-Button-label">Cancel</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id='screen' style="width: 100%">
+    </div>
+
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+    <script type="text/javascript" src="./Scripts/FileSaver.js"></script>
+    <script type="text/javascript" src="./Scripts/new-main.js"></script>
+
+    <script type="text/javascript" src="//1000hz.github.io/bootstrap-validator/dist/validator.min.js"></script>
+    <script type="text/javascript" src="./Scripts/jquery.fabric.min.js"></script>
+    <script type="text/javascript" src="./components/Panel/Jquery.Panel.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#pidKeyLabel").hide();
+
+            if ($('.ms-FilePicker').length > 0) {
+                $('.ms-FilePicker').css({
+                    "position": "absolute !important"
+                });
+
+                $('.ms-Dropdown').FilePicker();
+                $('.ms-Toggle').FilePicker();
+                $('.ms-Table').FilePicker();
+                $('.ms-DatePicker').FilePicker();
+            } else {
+                if ($.fn.Dropdown) {
+                    $('.ms-Dropdown').Dropdown();
+                }
+                if ($.fn.Toggle) {
+                    $('.ms-Toggle').Toggle();
+                }
+                if ($.fn.Table) {
+                    $('.ms-Table').Table();
+                }
+                if ($.fn.DatePicker) {
+                    var myDatepicker = $('.ms-DatePicker').DatePicker({
+                        label: "Deadline"
+                    });
+                }
+
+                if ($.fn.Panel) {
+                    $('.ms-Panel').Panel();
+                }
+
+                if ($.fn.Dialog) {
+                    $('.ms-Dialog').Dialog();
+                }
+
+                if ($.fn.List) {
+                    $('.ms-List').List();
+                }
+            }
+
+            if (fabric && fabric['Dropdown']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
+            }
+            if (fabric && fabric['Toggle']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
+            }
+            if (fabric && fabric['Table']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
+            }
+            if (fabric && fabric['DatePicker']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
+            }
+            //Corrections to bad datepicker behavior (from UI Fabric)
+            var $monthPicker = $('.ms-DatePicker-monthPicker');
+            var $monthControls = $('.ms-DatePicker-monthComponents');
+            var $yearControls = $('.ms-DatePicker-monthComponents');
+            var $decadeControls = $('.ms-DatePicker-decadeComponents');
+            var $yearPicker = $('.ms-DatePicker-yearPicker');
+            var $picker = myDatepicker.find('.ms-TextField-field').pickadate('picker');
+
+            /** Switch to the is-pickingMonths state. */
+            $monthPicker.on('click', '.js-showMonthPicker', function (event) {
+                myDatepicker.toggleClass('is-pickingMonths');
+                myDatepicker.toggleClass('is-pickingYears');
+            });
+
+            $monthControls.on('click', '.js-showMonthPicker', function (event) {
+                //fix disappearing box behavior
+                myDatepicker.toggleClass('is-pickingMonths');
+
+                //check to see if trying to click previous month icon
+                var $prevClickIcon = $('.js-prevMonth');
+                var X = (event.pageX);
+                var Y = (event.pageY);
+                if (($prevClickIcon.offset().left < X) && (($prevClickIcon.offset().left + $prevClickIcon.width()) > X) && ($prevClickIcon.offset().top < Y) && (($prevClickIcon.offset().top + $prevClickIcon.width()) > Y)) {
+                    //process the event
+                    event.preventDefault();
+                    var newMonth = $picker.get('highlight').month - 1;
+                    changeHighlightedDate($picker, null, newMonth, null);
+                }
+            });
+
+            $decadeControls.on('click', '.js-showMonthPicker', function (event) {
+                myDatepicker.toggleClass('is-pickingMonths');
+            });
+
+            /** Switch to the is-pickingYears state. */
+            $yearControls.on('click', '.js-showYearPicker', function (event) {
+                myDatepicker.toggleClass('is-pickingYears');
+            });
+
+            myDatepicker.find('.ms-Label').append("<i id=\"deadlineInfoIcon\" class=\"ms-Icon ms-Icon--circleInfo ms-fontColor-blue\" style=\"width: 30px;text-align: center;cursor:pointer;\" onclick=\"toggleInfo('deadlineInfo', this)\"></i>");
+        });
+
+        /** Change the highlighted date. */
+        function changeHighlightedDate($picker, newYear, newMonth, newDay) {
+
+            /** All variables are optional. If not provided, default to the current value. */
+            if (newYear == null) {
+                newYear = $picker.get('highlight').year;
+            }
+            if (newMonth == null) {
+                newMonth = $picker.get('highlight').month;
+            }
+            if (newDay == null) {
+                newDay = $picker.get('highlight').date;
+            }
+
+            /** Update it. */
+            $picker.set('highlight', [newYear, newMonth, newDay]);
+
+        }
+    </script>
+</body>
+
+</html>
