@@ -13,7 +13,13 @@ function setVersion(version) {
 }
 
 function setLanguage() {
-    checkboxes = $(".languageCheckBox").Id;
+    checkboxes = $(".languageCheckBox:checked");
+    languages = [checkboxes[0].id];
+    if (checkboxes.length > 1) {
+        for (var i = 1; i < checkboxes.length; i++) {
+            languages[i] = checkboxes[i].id
+        }
+    }
     showConfirmationModal();
 }
 
