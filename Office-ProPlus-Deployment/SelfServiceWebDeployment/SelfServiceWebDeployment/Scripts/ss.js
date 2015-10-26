@@ -4,20 +4,24 @@ var languages = "";
 
 function setProduct(product) {
     productToInstall = product;
+    $('#productSpan')[0].innerText = product;
     showLanguageModal();
 }
 
 function setVersion(version) {
     versionToInstall = version;
+    $('#versionSpan')[0].innerText = version;
     showProductModal();
 }
 
 function setLanguage() {
     checkboxes = $(".languageCheckBox:checked");
+    $('#productSpan')[0].innerText = checkboxes[0].id;
     languages = [checkboxes[0].id];
     if (checkboxes.length > 1) {
         for (var i = 1; i < checkboxes.length; i++) {
             languages[i] = checkboxes[i].id
+            $('#languageSpan')[0].innerText += ", "+checkboxes[i].id;
         }
     }
     showConfirmationModal();
