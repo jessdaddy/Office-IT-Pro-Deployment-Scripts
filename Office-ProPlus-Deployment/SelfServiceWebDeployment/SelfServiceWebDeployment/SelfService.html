@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <link rel="stylesheet" href="components/Table/Table.min.css" />
+    <link rel="stylesheet" href="components/Button/Button.min.css" />
+    <link rel="stylesheet" href="components/TextField/TextField.min.css" />
+    <link rel="stylesheet" href="components/Toggle/Toggle.min.css" />
+    <link rel="stylesheet" href="components/DatePicker/DatePicker.css" />
+    <link rel="stylesheet" href="components/NavBar/NavBar.min.css">
+    <link rel="stylesheet" href="components/CommandBar/CommandBar.min.css">
+    <link rel="stylesheet" href="components/Callout/Callout.min.css">
+    <link rel="stylesheet" href="components/Dialog/Dialog.min.css">
+    <link href="stylesheets/typeahead.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="components/Panel/Panel.min.css">
+    <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.min.css">
+    <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.components.min.css">
+
+    <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./components/TextField/Jquery.TextField.js"></script>
+    <script type="text/javascript" src="./components/NavBar/Jquery.NavBar.js"></script>
+    <script type="text/javascript" src="./components/CommandBar/Jquery.CommandBar.js"></script>
+    <script type="text/javascript" src="./Scripts/vkbeautify.0.99.00.beta.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+</head>
+<body>
+    <div class="ms-Overlay"></div>
+    <div id="versionModal" class="ms-Dialog" style="width:100%; height: 100%;">
+        <div class="ms-Overlay"></div>
+        <div class="ms-Dialog-main" style="width:80%; height: 80%; max-width:none">
+            <button class="ms-Dialog-button ms-Dialog-button--close">
+                <i class="ms-Icon ms-Icon--x"></i>
+            </button>
+            <div class="ms-Dialog-header">
+                <p class="ms-Dialog-title">Select Version</p>
+            </div>
+            <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                <div class=" ms-dialog-actions" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                    <div style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                        <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="setVersion('2013')" style="width:30%;height:20%; margin-right:auto;margin-left:auto;">
+                            <span class="ms-Button-label">2013</span>
+                        </button>
+                        <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="setVersion('2016')" style="width:30%;height:20%;margin-right:auto;margin-left:auto">
+                            <span class="ms-Button-label">2016</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="productModal" class="ms-Dialog" style="width:100%; height: 100%;display:none">
+        <div class="ms-Overlay"></div>
+        <div class="ms-Dialog-main" style="width:80%; height: 80%; max-width:none">
+            <button class="ms-Dialog-button ms-Dialog-button--close">
+                <i class="ms-Icon ms-Icon--x"></i>
+            </button>
+            <div class="ms-Dialog-header">
+                <p class="ms-Dialog-title">Select Products</p>
+            </div>
+            <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+
+                <div class="ms-Table">
+                    <div class="ms-Table-row">
+                        <span class="ms-font-xl">Section</span>
+                    </div>
+                    <div id="templatesRow" class="ms-Table-row navrow">
+                        <span class="ms-Table-cell" onclick="setProduct('Office')">Office</span>
+                    </div>
+                    <div id="templatesRow" class="ms-Table-row navrow">
+                        <span class="ms-Table-cell" onclick="setProduct('Visio')">Visio</span>
+                    </div>
+                    <div id="templatesRow" class="ms-Table-row navrow">
+                        <span class="ms-Table-cell" onclick="setProduct('Project')">Project</span>
+                    </div>
+                    <div id="templatesRow" class="ms-Table-row navrow">
+                        <span class="ms-Table-cell" onclick="setProduct('IDK')">IDK</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="languageModal" class="ms-Dialog" style="width:100%; height: 100%;display:none">
+        <div class="ms-Overlay"></div>
+        <div class="ms-Dialog-main" style="width:80%; height: 80%; max-width:none">
+            <button class="ms-Dialog-button ms-Dialog-button--close">
+                <i class="ms-Icon ms-Icon--x"></i>
+            </button>
+            <div class="ms-Dialog-header">
+                <p class="ms-Dialog-title">Select Products</p>
+            </div>
+            <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                <input type="checkbox" id="en-en" />
+                <input type="checkbox" id="ja-ja" />
+                <input type="checkbox" id="fr-fr" />
+                <input type="checkbox" id="ge-ge" />
+                <input type="checkbox" id="es-es" />
+                <input type="checkbox" id="it-it" />
+                <input type="checkbox" id="id-kk" />
+                <div class=" ms-dialog-actions" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                    <div style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                        <button class="ms-Dialog-action ms-Button">
+                            <span class="ms-Button-label">back</span>
+                        </button>
+                        <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="setLanguage()">
+                            <span class="ms-Button-label">forward</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmationModal" class="ms-Dialog" style="width:100%; height: 100%;display:none">
+        <div class="ms-Overlay"></div>
+        <div class="ms-Dialog-main" style="width:80%; height: 80%; max-width:none">
+            <button class="ms-Dialog-button ms-Dialog-button--close">
+                <i class="ms-Icon ms-Icon--x"></i>
+            </button>
+            <div class="ms-Dialog-header">
+                <p class="ms-Dialog-title">Select Products</p>
+            </div>
+            <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                <p>Confirmation Screen</p>
+                <div class=" ms-dialog-actions" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                    <div style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                        <button class="ms-Dialog-action ms-Button ms-Button--primary">
+                            <span class="ms-Button-label">Back</span>
+                        </button>
+                        <button class="ms-Dialog-action ms-Button ms-Button--primary">
+                            <span class="ms-Button-label">Install</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+    <script type="text/javascript" src="./Scripts/FileSaver.js"></script>
+
+    <script type="text/javascript" src="//1000hz.github.io/bootstrap-validator/dist/validator.min.js"></script>
+    <script type="text/javascript" src="./Scripts/jquery.fabric.min.js"></script>
+    <script type="text/javascript" src="./components/Panel/Jquery.Panel.js"></script>
+    <script type="text/javascript" src="./Scripts/ss.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            if ($('.ms-FilePicker').length > 0) {
+                $('.ms-FilePicker').css({
+                    "position": "absolute !important"
+                });
+
+                $('.ms-Dropdown').FilePicker();
+                $('.ms-Toggle').FilePicker();
+                $('.ms-Table').FilePicker();
+                $('.ms-DatePicker').FilePicker();
+            } else {
+                if ($.fn.Dropdown) {
+                    $('.ms-Dropdown').Dropdown();
+                }
+                if ($.fn.Toggle) {
+                    $('.ms-Toggle').Toggle();
+                }
+                if ($.fn.Table) {
+                    $('.ms-Table').Table();
+                }
+                if ($.fn.DatePicker) {
+                    var myDatepicker = $('.ms-DatePicker').DatePicker({
+                        label: "Deadline"
+                    });
+                }
+
+                if ($.fn.Panel) {
+                    $('.ms-Panel').Panel();
+                }
+
+                if ($.fn.Dialog) {
+                    $('.ms-Dialog').Dialog();
+                }
+
+                if ($.fn.List) {
+                    $('.ms-List').List();
+                }
+            }
+
+            if (fabric && fabric['Dropdown']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
+            }
+            if (fabric && fabric['Toggle']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
+            }
+            if (fabric && fabric['Table']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
+            }
+            if (fabric && fabric['DatePicker']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>

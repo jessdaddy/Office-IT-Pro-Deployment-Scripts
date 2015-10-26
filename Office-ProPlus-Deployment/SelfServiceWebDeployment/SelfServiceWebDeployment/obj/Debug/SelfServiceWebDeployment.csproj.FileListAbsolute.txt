@@ -1,0 +1,6 @@
+C:\Users\mdraftz\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfServiceWebDeployment\bin\CTROfficeXmlWebEditor.dll.config
+C:\Users\mdraftz\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfServiceWebDeployment\bin\CTROfficeXmlWebEditor.dll
+C:\Users\mdraftz\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfServiceWebDeployment\bin\CTROfficeXmlWebEditor.pdb
+C:\Users\mdraftz\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfServiceWebDeployment\obj\Debug\SelfServiceWebDeployment.csprojResolveAssemblyReference.cache
+C:\Users\mdraftz\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfServiceWebDeployment\obj\Debug\CTROfficeXmlWebEditor.dll
+C:\Users\mdraftz\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfServiceWebDeployment\obj\Debug\CTROfficeXmlWebEditor.pdb

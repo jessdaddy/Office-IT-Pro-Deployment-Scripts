@@ -220,8 +220,10 @@
     <Content Include="Scripts\jquery.fabric.js" />
     <Content Include="Scripts\jquery.fabric.min.js" />
     <Content Include="Scripts\new-main.js" />
+    <Content Include="Scripts\ss.js" />
     <Content Include="Scripts\ui-bootstrap-tpls-0.13.2.min.js" />
     <Content Include="Scripts\vkbeautify.0.99.00.beta.js" />
+    <Content Include="SelfService.html" />
     <Content Include="stylesheets\fabric.css" />
     <Content Include="stylesheets\fabric.min.css" />
     <Content Include="stylesheets\typeahead.css" />
