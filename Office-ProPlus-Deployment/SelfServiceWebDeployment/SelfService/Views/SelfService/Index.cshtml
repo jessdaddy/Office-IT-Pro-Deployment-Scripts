@@ -1,0 +1,311 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<html>
+<head>
+    <title>SelfService</title>
+    <meta charset="utf-8" name="viewport" content="width=device-width" />
+    <link href="stylesheets/typeahead.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.min.css">
+    <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.components.min.css">
+
+    <script type="text/javascript" src="./Scripts/vkbeautify.0.99.00.beta.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <style>
+        .checkboxLabel {
+            display: inline;
+            margin-left: 5px;
+            margin-bottom: 3px;
+        }
+
+        .languageCheckBox {
+            margin-bottom: -2px !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="versionModal" class="ms-Dialog" style="width:100%; height: 100%;">
+        <div class="ms-Dialog-main" style="width:80%; height: 80%; max-width:none">
+            <button class="ms-Dialog-button ms-Dialog-button--close">
+                <i class="ms-Icon ms-Icon--x"></i>
+            </button>
+            <div class="ms-Dialog-header">
+                <p class="ms-Dialog-title">Select Version</p>
+            </div>
+            <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                <p class="ms-font-m">ViewBag.Keys</p>
+                <div class=" ms-dialog-actions" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                    <div style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                        <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="setVersion('2013')" style="width:30%;height:20%; margin-right:auto;margin-left:auto;">
+                            <span class="ms-Button-label">2013</span>
+                        </button>
+                        <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="setVersion('2016')" style="width:30%;height:20%;margin-right:auto;margin-left:auto">
+                            <span class="ms-Button-label">2016</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="productModal" class="ms-Dialog" style="width:100%; height: 100%;display:none">
+        <div class="ms-Dialog-main" style="width:80%; height: 80%; max-width:none">
+            <button class="ms-Dialog-button ms-Dialog-button--close">
+                <i class="ms-Icon ms-Icon--x"></i>
+            </button>
+            <div class="ms-Dialog-header">
+                <p class="ms-Dialog-title">Select Products</p>
+            </div>
+            <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+
+                <div class="ms-Table">
+                    <div class="ms-Table-row">
+                        <span class="ms-font-xl">Section</span>
+                    </div>
+                    <div id="templatesRow" class="ms-Table-row navrow">
+                        <span class="ms-Table-cell" onclick="setProduct('O365ProPlusRetail')">Office 365 ProPlus</span>
+                    </div>
+                    <div id="templatesRow" class="ms-Table-row navrow">
+                        <span class="ms-Table-cell" onclick="setProduct('O365BusinessRetail')">Office 365 for Business</span>
+                    </div>
+                    <div id="templatesRow" class="ms-Table-row navrow">
+                        <span class="ms-Table-cell" onclick="setProduct('VisioProRetail')">Visio for Office 365</span>
+                    </div>
+                    <div id="templatesRow" class="ms-Table-row navrow">
+                        <span class="ms-Table-cell" onclick="setProduct('ProjectProRetail')">Project for Office 365</span>
+                    </div>
+                </div>
+                <div class=" ms-dialog-actions" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                    <div style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                        <button class="ms-Dialog-action ms-Button" onclick="showVersionModal()">
+                            <span class="ms-Button-label">Back</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="languageModal" class="ms-Dialog" style="width:100%; height: 100%;display:none">
+        <div class="ms-Dialog-main" style="max-width:none">
+            <button class="ms-Dialog-button ms-Dialog-button--close">
+                <i class="ms-Icon ms-Icon--x"></i>
+            </button>
+            <div class="ms-Dialog-header">
+                <p class="ms-Dialog-title">Select Languages</p>
+            </div>
+            <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                <div class="ms-Grid">
+                    <div class="ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col">
+                        <p>
+                            <input type="checkbox" id="en-us" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">English (en-us)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="ar-sa" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Arabic (ar-sa)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="bg-bg" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Bulgarian (bg-bg)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="zh-cn" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Chinese (Simplified) (zh-cn)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="zh-tw" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Chinese (zh-tw)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="hr-hr" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Croatian (hr-hr)</span>
+                        </p>
+
+                        <p>
+                            <input type="checkbox" id="cs-cz" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Czech (cs-cz)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="hr-hr" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Croatian (hr-hr)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="da-dk" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Danish (da-dk)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="et-ee" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Estonian (et-ee)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="fi-fi" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Finnish (fi-fi)</span>
+                        </p>
+
+                        <p>
+                            <input type="checkbox" id="fr-fr" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">French (fr-fr)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="de-de" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">German (de-de)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="el-gr" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Greek (el-gr)</span>
+                        </p>
+                    </div>
+                    <div class="ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col">
+                        <p>
+                            <input type="checkbox" id="he-il" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Hebrew (he-il)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="hi-in" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Hindi (hi-in)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="hu-hu" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Hungarian (hu-hu)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="id-id" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Indonesian (id-id)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="it-it" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Italian (it-it)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="ja-jp" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Japanese (ja-jp)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="kk-kh" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Kazakh (kk-kh)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="ko-kr" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Korean (ko-kr)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="lv-lv" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Latvian (lv-lv)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="lt-lt" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Lithuanian (lt-lt)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="ms-my" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Malay (ms-my)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="nb-no" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Norwegian (Bokm�l) (nb-no)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="pl-pl" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Polish (pl-pl)</span>
+                        </p>
+                    </div>
+                    <div class="ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col">
+                        <p>
+                            <input type="checkbox" id="pt-br" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Portuguese (Brazil)(pt-br)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="pt-pt" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Portuguese (Portugal)(pt-pt)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="ro-ro" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Romanian (ro-ro)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="ru-ru" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Russian (ru-ru)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="sr-latn-rs" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Serbian (Latin) (sr-latn-rs)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="sk-sk" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Slovak (sk-sk)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="sl-si" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Slovenian (sl-si)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="es-es" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Spanish (es-es)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="sv-se" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Swedish (sv-se)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="th-th" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Thai (th-th)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="tr-tr" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Turkish (tr-tr)</span>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="uk-ua" class="languageCheckBox" />
+                            <span class="ms-Label checkboxLabel">Ukrainian (uk-ua)</span>
+                        </p>
+                    </div>
+                </div>
+                <div class=" ms-dialog-actions" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                    <div style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                        <button class="ms-Dialog-action ms-Button" onclick="showProductModal()">
+                            <span class="ms-Button-label">back</span>
+                        </button>
+                        <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="setLanguage()">
+                            <span class="ms-Button-label">forward</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmationModal" class="ms-Dialog" style="width:100%; height: 100%;display:none">
+        <div class="ms-Dialog-main" style="width:80%; height: 80%; max-width:none">
+            <button class="ms-Dialog-button ms-Dialog-button--close">
+                <i class="ms-Icon ms-Icon--x"></i>
+            </button>
+            <div class="ms-Dialog-header">
+                <p class="ms-Dialog-title">Summary</p>
+            </div>
+            <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                <p class="ms-font-m">Confirmation Screen</p>
+                <p class="ms-font-m">Version: <span class="ms-font-m" id="versionSpan"></span></p>
+                <p class="ms-font-m">Product: <span class="ms-font-m" id="productSpan"></span></p>
+                <p class="ms-font-m">Languages: <span class="ms-font-m" id="languageSpan"></span></p>
+                <div class=" ms-dialog-actions" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                    <div style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                        <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="showLanguageModal()">
+                            <span class="ms-Button-label">Back</span>
+                        </button>
+                        <button class="ms-Dialog-action ms-Button ms-Button--primary">
+                            <span class="ms-Button-label">Install</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+</html>
