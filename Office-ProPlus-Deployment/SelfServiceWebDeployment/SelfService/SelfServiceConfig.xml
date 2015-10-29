@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SelfServiceSite>
+  
+  <Version ID="2016"/>
+  <Version ID="2013"/>
+
+  <Build Type="IT Pro"/>
+  <Build type="Accountant"/>
+  <Build type="Developer"/>
+  <Build type="Manager"/>
+  <Build type="Sauron"/>
+
+  <!--<Language ID="en-us" Label="English (en-us)"/>
+  <Language ID="ar-sa" Label="Arabic (ar-sa)"/>
+  <Language ID="bg-bg" Label="Bulgarian (bg-bg)"/>
+  <Language ID="zh-cn" Label="Chinese (Simplified) (zh-cn)"/>
+  <Language ID="zh-tw" Label="Chinese (zh-tw)"/>
+  <Language ID="hr-hr" Label="Croatian (hr-hr)"/>
+  <Language ID="cs-cz" Label="Czech (cs-cz)"/>
+  <Language ID="da-dk" Label="Danish(da-dk)"/>
+  <Language ID="et-ee" Label="Estonian (et-ee)"/>
+  <Language ID="fi-fi" Label="Finnish (fi-fi)"/>
+  <Language ID="fr-fr" Label="French (fr-fr)"/>
+  <Language ID="de-de" Label="German (de-de)"/>
+  <Language ID="el-gr" Label="Greek (el-gr)"/>
+  <Language ID="he-li" Label="Hebrew (he-li)"/>
+  <Language ID="hi-in" Label="Hindi (hi-in)"/>
+  <Language ID="hu-hu" Label="Hungarian (hu-hu)"/>
+  <Language ID="id-id" Label="Indonesian (id-id)"/>
+  <Language ID="it-it" Label="Italian (it-it)"/>
+  <Language ID="ja-jp" Label="Japanese (ja-jp)"/>
+  <Language ID="kk-kh" Label="Kazakh (kk-kh)"/>
+  <Language ID="cs-cz" Label="Czech (cs-cz)"/>
+  <Language ID="da-dk" Label="Danish(da-dk)"/>
+  <Language ID="et-ee" Label="Estonian (et-ee)"/>-->
+  <Language ID="fi-fi" Label="Finnish (fi-fi)"/>
+  <Language ID="fr-fr" Label="French (fr-fr)"/>
+  <Language ID="de-de" Label="German (de-de)"/>
+  <Language ID="el-gr" Label="Greek (el-gr)"/>
+  <Language ID="he-li" Label="Hebrew (he-li)"/>
+  <Language ID="hi-in" Label="Hindi (hi-in)"/>
+  <Language ID="hu-hu" Label="Hungarian (hu-hu)"/>
+  <Language ID="id-id" Label="Indonesian (id-id)"/>
+  <Language ID="it-it" Label="Italian (it-it)"/>
+  <Language ID="ja-jp" Label="Japanese (ja-jp)"/>
+  <Language ID="kk-kh" Label="Kazakh (kk-kh)"/>
+  <Language ID="he-li" Label="Hebrew (he-li)"/>
+  <Language ID="hi-in" Label="Hindi (hi-in)"/>
+  <Language ID="hu-hu" Label="Hungarian (hu-hu)"/>
+  <Language ID="id-id" Label="Indonesian (id-id)"/>
+
+  
+</SelfServiceSite>
