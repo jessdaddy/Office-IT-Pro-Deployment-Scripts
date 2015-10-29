@@ -10,7 +10,7 @@
   <Build type="Manager"/>
   <Build type="Sauron"/>
 
-  <!--<Language ID="en-us" Label="English (en-us)"/>
+  <Language ID="en-us" Label="English (en-us)"/>
   <Language ID="ar-sa" Label="Arabic (ar-sa)"/>
   <Language ID="bg-bg" Label="Bulgarian (bg-bg)"/>
   <Language ID="zh-cn" Label="Chinese (Simplified) (zh-cn)"/>
@@ -32,7 +32,7 @@
   <Language ID="kk-kh" Label="Kazakh (kk-kh)"/>
   <Language ID="cs-cz" Label="Czech (cs-cz)"/>
   <Language ID="da-dk" Label="Danish(da-dk)"/>
-  <Language ID="et-ee" Label="Estonian (et-ee)"/>-->
+  <Language ID="et-ee" Label="Estonian (et-ee)"/>
   <Language ID="fi-fi" Label="Finnish (fi-fi)"/>
   <Language ID="fr-fr" Label="French (fr-fr)"/>
   <Language ID="de-de" Label="German (de-de)"/>
