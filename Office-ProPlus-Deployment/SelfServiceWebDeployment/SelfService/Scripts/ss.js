@@ -149,7 +149,7 @@ $(document).ready(function () {
         url: "/SelfService/Languages",
         success: function onSuccess(result) {
             console.log("success");
-            availableLanguages = result.Split(";");
+            //availableLanguages = result.Split(";");
         }
     });
     $.ajax({
@@ -157,7 +157,7 @@ $(document).ready(function () {
         url: "/SelfService/Versions",
         success: function onSuccess(result) {
             console.log("success");
-            availableLanguages = result.Split(";");
+            //availableLanguages = result.Split(";");
         }
     });
     $.ajax({
@@ -165,7 +165,7 @@ $(document).ready(function () {
         url: "/SelfService/Products",
         success: function onSuccess(result) {
             console.log("success");
-            availableLanguages = result.Split(";");
+            //availableLanguages = result.Split(";");
         }
     });
 
