@@ -142,28 +142,9 @@ function showConfirmationModal() {
     $('#confirmationModal')[0].style.display = "block";
 }
 
+
 $(document).ready(function () {
 
-    $.ajax({
-        type: "GET",
-        url: "/SelfService/Languages",
-        success: function onSuccess(result) {
-            console.log("success");
-        }
-    });
-    $.ajax({
-        type: "GET",
-        url: "/SelfService/Versions",
-        success: function onSuccess(result) {
-            console.log("success");
-        }
-    });
-    $.ajax({
-        type: "GET",
-        url: "/SelfService/Products",
-        success: function onSuccess(result) {
-            console.log("success");
-        }
-    });
+
 
 });
