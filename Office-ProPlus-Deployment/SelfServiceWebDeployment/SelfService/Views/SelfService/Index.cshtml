@@ -32,6 +32,19 @@
         .modalList{
             text-align:center;
         }
+
+        .ms-Button--primary.ms-bgColor-orangeLight{
+            background-color:orange;
+            border-color:orange;
+        }
+        .ms-bgColor-orangeLight.ms-Button--primary.ms-Button:focus{
+            background-color:#ff8c00;
+            border-color:#ff8c00;
+        }
+        .ms-bgColor-orangeLight.ms-Button--primary.ms-Button:hover{
+            background-color:#ff8c00;
+            border-color:#ff8c00;
+        }
     </style>
 </head>
 <body>
@@ -51,8 +64,8 @@
                         <ul id="versions" class="modalList">
                             <li class="squareButton">
                                 <button class="ms-Dialog-action ms-Button" onclick="" style="width:225px;height:250px;">
-                                    <i class="ms-Icon ms-Icon--support"></i>
-                                    <span class="ms-Button-label">Help</span>
+                                    <i class="ms-Icon ms-Icon--question" style="font-size:125px"></i>
+                                    <span class="ms-font-xl" style="display:block">Help</span>
                                 </button>
                             </li>
                         </ul>
@@ -76,8 +89,8 @@
                     <ul class="modalList">
                         <li class="squareButton">
                             <button class="ms-Dialog-action ms-Button" onclick="setProduct('2013')" style="width:225px;height:250px;">
-                                <i class="ms-Icon ms-Icon--file"></i>
-                                <span class="ms-Button-label">IT</span>
+                                <i class="ms-Icon ms-Icon--people" style="font-size:125px"></i>
+                                <span class="ms-font-xl" style="display:block">IT</span>
                             </button>
                         </li>
                     </ul>
@@ -202,16 +215,16 @@
                                 if(version === "2013"){
                                     $('#versions').prepend("<li class='squareButton'>\
                                         <button class='ms-Dialog-action ms-Button ms-Button--primary ms-bgColor-orangeLight' onclick='setVersion(\"2013\")' style='width:225px;height:250px;'>\
-                                        <img src='~/Content/imgs/office-icon-white.png' />\
-                                        <span class='ms-Button-label ms-fontColor-white'>2013</span>\
+                                        <img src='Content/imgs/office-icon-white.png' />\
+                                        <span class='ms-font-xl ms-fontColor-white' style='display:block'>2013</span>\
                                         </button>\
                                         </li>");
                                 }
                                 if (version === "2016") {
                                     $('#versions').prepend("<li class='squareButton'>\
                                     <button class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"2016\")' style='width:225px;height:250px;'>\
-                                    <img src='~/Content/imgs/office-icon-white.png' />\
-                                    <span class='ms-Button-label'>2016</span>\
+                                    <img src='Content/imgs/office-icon-white.png' />\
+                                    <span class='ms-font-xl ms-fontColor-white' style='display:block'>2016</span>\
                                     </button>\
                                     </li>")
                                 }
