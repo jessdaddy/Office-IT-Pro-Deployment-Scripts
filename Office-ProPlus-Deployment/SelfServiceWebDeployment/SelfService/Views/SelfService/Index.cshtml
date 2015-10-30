@@ -41,19 +41,7 @@
             <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
                 <div class=" ms-dialog-actions" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
                     <div style="width:100%; height: 100%;">
-                        <div class="ms-Grid">
-                            <div class="ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col" style="text-align:center;">
-                                <button class="ms-Dialog-action ms-Button ms-Button--primary ms-bgColor-orangeLight" onclick="setVersion('2013')" style="width:225px;height:250px;">
-                                    <img src="~/Content/imgs/office-icon-white.png" />
-                                    <span class="ms-Button-label ms-fontColor-white">2013</span>
-                                </button>
-                            </div>
-                            <div class="ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col" style="text-align:center">
-                                <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="setVersion('2016')" style="width:225px;height:250px;">
-                                    <img src="~/Content/imgs/office-icon-white.png" />
-                                    <span class="ms-Button-label">2016</span>
-                                </button>
-                            </div>
+                        <div id="versions" class="ms-Grid">
                             <div class="ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col" style="text-align:center">
                                 <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="" style="width:225px;height:250px;">
                                     <i class="ms-Icon ms-Icon--support ms-fontColor-white"></i>
@@ -139,7 +127,6 @@
                     <div class="ms-Grid">
                         <div id="languagesGrid" class="ms-Grid" style="margin-bottom:1%;">
                             <div class='ms-Grid-row'>
-                                @*LANGUAGES GO HERE*@
                             </div>
                         </div>
                     </div>
@@ -232,7 +219,58 @@
                 });
             }
 
+            function getVersions() {
+
+                $.ajax({
+                    type: "GET",
+                    url: "SelfServiceConfig.xml",
+                    datatype: "xml",
+                    success:
+                        function (xml) {
+                            $(xml).find('Version').each(function () {
+                                var version = $(this).attr('ID');
+                                console.log("Versions: " + version);
+                                if(version === "2013"){
+                                    $('#versions').prepend("<div class='ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col' style='text-align:center;'>\
+                                        <button class='ms-Dialog-action ms-Button ms-Button--primary ms-bgColor-orangeLight' onclick='setVersion(\"2013\")' style='width:225px;height:250px;'>\
+                                        <img src='~/Content/imgs/office-icon-white.png' />\
+                                        <span class='ms-Button-label ms-fontColor-white'>2013</span>\
+                                        </button>\
+                                        </div>");
+                                }
+                                if (version === "2016") {
+                                    $('#versions').prepend("<div class='ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col' style='text-align:center'>\
+                                    <button class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"2016\")' style='width:225px;height:250px;'>\
+                                    <img src='~/Content/imgs/office-icon-white.png' />\
+                                    <span class='ms-Button-label'>2016</span>\
+                                    </button>\
+                                    </div>")
+                                }
+                            });
+                        }
+                });
+            }
+
+            function getBuild() {
+
+                $.ajax({
+                    type: "GET",
+                    url: "SelfServiceConfig.xml",
+                    datatype: "xml",
+                    success:
+                        function (xml) {
+                            $(xml).find('Build').each(function () {
+                                var buildType = $(this).attr('Type');
+                                console.log("Type: " + buildType);
+                                //TODO: Change the displayed builds on the page according the the XML file 
+                            });
+                        }
+                });
+            }
+
             $(document).ready(function () {
+                getVersions();
+                getBuild();
                 getLanguages();
             });
         })();

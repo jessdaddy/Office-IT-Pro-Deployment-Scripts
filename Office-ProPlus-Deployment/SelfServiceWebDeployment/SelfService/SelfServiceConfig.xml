@@ -5,10 +5,9 @@
   <Version ID="2013"/>
 
   <Build Type="IT Pro"/>
-  <Build type="Accountant"/>
-  <Build type="Developer"/>
-  <Build type="Manager"/>
-  <Build type="Sauron"/>
+  <Build Type="Accountant"/>
+  <Build Type="Developer"/>
+  <Build Type="Manager"/>
 
   <Language ID="en-us" Label="English (en-us)"/>
   <Language ID="ar-sa" Label="Arabic (ar-sa)"/>

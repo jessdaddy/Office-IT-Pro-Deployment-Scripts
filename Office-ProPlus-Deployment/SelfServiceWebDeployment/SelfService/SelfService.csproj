@@ -212,6 +212,9 @@
     <Content Include="Scripts\ui-bootstrap-tpls-0.13.2.min.js" />
     <Content Include="Scripts\vkbeautify.0.99.00.beta.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="SelfServiceConfig.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
