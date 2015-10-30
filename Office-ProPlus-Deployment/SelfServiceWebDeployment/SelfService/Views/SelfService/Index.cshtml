@@ -25,6 +25,13 @@
         .languageCheckBox {
             margin-bottom: -2px !important;
         }
+        .squareButton{
+            display:inline-block;
+            padding: 10px 10px;
+        }
+        .modalList{
+            text-align:center;
+        }
     </style>
 </head>
 <body>
@@ -41,14 +48,14 @@
             <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
                 <div class=" ms-dialog-actions" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
                     <div style="width:100%; height: 100%;">
-                        <div id="versions" class="ms-Grid">
-                            <div class="ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col" style="text-align:center">
-                                <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="" style="width:225px;height:250px;">
-                                    <i class="ms-Icon ms-Icon--support ms-fontColor-white"></i>
+                        <ul id="versions" class="modalList">
+                            <li class="squareButton">
+                                <button class="ms-Dialog-action ms-Button" onclick="" style="width:225px;height:250px;">
+                                    <i class="ms-Icon ms-Icon--support"></i>
                                     <span class="ms-Button-label">Help</span>
                                 </button>
-                            </div>
-                        </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -66,50 +73,44 @@
             </div>
             <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
                 <div style="width:100%; height: 100%;">
-                    <div class="ms-Grid">
-                        <div class="ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col" style="text-align:center;">
-                            <p>
-                                <button class="ms-Dialog-action ms-Button" onclick="setProduct('2013')" style="width:225px;height:250px;">
-                                    <i class="ms-Icon ms-Icon--mail"></i>
-                                    <span class="ms-Button-label">IT</span>
-                                </button>
-                            </p>
-                            <p>
-                                <button class="ms-Dialog-action ms-Button" onclick="setProduct('2013')" style="width:225px;height:250px;">
-                                    <i class="ms-Icon ms-Icon--mail"></i>
-                                    <span class="ms-Button-label">IT</span>
-                                </button>
-                            </p>
-                        </div>
-                        <div class="ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col" style="text-align:center">
-                            <p>
-                                <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="setProduct('2016')" style="width:225px;height:250px;">
-                                    <i class="ms-Icon ms-Icon--mail"></i>
-                                    <span class="ms-Button-label">Accounting</span>
-                                </button>
-                            </p>
-                            <p>
-                                <button class="ms-Dialog-action ms-Button" onclick="setProduct('2013')" style="width:225px;height:250px;">
-                                    <i class="ms-Icon ms-Icon--mail"></i>
-                                    <span class="ms-Button-label">IT</span>
-                                </button>
-                            </p>
-                        </div>
-                        <div class="ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col" style="text-align:center">
-                            <p>
-                                <button class="ms-Dialog-action ms-Button" onclick="setProduct('2013')" style="width:225px;height:250px;">
-                                    <i class="ms-Icon ms-Icon--mail"></i>
-                                    <span class="ms-Button-label">Purple People Eater</span>
-                                </button>
-                            </p>
-                            <p>
-                                <button class="ms-Dialog-action ms-Button" onclick="setProduct('2013')" style="width:225px;height:250px;">
-                                    <i class="ms-Icon ms-Icon--mail"></i>
-                                    <span class="ms-Button-label">IT</span>
-                                </button>
-                            </p>
-                        </div>
-                    </div>
+                    <ul class="modalList">
+                        <li class="squareButton">
+                            <button class="ms-Dialog-action ms-Button" onclick="setProduct('2013')" style="width:225px;height:250px;">
+                                <i class="ms-Icon ms-Icon--mail"></i>
+                                <span class="ms-Button-label">IT</span>
+                            </button>
+                        </li>
+                        <li class="squareButton">
+                            <button class="ms-Dialog-action ms-Button" onclick="setProduct('2013')" style="width:225px;height:250px;">
+                                <i class="ms-Icon ms-Icon--mail"></i>
+                                <span class="ms-Button-label">IT</span>
+                            </button>
+                        </li>
+                        <li class="squareButton">
+                            <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="setProduct('2016')" style="width:225px;height:250px;">
+                                <i class="ms-Icon ms-Icon--mail"></i>
+                                <span class="ms-Button-label">Accounting</span>
+                            </button>
+                        </li>
+                        <li class="squareButton">
+                            <button class="ms-Dialog-action ms-Button" onclick="setProduct('2013')" style="width:225px;height:250px;">
+                                <i class="ms-Icon ms-Icon--mail"></i>
+                                <span class="ms-Button-label">IT</span>
+                            </button>
+                        </li>
+                        <li class="squareButton">
+                            <button class="ms-Dialog-action ms-Button" onclick="setProduct('2013')" style="width:225px;height:250px;">
+                                <i class="ms-Icon ms-Icon--mail"></i>
+                                <span class="ms-Button-label">Purple People Eater</span>
+                            </button>
+                        </li>
+                        <li class="squareButton">
+                            <button class="ms-Dialog-action ms-Button" onclick="setProduct('2013')" style="width:225px;height:250px;">
+                                <i class="ms-Icon ms-Icon--mail"></i>
+                                <span class="ms-Button-label">IT</span>
+                            </button>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -229,20 +230,20 @@
                                 var version = $(this).attr('ID');
                                 console.log("Versions: " + version);
                                 if(version === "2013"){
-                                    $('#versions').prepend("<div class='ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col' style='text-align:center;'>\
+                                    $('#versions').prepend("<li class='squareButton'>\
                                         <button class='ms-Dialog-action ms-Button ms-Button--primary ms-bgColor-orangeLight' onclick='setVersion(\"2013\")' style='width:225px;height:250px;'>\
                                         <img src='~/Content/imgs/office-icon-white.png' />\
                                         <span class='ms-Button-label ms-fontColor-white'>2013</span>\
                                         </button>\
-                                        </div>");
+                                        </li>");
                                 }
                                 if (version === "2016") {
-                                    $('#versions').prepend("<div class='ms-u-lg4 ms-u-xl4 ms-u-md4 ms-Grid-col' style='text-align:center'>\
+                                    $('#versions').prepend("<li class='squareButton'>\
                                     <button class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"2016\")' style='width:225px;height:250px;'>\
                                     <img src='~/Content/imgs/office-icon-white.png' />\
                                     <span class='ms-Button-label'>2016</span>\
                                     </button>\
-                                    </div>")
+                                    </li>")
                                 }
                             });
                         }
