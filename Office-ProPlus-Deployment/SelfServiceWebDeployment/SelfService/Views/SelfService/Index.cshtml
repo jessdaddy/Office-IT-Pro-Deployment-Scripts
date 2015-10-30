@@ -49,7 +49,7 @@
 </head>
 <body>
     <div id="versionModal" class="ms-Dialog" style="width:100%; height: 100%;">
-        <div class="ms-Dialog-main" style="width:80%; height: 80%; max-width:none">
+        <div class="ms-Dialog-main" style="width:80%; height: 80%; max-width:none; overflow:auto">
             <button class="ms-Dialog-button ms-Dialog-button--close" style="display:block;position:static;margin-top:10px">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg" style="height:35px" />
                 <span class="ms-font-l" style="margin-left:5px;vertical-align:middle">Return to portal homepage</span>
@@ -84,8 +84,8 @@
                 <p class="ms-Dialog-title">Select Package</p>
                 <hr />
             </div>
-            <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
-                <div style="width:100%; height: 100%;">
+            <div class="ms-Dialog-inner" style="width:100%;">
+                <div style="width:100%;">
                     <ul id="buildsGrid" class="modalList">
                         @*BUILDS GO HERE*@
                     </ul>
