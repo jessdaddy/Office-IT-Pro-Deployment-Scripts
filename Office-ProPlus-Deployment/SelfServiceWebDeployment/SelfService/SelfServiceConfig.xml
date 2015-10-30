@@ -8,6 +8,18 @@
   <Build Type="Accountant"/>
   <Build Type="Developer"/>
   <Build Type="Manager"/>
+  <Build Type="IT Pro"/>
+  <Build Type="Accountant"/>
+  <Build Type="Developer"/>
+  <Build Type="Manager"/>
+  <Build Type="IT Pro"/>
+  <Build Type="Accountant"/>
+  <Build Type="Developer"/>
+  <Build Type="Manager"/>
+  <Build Type="IT Pro"/>
+  <Build Type="Accountant"/>
+  <Build Type="Developer"/>
+  <Build Type="Manager"/>
 
   <Language ID="en-us" Label="English (en-us)"/>
   <Language ID="ar-sa" Label="Arabic (ar-sa)"/>
