@@ -34,7 +34,6 @@
   <Language ID="fr-fr" Label="French (fr-fr)"/>
   <Language ID="de-de" Label="German (de-de)"/>
   <Language ID="el-gr" Label="Greek (el-gr)"/>
-  <Language ID="he-li" Label="Hebrew (he-li)"/>
   <Language ID="hi-in" Label="Hindi (hi-in)"/>
   <Language ID="hu-hu" Label="Hungarian (hu-hu)"/>
   <Language ID="id-id" Label="Indonesian (id-id)"/>
@@ -48,14 +47,12 @@
   <Language ID="fr-fr" Label="French (fr-fr)"/>
   <Language ID="de-de" Label="German (de-de)"/>
   <Language ID="el-gr" Label="Greek (el-gr)"/>
-  <Language ID="he-li" Label="Hebrew (he-li)"/>
   <Language ID="hi-in" Label="Hindi (hi-in)"/>
   <Language ID="hu-hu" Label="Hungarian (hu-hu)"/>
   <Language ID="id-id" Label="Indonesian (id-id)"/>
   <Language ID="it-it" Label="Italian (it-it)"/>
   <Language ID="ja-jp" Label="Japanese (ja-jp)"/>
   <Language ID="kk-kh" Label="Kazakh (kk-kh)"/>
-  <Language ID="he-li" Label="Hebrew (he-li)"/>
   <Language ID="hi-in" Label="Hindi (hi-in)"/>
   <Language ID="hu-hu" Label="Hungarian (hu-hu)"/>
   <Language ID="id-id" Label="Indonesian (id-id)"/>
