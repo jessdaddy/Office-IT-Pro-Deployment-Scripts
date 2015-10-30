@@ -64,8 +64,8 @@
                         <ul id="versions" class="modalList">
                             <li class="squareButton">
                                 <button class="ms-Dialog-action ms-Button" onclick="" style="width:225px;height:250px;">
-                                    <i class="ms-Icon ms-Icon--question" style="font-size:125px"></i>
-                                    <span class="ms-font-xl" style="display:block">Help</span>
+                                    <i class="ms-Icon ms-Icon--question" style="font-size:100px"></i>
+                                    <p class="ms-font-xl" style="display:block">Help</p>
                                 </button>
                             </li>
                         </ul>
@@ -248,16 +248,16 @@
                                 if(version === "2013"){
                                     $('#versions').prepend("<li class='squareButton'>\
                                         <button class='ms-Dialog-action ms-Button ms-Button--primary ms-bgColor-orangeLight' onclick='setVersion(\"2013\")' style='width:225px;height:250px;'>\
-                                        <img src='Content/imgs/office-icon-white.png' />\
-                                        <span class='ms-font-xl ms-fontColor-white' style='display:block'>2013</span>\
+                                        <img src='Content/imgs/office-icon-white.png' style='height:100px'/>\
+                                        <p class='ms-font-xl ms-fontColor-white' style='display:block'>2013</p>\
                                         </button>\
                                         </li>");
                                 }
                                 if (version === "2016") {
                                     $('#versions').prepend("<li class='squareButton'>\
                                     <button class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"2016\")' style='width:225px;height:250px;'>\
-                                    <img src='Content/imgs/office-icon-white.png' />\
-                                    <span class='ms-font-xl ms-fontColor-white' style='display:block'>2016</span>\
+                                    <img src='Content/imgs/office-icon-white.png' style='height:100px'/>\
+                                    <p class='ms-font-xl ms-fontColor-white' style='display:block'>2016</p>\
                                     </button>\
                                     </li>")
                                 }
@@ -280,7 +280,7 @@
                                 $("#buildsGrid").append("<li class='squareButton'>\
                                     <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall)' style='width:225px;height:250px;'>\
                                     <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
-                                    <span class='ms-font-xl' style='display:block'>" + $(this).attr('Type') + "</span>\
+                                    <p class='ms-font-xl' style='display:block'>" + $(this).attr('Type') + "</p>\
                                     </button>\
                                     </li>");
                             });

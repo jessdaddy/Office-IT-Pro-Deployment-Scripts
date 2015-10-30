@@ -8,9 +8,12 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <div style="width:100%; height:70px; background-color:grey;padding:10px 5px">
-        <img src="~/Content/imgs/office-icon-orange.png" style="height:50px" /><span class="ms-font-l">Company Name</span>
+    <div id="banner" class="ms-Dialog-header ms-bgColor-themeDark ms-bgColor-themeSecondary ms-fontColor-white">
+        <p class="ms-Dialog-title" style="width:90%; padding-left:20px; margin-right:auto">Company Name/Logo | Office Self Service Deployment</p>
     </div>
+    @*<div style="width:100%; height:70px; background-color:grey;padding:10px 5px">
+        <img src="~/Content/imgs/office-icon-orange.png" style="height:50px" /><span class="ms-font-l">Company Name</span>
+    </div>*@
     @RenderBody()
 
     @Scripts.Render("~/bundles/jquery")
