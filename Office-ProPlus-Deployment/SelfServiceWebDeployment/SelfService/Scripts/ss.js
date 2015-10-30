@@ -119,6 +119,7 @@ function showProductModal() {
     $("#versionModal")[0].style.display = "none";
     $("#languageModal")[0].style.display = "none";
     $('#confirmationModal')[0].style.display = "none";
+    $('#downloadModal')[0].style.display = "none";
 }
 
 function showLanguageModal() {
@@ -126,6 +127,7 @@ function showLanguageModal() {
     $("#versionModal")[0].style.display = "none";
     $("#languageModal")[0].style.display = "block";
     $('#confirmationModal')[0].style.display = "none";
+    $('#downloadModal')[0].style.display = "none";
 }
 
 function showVersionModal() {
@@ -133,6 +135,7 @@ function showVersionModal() {
     $("#versionModal")[0].style.display = "block";
     $("#languageModal")[0].style.display = "none";
     $('#confirmationModal')[0].style.display = "none";
+    $('#downloadModal')[0].style.display = "none";
 }
 
 function showConfirmationModal() {
@@ -140,6 +143,18 @@ function showConfirmationModal() {
     $("#versionModal")[0].style.display = "none";
     $("#languageModal")[0].style.display = "none";
     $('#confirmationModal')[0].style.display = "block";
+    $('#downloadModal')[0].style.display = "none";
+
+}
+
+function showDownloadModal() {
+    $("#productModal")[0].style.display = "none";
+    $("#versionModal")[0].style.display = "none";
+    $("#languageModal")[0].style.display = "none";
+    $('#confirmationModal')[0].style.display = "none";
+    $('#downloadModal')[0].style.display = "block";
+
+    $('#directDL').text(versionToInstall);
 }
 
 $(document).ready(function () {
