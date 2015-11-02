@@ -194,10 +194,19 @@ textarea {
 .confirmation-Dialog-inner{
     width:80%;
     height:auto;
-    margin-left:10%;
+    margin-left:15%;
     margin-right:auto; 
 }
 
 .hidden{
     display:none;
+}
+
+input[type=checkbox]
+{
+  -ms-transform: scale(2); 
+  -moz-transform: scale(2);
+  -webkit-transform: scale(2);
+  -o-transform: scale(2);
+  margin-right:10px;
 }
