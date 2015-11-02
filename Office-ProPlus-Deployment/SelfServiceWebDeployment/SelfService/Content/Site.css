@@ -220,3 +220,28 @@ input[type=checkbox]
 .questionAnswer{
     margin-left:10px;
 }
+
+.helpButton{
+    height:50px;
+    width:50px;
+    font-size:25px;
+    text-align:center;
+    padding-top:13px;
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+    border-left-color: rgba(255, 255, 255, 0.3);
+    border-right-color: rgba(255, 255, 255, 0.3);
+}
+
+.helpButton:hover{
+    background-color:#005a9e;
+}
+
+.banner{
+    width:100%;
+    height:50px;
+    position:absolute;
+    top:0;
+    text-align:left;
+    line-height:normal;
+}
