@@ -86,13 +86,13 @@ var availableLanguages;
 function setProduct(product) {
     productToInstall = product;
     $('#productSpan')[0].innerText = product;
-    showLanguageModal();
+    showModal('languageModal');
 }
 
 function setVersion(version) {
     versionToInstall = version;
     $('#versionSpan')[0].innerText = version;
-    showProductModal();
+    showModal('productModal');
 }
 
 function setLanguage() {
@@ -107,55 +107,19 @@ function setLanguage() {
             $('#languageSpan')[0].innerText += ", "+languageDictionary[checkboxes[i].id];
         }
     }
-    showConfirmationModal();
+    showModal('confirmationModal');
 }
 
 function startInstall() {
 
 }
 
-function showProductModal() {
-    $("#productModal")[0].style.display = "block";
-    $("#versionModal")[0].style.display = "none";
-    $("#languageModal")[0].style.display = "none";
-    $('#confirmationModal')[0].style.display = "none";
-    $('#downloadModal')[0].style.display = "none";
-}
-
-function showLanguageModal() {
-    $("#productModal")[0].style.display = "none";
-    $("#versionModal")[0].style.display = "none";
-    $("#languageModal")[0].style.display = "block";
-    $('#confirmationModal')[0].style.display = "none";
-    $('#downloadModal')[0].style.display = "none";
-}
-
-function showVersionModal() {
-    $("#helpModal")[0].style.display = "none";
-    $("#productModal")[0].style.display = "none";
-    $("#versionModal")[0].style.display = "block";
-    $("#languageModal")[0].style.display = "none";
-    $('#confirmationModal')[0].style.display = "none";
-    $('#downloadModal')[0].style.display = "none";
-}
-
-function showConfirmationModal() {
-    $("#productModal")[0].style.display = "none";
-    $("#versionModal")[0].style.display = "none";
-    $("#languageModal")[0].style.display = "none";
-    $('#confirmationModal')[0].style.display = "block";
-    $('#downloadModal')[0].style.display = "none";
-
-}
-
-function showDownloadModal() {
-    $("#productModal")[0].style.display = "none";
-    $("#versionModal")[0].style.display = "none";
-    $("#languageModal")[0].style.display = "none";
-    $('#confirmationModal')[0].style.display = "none";
-    $('#downloadModal')[0].style.display = "block";
-
-    $('#directDL').text(versionToInstall);
+function showModal(modalId) {
+    $(".custom-Dialog").removeClass("hidden").addClass("hidden");
+    $("#" + modalId).removeClass("hidden");
+    if (modalId == "downloadModal") {
+        $('#directDL').text(versionToInstall);
+    }
 }
 
 function getLanguages() {
@@ -186,18 +150,18 @@ function getVersions() {
                     var version = $(this).attr('ID');
                     if (version === "2013") {
                         $('#versions').prepend("<li class='squareButton'>\
-                                        <button class='ms-Dialog-action ms-Button ms-Button--primary ms-bgColor-orangeLight' onclick='setVersion(\"2013\")' style='width:225px;height:250px;'>\
+                                        <div class='ms-Dialog-action ms-Button ms-Button--primary ms-bgColor-orangeLight' onclick='setVersion(\"2013\")' style='width:225px;height:250px;padding:50px'>\
                                         <img src='Content/imgs/office-icon-white.png' style='height:100px'/>\
                                         <p class='ms-font-xl ms-fontColor-white' style='display:block'>2013</p>\
-                                        </button>\
+                                        </div>\
                                         </li>");
                     }
                     if (version === "2016") {
                         $('#versions').prepend("<li class='squareButton'>\
-                                    <button class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"2016\")' style='width:225px;height:250px;'>\
+                                    <div class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"2016\")' style='width:225px;height:250px;padding:50px'>\
                                     <img src='Content/imgs/office-icon-white.png' style='height:100px'/>\
                                     <p class='ms-font-xl ms-fontColor-white' style='display:block'>2016</p>\
-                                    </button>\
+                                    </div>\
                                     </li>")
                     }
                 });
