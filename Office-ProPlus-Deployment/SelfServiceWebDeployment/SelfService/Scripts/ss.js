@@ -131,6 +131,7 @@ function showLanguageModal() {
 }
 
 function showVersionModal() {
+    $("#helpModal")[0].style.display = "none";
     $("#productModal")[0].style.display = "none";
     $("#versionModal")[0].style.display = "block";
     $("#languageModal")[0].style.display = "none";
@@ -157,9 +158,77 @@ function showDownloadModal() {
     $('#directDL').text(versionToInstall);
 }
 
+function getLanguages() {
+
+    $.ajax({
+        type: "GET",
+        url: "SelfServiceConfig.xml",
+        datatype: "xml",
+        success:
+            function (xml) {
+                $(xml).find('Language').each(function () {
+                    $('#languagesGrid > .ms-Grid-row').append("<div class='ms-Grid-col ms-u-lg4 ms-u-xl4 ms-u-md4'> <input type='checkbox' id='" + $(this).attr('ID') + "' class='languageCheckBox' /> \
+                                    <span class='ms-Label checkboxLabel'>" + $(this).attr('Label') + "</span></div>");
+                });
+            }
+    });
+}
+
+function getVersions() {
+
+    $.ajax({
+        type: "GET",
+        url: "SelfServiceConfig.xml",
+        datatype: "xml",
+        success:
+            function (xml) {
+                $(xml).find('Version').each(function () {
+                    var version = $(this).attr('ID');
+                    if (version === "2013") {
+                        $('#versions').prepend("<li class='squareButton'>\
+                                        <div class='ms-Dialog-action ms-Button ms-Button--primary ms-bgColor-orangeLight' onclick='setVersion(\"2013\")' style='width:225px;height:250px;padding:50px'>\
+                                        <img src='Content/imgs/office-icon-white.png' style='height:100px'/>\
+                                        <p class='ms-font-xl ms-fontColor-white' style='display:block'>2013</p>\
+                                        </div>\
+                                        </li>");
+                    }
+                    if (version === "2016") {
+                        $('#versions').prepend("<li class='squareButton'>\
+                                    <div class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"2016\")' style='width:225px;height:250px;padding:50px'>\
+                                    <img src='Content/imgs/office-icon-white.png' style='height:100px'/>\
+                                    <p class='ms-font-xl ms-fontColor-white' style='display:block'>2016</p>\
+                                    </div>\
+                                    </li>")
+                    }
+                });
+            }
+    });
+}
+
+function getBuild() {
+
+    $.ajax({
+        type: "GET",
+        url: "SelfServiceConfig.xml",
+        datatype: "xml",
+        success:
+            function (xml) {
+                $(xml).find('Build').each(function () {
+                    var buildType = $(this).attr('Type');
+                    console.log("Type: " + buildType);
+                    $("#buildsGrid").append("<li class='squareButton'>\
+                                    <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall)' style='width:225px;height:250px;'>\
+                                    <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
+                                    <p class='ms-font-xl' style='display:block'>" + $(this).attr('Type') + "</p>\
+                                    </button>\
+                                    </li>");
+                });
+            }
+    });
+}
 
 $(document).ready(function () {
-
-
-
+    getVersions();
+    getBuild();
+    getLanguages();
 });

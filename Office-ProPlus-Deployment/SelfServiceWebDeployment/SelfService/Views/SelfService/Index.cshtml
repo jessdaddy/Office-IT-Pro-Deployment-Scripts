@@ -10,57 +10,29 @@
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.min.css">
     <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.components.min.css">
-
+    <link href="~/Content/Site.css" rel="stylesheet" />
     <script type="text/javascript" src="./Scripts/vkbeautify.0.99.00.beta.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
     <script src="//code.jquery.com/jquery-2.1.4.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <style>
-        .checkboxLabel {
-            display: inline;
-            margin-left: 5px;
-            margin-bottom: 3px;
-        }
 
-        .languageCheckBox {
-            margin-bottom: -2px !important;
-        }
-        .squareButton{
-            display:inline-block;
-            padding: 10px 10px;
-        }
-        .modalList{
-            text-align:center;
-        }
-
-        .ms-Button--primary.ms-bgColor-orangeLight{
-            background-color:orange;
-            border-color:orange;
-        }
-        .ms-bgColor-orangeLight.ms-Button--primary.ms-Button:focus{
-            background-color:#ff8c00;
-            border-color:#ff8c00;
-        }
-        .ms-bgColor-orangeLight.ms-Button--primary.ms-Button:hover{
-            background-color:#ff8c00;
-            border-color:#ff8c00;
-        }
     </style>
 </head>
 <body>
-    <div id="versionModal" class="ms-Dialog" style="width:100%; height: 100%;">
-        <div class="ms-Dialog-main" style="width:80%; height: 80%; max-width:none; overflow:auto">
-            <button class="ms-Dialog-button ms-Dialog-button--close" style="display:block;position:static;margin-top:10px">
-                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg" style="height:35px" />
-                <span class="ms-font-l" style="margin-left:5px;vertical-align:middle">Return to portal homepage</span>
+    <div id="versionModal" class="ms-Dialog custom-Dialog" >
+        <div class="ms-Dialog-main custom-Dialog-main" >
+            <button class="ms-Dialog-button custom-back-button" >
+                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
+                <span class="ms-font-l">Return to portal homepage</span>
             </button>
             <div class="ms-Dialog-header">
                 <p class="ms-Dialog-title">Select Version</p>
                 <hr />
             </div>
-            <div class="ms-Dialog-inner" style="width:100%;height:auto">
-                <div class=" ms-dialog-actions" style="width:100%;">
-                    <div style="width:100%;">
+            <div class="ms-Dialog-inner custom-Dialog-inner">
+                <div class="ms-dialog-actions custom-Dialog-actions">
+                    <div>
                         <ul id="versions" class="modalList">
                             <li class="squareButton">
                                 <div class="ms-Dialog-action ms-Button" onclick="" style="width:225px;height:250px;padding:50px">
@@ -74,18 +46,19 @@
                     </div>
                 </div>
             </div>
-    <div id="productModal" class="ms-Dialog" style="width:100%; height: 100%;display:none;">
-        <div class="ms-Dialog-main" style="width:80%; height: 80%; max-width:none;overflow:auto">
-            <button class="ms-Dialog-button ms-Dialog-button--close" style="display:block;position:static;margin-top:10px" onclick="showVersionModal()">
-                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg" style="height:35px" />
-                <span class="ms-font-l" style="margin-left:5px;vertical-align:middle">Back</span>
+
+    <div id="productModal" class="ms-Dialog custom-Dialog">
+        <div class="ms-Dialog-main custom-Dialog-main">
+            <button class="ms-Dialog-button custom-back-button" onclick="showVersionModal()">
+                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
+                <span class="ms-font-l">Back</span>
             </button>
             <div class="ms-Dialog-header">
                 <p class="ms-Dialog-title">Select Package</p>
                 <hr />
             </div>
-            <div class="ms-Dialog-inner" style="width:100%;">
-                <div style="width:100%;">
+            <div class="ms-Dialog-inner custom-Dialog-inner">
+                <div class="languages">
                     <ul id="buildsGrid" class="modalList">
                         @*BUILDS GO HERE*@
                     </ul>
@@ -94,25 +67,25 @@
         </div>
     </div>
 
-    <div id="languageModal" class="ms-Dialog" style="width:100%; height: 100%;display:none">
-            <div class="ms-Dialog-main" style="width:80%; height: 80%;max-width:none">
-                <button class="ms-Dialog-button ms-Dialog-button--close" style="display:block;position:static;margin-top:10px" onclick="showProductModal()">
-                    <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg" style="height:35px" />
-                    <span class="ms-font-l" style="margin-left:5px;vertical-align:middle">Back</span>
+    <div id="languageModal" class="ms-Dialog custom-Dialog">
+            <div class="ms-Dialog-main custom-Dialog-main">
+                <button class="ms-Dialog-button custom-back-button" onclick="showProductModal()">
+                    <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
+                    <span class="ms-font-l">Back</span>
                 </button>
                 <div class="ms-Dialog-header">
                     <p class="ms-Dialog-title">Select Languages</p>
                 </div>
-                <div class="ms-Dialog-inner" style="width:100%;height:auto">
+                <div class="ms-Dialog-inner custom-Dialog-inner">
                     <div class="ms-Grid">
-                        <div id="languagesGrid" class="ms-Grid" style="margin-bottom:1%;">
+                        <div id="languagesGrid" class="ms-Grid languagesGrid">
                             <div class='ms-Grid-row'>
                                 @*LANGUAGES GO HERE*@
                             </div>
                         </div>
                     </div>
-                    <div class=" ms-dialog-actions" style="width:100%;">
-                        <div style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
+                    <div class="ms-dialog-actions custom-Dialog-actions">
+                        <div class="languagesContinue">
                             <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="setLanguage()">
                                 <span class="ms-Button-label">Continue</span>
                             </button>
@@ -122,21 +95,21 @@
         </div>
     </div>
 
-    <div id="confirmationModal" class="ms-Dialog" style="width:100%; height: 100%;display:none">
-        <div class="ms-Dialog-main" style="width:80%; height:80%;max-width:none;">
-            <button class="ms-Dialog-button ms-Dialog-button--close" style="display:block;position:static;margin-top:10px" onclick="showLanguageModal()">
-                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg" style="height:35px" />
-                <span class="ms-font-l" style="margin-left:5px;vertical-align:middle">Back</span>
+    <div id="confirmationModal" class="ms-Dialog custom-Dialog">
+        <div class="ms-Dialog-main custom-Dialog-main">
+            <button class="ms-Dialog-button custom-back-button" onclick="showLanguageModal()">
+                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
+                <span class="ms-font-l">Back</span>
             </button>
             <div class="ms-Dialog-header">
                 <p class="ms-Dialog-title">Lets make sure you're getting what you need...</p>
                 <hr />
             </div>
-            <div class="ms-Dialog-inner" style="width:100%; height:auto;margin-right:auto;margin-left:auto">
+            <div class="ms-Dialog-inner custom-Dialog-inner">
                 <p class="ms-font-l" style="padding-bottom:1%;">Here's what you are about to download. If this is correct please click the  <b>Confirm</b> button to proceed downloading</p>
                 <div class="ms-Grid" style="margin-left:2%">
                     <div class="ms-Grid-row">
-                        <div class="ms-Grid-col" style="padding-bottom:1%">
+                        <div class="ms-Grid-col confirmationField">
                             <p class="ms-font-l">Office Version:</p>
                         </div>
                         <div class="ms-Grid-col">
@@ -144,70 +117,25 @@
                         </div>
                     </div>
                    <div class="ms-Grid-row">
-                        <div class="ms-Grid-col" style="padding-bottom:1%">
+                        <div class="ms-Grid-col confirmationField">
                             <p class="ms-font-l">Product Package:</p>
                         </div>
-                       <div class="ms-Grid-col" style="padding-bottom:1%">
+                       <div class="ms-Grid-col confirmationField">
                            <p id="productSpan" class="ms-font-l"></p>
                        </div>
                     </div>
                     <div class="ms-Grid-row">
-                        <div class="ms-Grid-col" style="padding-bottom:1%">
+                        <div class="ms-Grid-col confirmationField">
                             <p class="ms-font-l">Languages:</p>
                         </div>
-                        <div class="ms-Grid-col ms-u-lg10" style="padding-bottom:1%">
+                        <div class="ms-Grid-col ms-u-lg10">
                             <p id="languageSpan" class="ms-font-l"></p>
                         </div>
                     </div>
             </div>
-                <div class=" ms-dialog-actions" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
-                    <div style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
-                        <button class="ms-Dialog-action ms-Button ms-Button--primary" style="width:20%;height:50px;margin-left:30%;margin-right:auto;" onclick="showDownloadModal()">
-                            <span class="ms-Button-label">Confirm</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="downloadModal" class="ms-Dialog" style="width:100%; height: 100%;display:none">
-        <div class="ms-Dialog-main" style="width:80%; height: 80%; max-width:none">
-            <button class="ms-Dialog-button ms-Dialog-button--close" style="display:block;position:static;margin-top:10px" onclick="showConfirmationModal()">
-                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg" style="height:35px" />
-                <span class="ms-font-l" style="margin-left:5px;vertical-align:middle">Back</span>
-            </button>
-            <div class="ms-Dialog-header">
-                <p class="ms-Dialog-title">You're all set! Your download will begin shortly...</p>
-                <hr />
-                </div>
-            <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
-               <p class="ms-font-m">If your download doesn't start after 10 seconds please download Office <a id="directDL" href="#"></a> here.</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="helpModal" class="ms-Dialog" style="width:100%; height: 100%;display:none">
-        <div class="ms-Dialog-main" style="width:80%; height: 80%; max-width:none">
-            <button class="ms-Dialog-button ms-Dialog-button--close" style="display:block;position:static;margin-top:10px" onclick="showVersionModal()">
-                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg" style="height:35px" />
-                <span class="ms-font-l" style="margin-left:5px;vertical-align:middle">Back</span>
-            </button>
-            <div class="ms-Dialog-header">
-                <p class="ms-Dialog-title">Summary</p>
-                <hr />
-            </div>
-            <div class="ms-Dialog-inner" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
-                <p class="ms-font-m">Confirmation Screen</p>
-                <p class="ms-font-m">Version: <span class="ms-font-m" id="versionSpan"></span></p>
-                <p class="ms-font-m">Product: <span class="ms-font-m" id="productSpan"></span></p>
-                <p class="ms-font-m">Languages: <span class="ms-font-m" id="languageSpan"></span></p>
-                <div class=" ms-dialog-actions" style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
-                    <div style="width:100%; height: 100%;margin-right:auto;margin-left:auto">
-                        <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="showLanguageModal()">
-                            <span class="ms-Button-label">Back</span>
-                        </button>
-                        <button class="ms-Dialog-action ms-Button ms-Button--primary">
+                <div class=" ms-dialog-actions confirmationActions">
+                    <div>
+                        <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="showDownloadModal()">
                             <span class="ms-Button-label">Install</span>
                         </button>
                     </div>
@@ -216,85 +144,36 @@
         </div>
     </div>
 
+    <div id="downloadModal" class="ms-Dialog custom-Dialog">
+        <div class="ms-Dialog-main custom-Dialog-main">
+            <button class="ms-Dialog-button custom-back-button" onclick="showConfirmationModal()">
+                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg" />
+                <span class="ms-font-l">Back</span>
+            </button>
+            <div class="ms-Dialog-header">
+                <p class="ms-Dialog-title">You're all set! Your download will begin shortly...</p>
+                <hr />
+                </div>
+            <div class="ms-Dialog-inner custom-Dialog-inner">
+               <p class="ms-font-m">If your download doesn't start after 10 seconds please download Office <a id="directDL" href="#"></a> here.</p>
+            </div>
+        </div>
+    </div>
 
-    <script>
-        (function () {
-            function getLanguages() {
-
-                $.ajax({
-                    type:"GET",
-                    url: "SelfServiceConfig.xml",
-                    datatype: "xml",
-                    success:
-                        function (xml) {
-                            $(xml).find('Language').each(function () {
-                                $('#languagesGrid > .ms-Grid-row').append("<div class='ms-Grid-col ms-u-lg4 ms-u-xl4 ms-u-md4'> <input type='checkbox' id='" + $(this).attr('ID') + "' class='languageCheckBox' /> \
-                                    <span class='ms-Label checkboxLabel'>" + $(this).attr('Label') + "</span></div>");
-                            });
-                        }
-                });
-            }
-
-            function getVersions() {
-
-                $.ajax({
-                    type: "GET",
-                    url: "SelfServiceConfig.xml",
-                    datatype: "xml",
-                    success:
-                        function (xml) {
-                            $(xml).find('Version').each(function () {
-                                var version = $(this).attr('ID');
-                                if(version === "2013"){
-                                    $('#versions').prepend("<li class='squareButton'>\
-                                        <div class='ms-Dialog-action ms-Button ms-Button--primary ms-bgColor-orangeLight' onclick='setVersion(\"2013\")' style='width:225px;height:250px;padding:50px'>\
-                                        <img src='Content/imgs/office-icon-white.png' style='height:100px'/>\
-                                        <p class='ms-font-xl ms-fontColor-white' style='display:block'>2013</p>\
-                                        </div>\
-                                        </li>");
-                                }
-                                if (version === "2016") {
-                                    $('#versions').prepend("<li class='squareButton'>\
-                                    <div class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"2016\")' style='width:225px;height:250px;padding:50px'>\
-                                    <img src='Content/imgs/office-icon-white.png' style='height:100px'/>\
-                                    <p class='ms-font-xl ms-fontColor-white' style='display:block'>2016</p>\
-                                    </div>\
-                                    </li>")
-                                }
-                            });
-                        }
-                });
-            }
-
-            function getBuild() {
-
-                $.ajax({
-                    type: "GET",
-                    url: "SelfServiceConfig.xml",
-                    datatype: "xml",
-                    success:
-                        function (xml) {
-                            $(xml).find('Build').each(function () {
-                                var buildType = $(this).attr('Type');
-                                console.log("Type: " + buildType);
-                                $("#buildsGrid").append("<li class='squareButton'>\
-                                    <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall)' style='width:225px;height:250px;'>\
-                                    <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
-                                    <p class='ms-font-xl' style='display:block'>" + $(this).attr('Type') + "</p>\
-                                    </button>\
-                                    </li>");
-                            });
-                        }
-                });
-            }
-
-            $(document).ready(function () {
-                getVersions();
-                getBuild();
-                getLanguages();
-            });
-        })();
-    </script>
-
+    <div id="helpModal" class="ms-Dialog custom-Dialog">
+        <div class="ms-Dialog-main custom-Dialog-main">
+            <button class="ms-Dialog-button custom-back-button" onclick="showVersionModal()">
+                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
+                <span class="ms-font-l">Back</span>
+            </button>
+            <div class="ms-Dialog-header">
+                <p class="ms-Dialog-title">Summary</p>
+                <hr />
+            </div>
+            <div class="ms-Dialog-inner custom-Dialog-inner">
+               
+            </div>
+        </div>
+    </div>
 </body>
 </html>
