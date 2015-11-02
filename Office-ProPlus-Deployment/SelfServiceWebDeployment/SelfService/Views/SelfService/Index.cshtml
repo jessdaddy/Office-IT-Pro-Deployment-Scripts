@@ -21,6 +21,7 @@
 </head>
 <body>
     <div id="versionModal" class="ms-Dialog custom-Dialog" >
+        @Html.Partial("~/Views/SHared/_banner.cshtml")
         <div class="ms-Dialog-main custom-Dialog-main" >
             <button class="ms-Dialog-button custom-back-button" >
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
@@ -42,6 +43,7 @@
             </div>
 
     <div id="productModal" class="ms-Dialog custom-Dialog hidden">
+        @Html.Partial("~/Views/SHared/_banner.cshtml")
         <div class="ms-Dialog-main custom-Dialog-main">
             <button class="ms-Dialog-button custom-back-button" onclick="showModal('versionModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
@@ -50,7 +52,7 @@
             <div class="ms-Dialog-header">
                 <div class="ms-Grid-row">
                     <div class="ms-Grid-col">
-                        <p class="ms-Dialog-title">Select Package</p>
+                <p class="ms-Dialog-title">Select Package</p>
                     </div>
                     <div class="ms-Grid-col">
                         <div class="ms-SearchBox">
@@ -90,6 +92,7 @@
     </div>
 
     <div id="languageModal" class="ms-Dialog custom-Dialog hidden">
+        @Html.Partial("~/Views/SHared/_banner.cshtml")
             <div class="ms-Dialog-main custom-Dialog-main">
                 <button class="ms-Dialog-button custom-back-button" onclick="showModal('productModal')">
                     <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
@@ -118,6 +121,7 @@
     </div>
 
     <div id="confirmationModal" class="ms-Dialog custom-Dialog hidden">
+        @Html.Partial("~/Views/SHared/_banner.cshtml")
         <div class="ms-Dialog-main custom-Dialog-main">
             <button class="ms-Dialog-button custom-back-button" onclick="showModal('languageModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
@@ -167,6 +171,7 @@
     </div>
 
     <div id="downloadModal" class="ms-Dialog custom-Dialog hidden">
+        @Html.Partial("~/Views/SHared/_banner.cshtml")
         <div class="ms-Dialog-main custom-Dialog-main">
             <button class="ms-Dialog-button custom-back-button" onclick="showModal('confirmationModal')">
                 @*hide first SVG until bug fixed*@
@@ -185,17 +190,41 @@
     </div>
 
     <div id="helpModal" class="ms-Dialog custom-Dialog hidden">
+        @Html.Partial("~/Views/SHared/_banner.cshtml")
         <div class="ms-Dialog-main custom-Dialog-main">
             <button class="ms-Dialog-button custom-back-button" onclick="showModal('versionModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
                 <span class="ms-font-l">Back</span>
             </button>
             <div class="ms-Dialog-header">
-                <p class="ms-Dialog-title">Help</p>
+                <p class="ms-Dialog-title">Support Page</p>
                 <hr />
             </div>
             <div class="ms-Dialog-inner custom-Dialog-inner">
-               
+                <div class="questionDiv">
+                    <h4 class="ms-font-xl">Question?</h4>
+                    <p class="ms-font-m questionAnswer">
+                        An Answer. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                    </p>
+                </div>
+                <div class="questionDiv">
+                    <h4 class="ms-font-xl">Question?</h4>
+                    <p class="ms-font-m questionAnswer">
+                        An Answer. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                    </p>
+                </div>
+                <div class="questionDiv">
+                    <h4 class="ms-font-xl">Question?</h4>
+                    <p class="ms-font-m questionAnswer">
+                        An Answer. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                    </p>
+                </div>
+                <div class="questionDiv">
+                    <h4 class="ms-font-xl">Question?</h4>
+                    <p class="ms-font-m questionAnswer">
+                        An Answer. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
