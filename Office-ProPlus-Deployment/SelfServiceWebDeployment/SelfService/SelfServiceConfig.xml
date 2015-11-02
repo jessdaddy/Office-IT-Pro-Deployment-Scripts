@@ -26,7 +26,7 @@
   </Builds>
 
   <Languages> 
-    <Language ID="en-us" Label="English (en-us)"/>
+    <!--<Language ID="en-us" Label="English (en-us)"/>
     <Language ID="ar-sa" Label="Arabic (ar-sa)"/>
     <Language ID="bg-bg" Label="Bulgarian (bg-bg)"/>
     <Language ID="zh-cn" Label="Chinese (Simplified) (zh-cn)"/>
@@ -39,7 +39,7 @@
     <Language ID="fr-fr" Label="French (fr-fr)"/>
     <Language ID="de-de" Label="German (de-de)"/>
     <Language ID="el-gr" Label="Greek (el-gr)"/>
-    <Language ID="hi-in" Label="Hindi (hi-in)"/>
+    <Language ID="hi-in" Label="Hindi (hi-in)"/>-->
     <Language ID="hu-hu" Label="Hungarian (hu-hu)"/>
     <Language ID="id-id" Label="Indonesian (id-id)"/>
     <Language ID="it-it" Label="Italian (it-it)"/>

@@ -66,11 +66,13 @@ textarea {
     display:inline;
     margin-left:5px;
     font-size:x-large;
-    margin-bottom:3px;
+    cursor:pointer;
+ 
 }
 
 .languageCheckBox {
     margin-bottom: -2px !important;
+    cursor:pointer;
 }
 .squareButton{
     display:inline-block;
