@@ -212,3 +212,11 @@ input[type=checkbox]
   -o-transform: scale(2);
   margin-right:10px;
 }
+
+.questionDiv{
+    margin-bottom:10px;
+}
+
+.questionAnswer{
+    margin-left:10px;
+}
