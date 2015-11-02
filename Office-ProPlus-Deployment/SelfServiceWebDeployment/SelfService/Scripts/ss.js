@@ -131,6 +131,7 @@ function showLanguageModal() {
 }
 
 function showVersionModal() {
+    $("#helpModal")[0].style.display = "none";
     $("#productModal")[0].style.display = "none";
     $("#versionModal")[0].style.display = "block";
     $("#languageModal")[0].style.display = "none";
