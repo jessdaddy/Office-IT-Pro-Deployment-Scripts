@@ -193,7 +193,7 @@ function getBuild() {
             function (xml) {
                 $(xml).find('Build').each(function () {
                     var buildType = $(this).attr('Type');
-                    $("#buildsGrid").append("<li class='squareButton'>\
+                    $("#buildsGrid").append("<li class='squareButton-build'>\
                                     <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall)' style='width:225px;height:250px;'>\
                                     <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
                                     <p class='ms-font-xl' style='display:block'>" + $(this).attr('Type') + "</p>\
