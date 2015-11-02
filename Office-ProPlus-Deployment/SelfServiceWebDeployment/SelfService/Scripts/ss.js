@@ -167,8 +167,8 @@ function getLanguages() {
         success:
             function (xml) {
                 $(xml).find('Language').each(function () {
-                    $('#languagesGrid > .ms-Grid-row').append("<div class='ms-Grid-col ms-u-lg4 ms-u-xl4 ms-u-md4'> <input type='checkbox' id='" + $(this).attr('ID') + "' class='languageCheckBox' /> \
-                                    <span class='ms-Label checkboxLabel'>" + $(this).attr('Label') + "</span></div>");
+                    $('#languagesGrid > .ms-Grid-row').append("<div class='ms-Grid-col ms-u-lg4 ms-u-xl4 ms-u-md4'><label> <input type='checkbox' id='" + $(this).attr('ID') + "' class='languageCheckBox' /> \
+                                    <span class='ms-Label checkboxLabel'>" + $(this).attr('Label') + "</span></label></div>");
                 });
             }
     });
@@ -215,7 +215,6 @@ function getBuild() {
             function (xml) {
                 $(xml).find('Build').each(function () {
                     var buildType = $(this).attr('Type');
-                    console.log("Type: " + buildType);
                     $("#buildsGrid").append("<li class='squareButton'>\
                                     <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall)' style='width:225px;height:250px;'>\
                                     <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
