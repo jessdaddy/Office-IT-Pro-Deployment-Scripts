@@ -59,3 +59,58 @@ textarea {
 .validation-summary-valid {
     display: none;
 }
+
+
+/*Moving Inline css to custom classes*/ 
+.custom-Dialog {
+    height:100%;
+    width:100%;
+}
+
+.custom-Dialog-main {
+    width: 80%;
+    height: 80%;
+    max-width: none;
+    overflow: auto;
+}
+
+.custom-back-button{
+    display:block;
+    position:static;
+    margin-top:10px;
+    margin: 0;
+    border: 0;
+    background: 0 0;
+    cursor: pointer;
+    top: 12px;
+    right: 12px;
+    padding: 8px;
+    z-index: 10;
+}
+
+.custom-back-button > img{
+    height:35px;
+}
+
+.custom-back-button > span{
+    margin-left:5px;
+    vertical-align:middle
+}
+
+.custom-Dialog-inner{
+    width:100%;
+    height:auto
+}
+
+.custom-Dialog-actions{
+    width:100%;
+}
+
+.custom-Dialog-actions > div{
+    width:100%;
+}
+
+.squareButton > button{
+    width:225px;height:250px;
+
+}
