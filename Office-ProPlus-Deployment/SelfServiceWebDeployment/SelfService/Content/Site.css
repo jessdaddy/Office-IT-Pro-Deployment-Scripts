@@ -190,3 +190,7 @@ textarea {
     margin-left:30%;
     margin-right:auto;
 }
+
+.hidden{
+    display:none;
+}

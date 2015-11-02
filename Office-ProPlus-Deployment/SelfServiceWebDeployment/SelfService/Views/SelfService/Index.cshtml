@@ -47,9 +47,9 @@
                 </div>
             </div>
 
-    <div id="productModal" class="ms-Dialog custom-Dialog">
+    <div id="productModal" class="ms-Dialog custom-Dialog hidden">
         <div class="ms-Dialog-main custom-Dialog-main">
-            <button class="ms-Dialog-button custom-back-button" onclick="showVersionModal()">
+            <button class="ms-Dialog-button custom-back-button" onclick="showModal('versionModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
                 <span class="ms-font-l">Back</span>
             </button>
@@ -67,9 +67,9 @@
         </div>
     </div>
 
-    <div id="languageModal" class="ms-Dialog custom-Dialog">
+    <div id="languageModal" class="ms-Dialog custom-Dialog hidden">
             <div class="ms-Dialog-main custom-Dialog-main">
-                <button class="ms-Dialog-button custom-back-button" onclick="showProductModal()">
+                <button class="ms-Dialog-button custom-back-button" onclick="showModal('productModal')">
                     <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
                     <span class="ms-font-l">Back</span>
                 </button>
@@ -95,9 +95,9 @@
         </div>
     </div>
 
-    <div id="confirmationModal" class="ms-Dialog custom-Dialog">
+    <div id="confirmationModal" class="ms-Dialog custom-Dialog hidden">
         <div class="ms-Dialog-main custom-Dialog-main">
-            <button class="ms-Dialog-button custom-back-button" onclick="showLanguageModal()">
+            <button class="ms-Dialog-button custom-back-button" onclick="showModal('languageModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
                 <span class="ms-font-l">Back</span>
             </button>
@@ -135,7 +135,7 @@
             </div>
                 <div class=" ms-dialog-actions confirmationActions">
                     <div>
-                        <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="showDownloadModal()">
+                        <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="showModal('downloadModal')">
                             <span class="ms-Button-label">Install</span>
                         </button>
                     </div>
@@ -144,9 +144,9 @@
         </div>
     </div>
 
-    <div id="downloadModal" class="ms-Dialog custom-Dialog">
+    <div id="downloadModal" class="ms-Dialog custom-Dialog hidden">
         <div class="ms-Dialog-main custom-Dialog-main">
-            <button class="ms-Dialog-button custom-back-button" onclick="showConfirmationModal()">
+            <button class="ms-Dialog-button custom-back-button" onclick="showModal('confirmationModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg" />
                 <span class="ms-font-l">Back</span>
             </button>
@@ -160,14 +160,14 @@
         </div>
     </div>
 
-    <div id="helpModal" class="ms-Dialog custom-Dialog">
+    <div id="helpModal" class="ms-Dialog custom-Dialog hidden">
         <div class="ms-Dialog-main custom-Dialog-main">
-            <button class="ms-Dialog-button custom-back-button" onclick="showVersionModal()">
+            <button class="ms-Dialog-button custom-back-button" onclick="showModal('versionModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
                 <span class="ms-font-l">Back</span>
             </button>
             <div class="ms-Dialog-header">
-                <p class="ms-Dialog-title">Summary</p>
+                <p class="ms-Dialog-title">Help</p>
                 <hr />
             </div>
             <div class="ms-Dialog-inner custom-Dialog-inner">
