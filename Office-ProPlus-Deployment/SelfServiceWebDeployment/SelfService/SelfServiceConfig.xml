@@ -6,27 +6,32 @@
     <Version ID="2013"/>
   </Versions>
 
+  <FilterLabels>
+    <FilterOne>Location</FilterOne>
+    <FilterTwo>Level</FilterTwo>
+  </FilterLabels>
+  
   <Builds>
-    <Build Type="IT Pro"/>
-    <Build Type="Accountant"/>
-    <Build Type="Developer"/>
-    <Build Type="Manager"/>
-    <Build Type="IT Pro"/>
-    <Build Type="Accountant"/>
-    <Build Type="Developer"/>
-    <Build Type="Manager"/>
-    <Build Type="IT Pro"/>
-    <Build Type="Accountant"/>
-    <Build Type="Developer"/>
-    <Build Type="Manager"/>
-    <Build Type="IT Pro"/>
-    <Build Type="Accountant"/>
-    <Build Type="Developer"/>
-    <Build Type="Manager"/>
+    <Build Type="IT Pro" FilterOne="Florida" FilterTwo="I"/>
+    <Build Type="Accountant" FilterOne="Texas" FilterTwo="I"/>
+    <Build Type="Developer" FilterOne="Texas" FilterTwo="I"/>
+    <Build Type="Manager" FilterOne="Florida" FilterTwo="II"/>
+    <Build Type="IT Pro" FilterOne="Texas" FilterTwo="III"/>
+    <Build Type="Accountant" FilterOne="Kansas" FilterTwo="I"/>
+    <Build Type="Developer" FilterOne="Missouri" FilterTwo="II"/>
+    <Build Type="Manager" FilterOne="Missouri" FilterTwo="IV"/>
+    <Build Type="IT Pro" FilterOne="Kansas" FilterTwo="I"/>
+    <Build Type="Accountant" FilterOne="Texas" FilterTwo="I"/>
+    <Build Type="Developer" FilterOne="Missouri" FilterTwo="II"/>
+    <Build Type="Manager" FilterOne="Missouri" FilterTwo="V"/>
+    <Build Type="IT Pro" FilterOne="Kansas" FilterTwo="V"/>
+    <Build Type="Accountant" FilterOne="Florida" FilterTwo="IV"/>
+    <Build Type="Developer" FilterOne="Kansas" FilterTwo="III"/>
+    <Build Type="Manager" FilterOne="Missouri" FilterTwo="I"/>
   </Builds>
 
   <Languages> 
-    <!--<Language ID="en-us" Label="English (en-us)"/>
+    <Language ID="en-us" Label="English (en-us)"/>
     <Language ID="ar-sa" Label="Arabic (ar-sa)"/>
     <Language ID="bg-bg" Label="Bulgarian (bg-bg)"/>
     <Language ID="zh-cn" Label="Chinese (Simplified) (zh-cn)"/>
@@ -39,7 +44,7 @@
     <Language ID="fr-fr" Label="French (fr-fr)"/>
     <Language ID="de-de" Label="German (de-de)"/>
     <Language ID="el-gr" Label="Greek (el-gr)"/>
-    <Language ID="hi-in" Label="Hindi (hi-in)"/>-->
+    <Language ID="hi-in" Label="Hindi (hi-in)"/>
     <Language ID="hu-hu" Label="Hungarian (hu-hu)"/>
     <Language ID="id-id" Label="Indonesian (id-id)"/>
     <Language ID="it-it" Label="Italian (it-it)"/>

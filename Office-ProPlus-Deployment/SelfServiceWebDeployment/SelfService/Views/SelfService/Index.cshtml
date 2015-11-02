@@ -48,7 +48,35 @@
                 <span class="ms-font-l">Back</span>
             </button>
             <div class="ms-Dialog-header">
-                <p class="ms-Dialog-title">Select Package</p>
+                <div class="ms-Grid-row">
+                    <div class="ms-Grid-col">
+                        <p class="ms-Dialog-title">Select Package</p>
+                    </div>
+                    <div class="ms-Grid-col">
+                        <div class="ms-SearchBox">
+                            <input id="searchBox" class="ms-SearchBox-field" type="text" placeholder="Search&hellip;"/>
+                            <button class="ms-SearchBox-closeButton"></button>
+                        </div>
+                    </div>
+                    <div class="ms-Grid-col">
+                        <div class="ms-Dropdown" tabindex="0">
+                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                            <select id="ddl-FilterOne" class="ms-Dropdown-select">
+                                <option>Filter One</option>
+                                <option>Test</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ms-Grid-col">
+                        <div class="ms-Dropdown" tabindex="0">
+                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                            <select id="ddl-FilterTwo" class="ms-Dropdown-select">
+                                <option>Filter Two</option>
+                                <option>Test</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <hr />
             </div>
             <div class="ms-Dialog-inner custom-Dialog-inner">
