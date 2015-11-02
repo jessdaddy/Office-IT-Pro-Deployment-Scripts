@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SelfServiceSite>
 
-  <Versions>
+  <Versions Optional="false">
     <Version ID="2016"/>
     <Version ID="2013"/>
   </Versions>

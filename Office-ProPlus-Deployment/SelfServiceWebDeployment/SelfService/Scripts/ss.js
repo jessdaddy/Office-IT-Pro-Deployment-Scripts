@@ -146,25 +146,39 @@ function getVersions() {
         datatype: "xml",
         success:
             function (xml) {
-                $(xml).find('Version').each(function () {
-                    var version = $(this).attr('ID');
-                    if (version === "2013") {
-                        $('#versions').prepend("<li class='squareButton'>\
+                var optional = $(xml).find('Versions').attr('Optional');
+                console.log(optional);
+
+                if (optional === "true") {
+                    $(xml).find('Version').each(function () {
+                        var version = $(this).attr('ID');
+                        if (version === "2013") {
+                            $('#versions').prepend("<li class='squareButton'>\
                                         <div class='ms-Dialog-action ms-Button ms-Button--primary ms-bgColor-orangeLight' onclick='setVersion(\"2013\")' style='width:225px;height:250px;padding:50px'>\
                                         <img src='Content/imgs/office-icon-white.png' style='height:100px'/>\
                                         <p class='ms-font-xl ms-fontColor-white' style='display:block'>2013</p>\
                                         </div>\
                                         </li>");
-                    }
-                    if (version === "2016") {
-                        $('#versions').prepend("<li class='squareButton'>\
+                        }
+                        if (version === "2016") {
+                            $('#versions').prepend("<li class='squareButton'>\
                                     <div class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"2016\")' style='width:225px;height:250px;padding:50px'>\
                                     <img src='Content/imgs/office-icon-white.png' style='height:100px'/>\
                                     <p class='ms-font-xl ms-fontColor-white' style='display:block'>2016</p>\
                                     </div>\
                                     </li>")
-                    }
-                });
+                        }
+                    });
+                }
+                else
+                {
+                    $('#versions').prepend("<li class='squareButton'>\
+                                    <div class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"Office 365 ProPlus\")' style='text-align:center;width:225px;height:250px;max-height:250px;padding-top:50px;'>\
+                                    <img src='Content/imgs/office-icon-white.png' style='height:100px;'/>\
+                                    <p class='ms-font-xl ms-fontColor-white' style='display:block;r'>Office 365 ProPlus</p>\
+                                    </div>\
+                                    </li>")
+                }
             }
     });
 }
