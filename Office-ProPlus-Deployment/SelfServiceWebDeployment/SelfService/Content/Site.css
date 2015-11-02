@@ -190,3 +190,10 @@ textarea {
     margin-left:30%;
     margin-right:auto;
 }
+
+.confirmation-Dialog-inner{
+    width:80%;
+    height:auto;
+    margin-left:10%;
+    margin-right:auto; 
+}
