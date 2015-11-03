@@ -197,6 +197,7 @@ function getBuild() {
                                     <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall)' style='width:225px;height:250px;'>\
                                     <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
                                     <p class='ms-font-xl' style='display:block'>" + $(this).attr('Type') + "</p>\
+                                    <div id='tag' class='ms-font-md' style='display:block:padding-bottom:2px;'>Tags: " + $(this).attr('Location') +","+$(this).attr('FilterOne') + "</div>\
                                     </button>\
                                     </li>");
                 });
@@ -204,8 +205,55 @@ function getBuild() {
     });
 }
 
+
+function getLocations() {
+
+    var locations = [];
+    $.ajax({
+        type: "GET",
+        url: "SelfServiceConfig.xml",
+        datatype: "xml",
+        success:
+            function (xml) {
+                $(xml).find('Build').each(function () {
+                    var location = $(this).attr('Location');
+                    if($.inArray(location,locations) === -1)
+                    {
+                        locations.push(location);
+                        $("#ddl-Location").siblings('ul').append("<li class='ms-Dropdown-item'>" + location + "</li>");
+                    }
+                });
+            }
+    });
+}
+
+function getFilterOne() {
+
+    var filters = [];
+    $.ajax({
+        type: "GET",
+        url: "SelfServiceConfig.xml",
+        datatype: "xml",
+        success:
+            function (xml) {
+
+                var filterOneLabel = $(xml).find('FilterOne').attr('Filter');
+                $("#ddl-FilterOne").siblings('span.ms-Dropdown-title').text(filterOneLabel);
+                $(xml).find('Build').each(function () {
+
+                    var filter= $(this).attr('FilterOne');
+                    if ($.inArray(filter, filters) === -1) {
+                        filters.push(filter);
+                        $("#ddl-FilterOne").siblings('ul').append("<li class='ms-Dropdown-item'>" + filter + "</li>");
+                    }
+                });
+            }
+    });
+}
 $(document).ready(function () {
     getVersions();
     getBuild();
     getLanguages();
+    getLocations();
+    getFilterOne();
 });

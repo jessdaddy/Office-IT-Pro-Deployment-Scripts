@@ -84,7 +84,8 @@ textarea {
 }
 
 .squareButton-build:hover > button > i,
-.squareButton-build:hover > button > p{
+.squareButton-build:hover > button > p,
+.squareButton-build:hover > button > div{
     color:white;
 }
 

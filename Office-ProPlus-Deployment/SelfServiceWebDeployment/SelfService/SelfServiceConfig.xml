@@ -7,27 +7,26 @@
   </Versions>
 
   <FilterLabels>
-    <FilterOne>Location</FilterOne>
-    <FilterTwo>Level</FilterTwo>
+    <FilterOne Filter="Level"></FilterOne>
   </FilterLabels>
   
   <Builds>
-    <Build Type="IT Pro" FilterOne="Florida" FilterTwo="I"/>
-    <Build Type="Accountant" FilterOne="Texas" FilterTwo="I"/>
-    <Build Type="Developer" FilterOne="Texas" FilterTwo="I"/>
-    <Build Type="Manager" FilterOne="Florida" FilterTwo="II"/>
-    <Build Type="IT Pro" FilterOne="Texas" FilterTwo="III"/>
-    <Build Type="Accountant" FilterOne="Kansas" FilterTwo="I"/>
-    <Build Type="Developer" FilterOne="Missouri" FilterTwo="II"/>
-    <Build Type="Manager" FilterOne="Missouri" FilterTwo="IV"/>
-    <Build Type="IT Pro" FilterOne="Kansas" FilterTwo="I"/>
-    <Build Type="Accountant" FilterOne="Texas" FilterTwo="I"/>
-    <Build Type="Developer" FilterOne="Missouri" FilterTwo="II"/>
-    <Build Type="Manager" FilterOne="Missouri" FilterTwo="V"/>
-    <Build Type="IT Pro" FilterOne="Kansas" FilterTwo="V"/>
-    <Build Type="Accountant" FilterOne="Florida" FilterTwo="IV"/>
-    <Build Type="Developer" FilterOne="Kansas" FilterTwo="III"/>
-    <Build Type="Manager" FilterOne="Missouri" FilterTwo="I"/>
+    <Build Type="IT Pro" Location="Florida" FilterOne="I"/>
+    <Build Type="Accountant" Location="Texas" FilterOne="I"/>
+    <Build Type="Developer" Location="Texas" FilterOne="I"/>
+    <Build Type="Manager" Location="Florida" FilterOne="II"/>
+    <Build Type="IT Pro" Location="Texas" FilterOne="III"/>
+    <Build Type="Accountant" Location="Kansas" FilterOne="I"/>
+    <Build Type="Developer" Location="Missouri" FilterOne="II"/>
+    <Build Type="Manager" Location="Missouri" FilterOne="IV"/>
+    <Build Type="IT Pro" Location="Kansas" FilterOne="I"/>
+    <Build Type="Accountant" Location="Texas" FilterOne="I"/>
+    <Build Type="Developer" Location="Missouri" FilterOne="II"/>
+    <Build Type="Manager" Location="Missouri" FilterOne="V"/>
+    <Build Type="IT Pro" Location="Kansas" FilterOne="V"/>
+    <Build Type="Accountant" Location="Florida" FilterOne="IV"/>
+    <Build Type="Developer" Location="Kansas" FilterOne="III"/>
+    <Build Type="Manager" Location="Missouri" FilterOne="I"/>
   </Builds>
 
   <Languages> 
