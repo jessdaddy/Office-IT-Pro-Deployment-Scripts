@@ -83,7 +83,9 @@ var languageDictionary = {
     "uk-ua": "Ukrainian"
 }
 var availableLanguages;
-function setProduct(product) {
+function setProduct(product, build) {
+    buildID = build;
+    getLanguages();
     productToInstall = product;
     $('#productSpan')[0].innerText = product;
     showModal('languageModal');
@@ -130,10 +132,17 @@ function getLanguages() {
         datatype: "xml",
         success:
             function (xml) {
-                $(xml).find('Language').each(function () {
-                    $('#languagesGrid > .ms-Grid-row').append("<div class='ms-Grid-col ms-u-lg4 ms-u-xl4 ms-u-md4'><label> <input type='checkbox' id='" + $(this).attr('ID') + "' class='languageCheckBox' /> \
-                                    <span class='ms-Label checkboxLabel'>" + $(this).attr('Label') + "</span></label></div>");
-                });
+                $('#languagesGrid > .ms-Grid-row').empty();
+                console.log(buildID);
+                $xml = $(xml);
+                var languages = $xml.find("[ID='" + buildID + "']").attr('Languages').split(",");
+                $.each(languages, function (index, value) {
+                    var label = value;
+                    var id = value.split(" ").pop().replace(")",'').replace("(",'');
+                    console.log(label + " " + id);
+                    $('#languagesGrid > .ms-Grid-row').append("<div class='ms-Grid-col ms-u-lg4 ms-u-xl4 ms-u-md4'><label> <input type='checkbox' id='" + id + "' class='languageCheckBox' /> \
+                                    <span class='ms-Label checkboxLabel'>" + label + "</span></label></div>");
+                });  
             }
     });
 }
@@ -194,7 +203,7 @@ function getBuild() {
                 $(xml).find('Build').each(function () {
                     var buildType = $(this).attr('Type');
                     $("#buildsGrid").append("<li class='squareButton-build'>\
-                                    <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall)' style='width:225px;height:250px;'>\
+                                    <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")' style='width:225px;height:250px;'>\
                                     <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
                                     <p class='ms-font-xl' style='display:block'>" + $(this).attr('Type') + "</p>\
                                     <div id='tag' class='ms-font-md' style='display:block:padding-bottom:2px;'>Tags: " + $(this).attr('Location') +","+$(this).attr('FilterOne') + "</div>\
@@ -254,10 +263,10 @@ function getFilterOne() {
             }
     });
 }
+
 $(document).ready(function () {
     getVersions();
     getBuild();
-    getLanguages();
     getLocations();
     getFilterOne();
 });
