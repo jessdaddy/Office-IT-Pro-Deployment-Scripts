@@ -205,8 +205,8 @@ function getBuild() {
                     $("#buildsGrid").append("<li class='squareButton-build'>\
                                     <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")' style='width:225px;height:250px;'>\
                                     <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
-                                    <p class='ms-font-xl' style='display:block'>" + $(this).attr('Type') + "</p>\
-                                    <div id='tag' class='ms-font-md' style='display:block:padding-bottom:2px;'>Tags: " + $(this).attr('Location') +","+$(this).attr('FilterOne') + "</div>\
+                                    <p class='ms-font-xl' style='display:block'>" + $(this).attr('Type') + "\
+                                    <br>" + $(this).attr('Location') + "," + $(this).attr('FilterOne') + "</p>\
                                     </button>\
                                     </li>");
                 });
@@ -264,9 +264,31 @@ function getFilterOne() {
     });
 }
 
+function searchBoxFilter() {
+    var searchTerm = $('#searchBox').val().toLocaleLowerCase();
+    
+    $('#buildsGrid li p').each(function () {
+
+        if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) < 0) {
+            $(this).parent().hide();
+        }
+        else {
+            $(this).parent().show();
+        }
+    });
+
+   
+
+}
+
+
 $(document).ready(function () {
     getVersions();
     getBuild();
     getLocations();
     getFilterOne();
+
+    $("#searchBox").keyup(function(){
+        searchBoxFilter();
+    });
 });
