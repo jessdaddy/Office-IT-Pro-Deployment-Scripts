@@ -215,6 +215,8 @@ function getLocations() {
         datatype: "xml",
         success:
             function (xml) {
+                $("#ddl-Location").siblings('span.ms-Dropdown-title').text("Location Filter");
+
                 $(xml).find('Build').each(function () {
                     var location = $(this).attr('Location');
                     if($.inArray(location,locations) === -1)
@@ -238,7 +240,7 @@ function getFilterOne() {
             function (xml) {
 
                 var filterOneLabel = $(xml).find('FilterOne').attr('Filter');
-                $("#ddl-FilterOne").siblings('span.ms-Dropdown-title').text(filterOneLabel);
+                $("#ddl-FilterOne").siblings('span.ms-Dropdown-title').text(filterOneLabel+" Filter");
                 $(xml).find('Build').each(function () {
 
                     var filter= $(this).attr('FilterOne');
