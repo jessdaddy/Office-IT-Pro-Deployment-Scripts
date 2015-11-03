@@ -215,7 +215,7 @@ function getBuild() {
 }
 
 
-function getLocations() {
+function getLocations( callback) {
 
     var locations = [];
     $.ajax({
@@ -232,9 +232,12 @@ function getLocations() {
                     if($.inArray(location,locations) === -1)
                     {
                         locations.push(location);
+                        $("#ddl-Location").siblings('ul').attr('id','ul-Location');
                         $("#ddl-Location").siblings('ul').append("<li class='ms-Dropdown-item'>" + location + "</li>");
                     }
                 });
+
+                callback();
             }
     });
 }
@@ -281,14 +284,47 @@ function searchBoxFilter() {
 
 }
 
+function locationFilter(location) {
+
+
+
+    $('#buildsGrid li p').each(function() {
+
+        if ($(this).text().split(',')[0].toLocaleLowerCase().indexOf(location) < 0) {
+            $(this).parent().hide();
+        }
+        else {
+            $(this).parent().show();
+        }
+    });
+
+    if (location === 'location filter') {
+        $('#buildsGrid li p').each(function() {
+            $(this).parent().show();
+        });
+    }
+}
+
+function addLocationClick() {
+    $('#ul-Location li').each(function () {
+        $(this).attr('onclick', "locationFilter('"+$(this).text().toLocaleLowerCase()+"')");
+    });
+}
+
 
 $(document).ready(function () {
+
+
+    getLocations(addLocationClick);
     getVersions();
     getBuild();
-    getLocations();
     getFilterOne();
 
+    //searchbox filter
     $("#searchBox").keyup(function(){
         searchBoxFilter();
     });
+
+  
+
 });
