@@ -87,13 +87,13 @@ function setProduct(product, build) {
     buildID = build;
     getLanguages();
     productToInstall = product;
-    $('#productSpan')[0].innerText = product;
+    $('#productSpan').text(product);
     showModal('languageModal');
 }
 
 function setVersion(version) {
     versionToInstall = version;
-    $('#versionSpan')[0].innerText = version;
+    $('#versionSpan').text(version);
     showModal('productModal');
 }
 
@@ -101,7 +101,7 @@ function setLanguage() {
     var checkboxes = null;
     languages = null;
     checkboxes = $(".languageCheckBox:checked");
-    $('#languageSpan')[0].innerText = languageDictionary[checkboxes[0].id];
+    $('#languageSpan').text(languageDictionary[checkboxes[0].id]);
     languages = [checkboxes[0].id];
     if (checkboxes.length > 1) {
         for (var i = 1; i < checkboxes.length; i++) {
