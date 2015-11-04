@@ -122,6 +122,11 @@ function showModal(modalId) {
     if (modalId == "downloadModal") {
         $('#directDL').text(versionToInstall);
     }
+
+    if (modalId === 'productModal')
+    {
+        resetFilters();
+    }
 }
 
 function getLanguages() {
