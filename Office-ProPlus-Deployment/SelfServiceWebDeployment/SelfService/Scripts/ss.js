@@ -138,13 +138,11 @@ function getLanguages() {
         success:
             function (xml) {
                 $('#languagesGrid > .ms-Grid-row').empty();
-                console.log(buildID);
                 $xml = $(xml);
                 var languages = $xml.find("[ID='" + buildID + "']").attr('Languages').split(",");
                 $.each(languages, function (index, value) {
                     var label = value;
                     var id = value.split(" ").pop().replace(")",'').replace("(",'');
-                    console.log(label + " " + id);
                     $('#languagesGrid > .ms-Grid-row').append("<div class='ms-Grid-col ms-u-lg4 ms-u-xl4 ms-u-md4'><label> <input type='checkbox' id='" + id + "' class='languageCheckBox' /> \
                                     <span class='ms-Label checkboxLabel'>" + label + "</span></label></div>");
                 });  
@@ -161,8 +159,6 @@ function getVersions() {
         success:
             function (xml) {
                 var optional = $(xml).find('Versions').attr('Optional');
-                console.log(optional);
-
                 if (optional === "true") {
                     $(xml).find('Version').each(function () {
                         var version = $(this).attr('ID');
@@ -180,18 +176,18 @@ function getVersions() {
                                     <img src='Content/imgs/office-icon-white.png' style='height:100px'/>\
                                     <p class='ms-font-xl ms-fontColor-white' style='display:block'>2016</p>\
                                     </div>\
-                                    </li>")
+                                    </li>");
                         }
                     });
                 }
                 else
                 {
                     $('#versions').prepend("<li class='squareButton'>\
-                                    <div class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"Office 365 ProPlus\")' style='text-align:center;width:225px;height:250px;max-height:250px;padding-top:50px;'>\
+                                    <div class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"365 ProPlus\")' style='text-align:center;width:225px;height:250px;max-height:250px;padding-top:50px;'>\
                                     <img src='Content/imgs/office-icon-white.png' style='height:100px;'/>\
                                     <p class='ms-font-xl ms-fontColor-white' style='display:block;r'>Office 365 ProPlus</p>\
                                     </div>\
-                                    </li>")
+                                    </li>");
                 }
             }
     });
