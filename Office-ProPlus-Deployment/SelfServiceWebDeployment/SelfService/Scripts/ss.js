@@ -203,9 +203,9 @@ function getBuild() {
                 $(xml).find('Build').each(function () {
                     var buildType = $(this).attr('Type');
                     $("#buildsGrid").append("<li class='squareButton-build'>\
-                                    <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")' style='width:225px;height:250px;'>\
+                                    <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")' style='width:225px;height:250px;display:inline-block'>\
                                     <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
-                                    <p class='ms-font-xl' style='display:block'>" + $(this).attr('Type') + "\
+                                    <p class='ms-font-xl filter-field' style='display:block'>" + $(this).attr('Type') + "\
                                     <br>" + $(this).attr('Location') + "," + $(this).attr('FilterOne') + "</p>\
                                     </button>\
                                     </li>");
@@ -271,32 +271,37 @@ function getFilterOne(callback) {
 }
 
 function searchBoxFilter() {
+
     var searchTerm = $('#searchBox').val().toLocaleLowerCase();
     
     $('#buildsGrid li p').each(function () {
 
-        if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) < 0 && $(this).is(':visible')) {
+        if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) < 0 && $(this).parent().css('display') === 'inline-block') {
             $(this).parent().hide();
         }
-        else {
-            $(this).parent().show();
-        }
+        //else if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0 && $(this).parent().css('display') === 'none') {
+        //    $(this).parent().show();
+        //}
     });
 
-   
-
+    if (searchTerm.length === 0) {
+        $('#buildsGrid li p').each(function () {
+            $(this).parent().show();
+        })
+    }
 }
 
 function locationFilter(location) {
 
     $('#buildsGrid li p').each(function () {
         var temp_location = $(this).text().split(',')[0].split(" ")[$(this).text().split(',')[0].split(" ").length - 1].toLocaleLowerCase();
-        if (temp_location !== location) {
+
+        if (temp_location !== location && $(this).parent().css('display') === 'inline-block') {
             $(this).parent().hide();
         }
-        else {
-            $(this).parent().show();
-        }
+        //else if (temp_location === location && $(this).parent().css('display') === 'none') {
+        //    $(this).parent().show();
+        //}
     });
 
     if (location.toLocaleLowerCase().indexOf('filter') >= 0) {
@@ -310,13 +315,12 @@ function locationFilter(location) {
 function filterOne(filter) {
 
     $('#buildsGrid li p').each(function () {
-        console.log($(this).text().split(",")[1] === filter);
-        if ($(this).text().split(',')[1].toLocaleLowerCase() !== filter) {
+        if ($(this).text().split(',')[1].toLocaleLowerCase() !== filter && $(this).parent().css('display') === 'inline-block') {
             $(this).parent().hide();
         }
-        else {
-            $(this).parent().show();
-        }
+        //else if ($(this).text().split(',')[1].toLocaleLowerCase() === filter && $(this).parent().css('display') === 'none') {
+        //    $(this).parent().show();
+        //}
     });
 
     if (filter.toLocaleLowerCase().indexOf('filter') >= 0) {
@@ -324,7 +328,9 @@ function filterOne(filter) {
             $(this).parent().show();
         });
     }
+    var location = $('#ul-Location li.is-selected').text();
 
+    //locationFilter(location);
 }
 
 function addLocationClick() {
@@ -339,6 +345,14 @@ function addFilterOneClick() {
     });
 }
 
+function resetFilters() {
+    $('#searchBox').val('');
+    searchBoxFilter();
+
+    $('#ul-Location li:first').click();
+    $('#ul-FilterOne li:first').click();
+}
+
 
 $(document).ready(function () {
 
@@ -348,11 +362,15 @@ $(document).ready(function () {
     getVersions();
     getBuild();
    
-
     //searchbox filter
     $("#searchBox").keyup(function(){
         searchBoxFilter();
     });
+
+    //filter reset
+    $('#btn-Reset').click(function () {
+        resetFilters();
+    })
 
   
 
