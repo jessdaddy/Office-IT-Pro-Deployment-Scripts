@@ -264,9 +264,30 @@ function getFilterOne() {
     });
 }
 
+function prepTags() {
+    var searchBoxTaggle = new Taggle('outerSearchBox');
+    var container = searchBoxTaggle.getContainer();
+    var input = searchBoxTaggle.getInput();
+
+    $(input).autocomplete({
+        source: ['Florida','Texas','Missouri','Kansas', 'I', 'II', 'III', 'IV', 'V'],
+        appendTo: container,
+        position: { at: "left bottom", of: container },
+        select: function (event, data) {
+            event.preventDefault();
+            //Add the tag if user clicks
+            if (event.which === 1) {
+                searchBoxTaggle.add(data.item.value);
+            }
+        }
+    });
+}
+
 $(document).ready(function () {
+    //new Taggle('searchBox');
     getVersions();
     getBuild();
     getLocations();
     getFilterOne();
+    prepTags();
 });

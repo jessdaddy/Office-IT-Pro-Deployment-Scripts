@@ -456,7 +456,7 @@
      * @param {Number} width
      */
     Taggle.prototype._setInputWidth = function(width) {
-        this.input.style.width = (width || 10) + 'px';
+        this.input.style.width = (width || 50) + 'px';
     };
 
     /**
