@@ -35,12 +35,6 @@
                 <div class="ms-dialog-actions custom-Dialog-actions">
                     <div>
                         <ul id="versions" class="modalList">
-                            <li class="squareButton">
-                                <div class="ms-Dialog-action ms-Button" onclick="showModal('helpModal')" style="width:225px;height:250px;padding:50px">
-                                    <i class="ms-Icon ms-Icon--question" style="font-size:100px"></i>
-                                    <p class="ms-font-xl" style="display:block">Help</p>
-                                </div>
-                            </li>
                         </ul>
                             </div>
                         </div>
@@ -56,12 +50,35 @@
                 <span class="ms-font-l">Back</span>
             </button>
             <div class="ms-Dialog-header">
+                <div class="ms-Grid-row">
+                    <div class="ms-Grid-col">
                 <p class="ms-Dialog-title">Select Package</p>
+                    </div>
+                    <div class="ms-Grid-col">
+                        <div class="ms-SearchBox">
+                            <input id="searchBox" class="ms-SearchBox-field" type="text" placeholder="Search&hellip;"/>
+                            <button class="ms-SearchBox-closeButton"></button>
+                        </div>
+                    </div>
+                    <div class="ms-Grid-col">
+                        <div class="ms-Dropdown" style="width:150px">
+                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                            <select id="ddl-Location" class="ms-Dropdown-select">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ms-Grid-col">
+                        <div class="ms-Dropdown" style="width:150px" tabindex="0">
+                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                            <select id="ddl-FilterOne" class="ms-Dropdown-select"></select>
+                        </div>
+                    </div>
+                </div>
                 <hr />
             </div>
             <div class="ms-Dialog-inner custom-Dialog-inner">
                 <div class="languages">
-                    <ul id="buildsGrid" class="modalList">
+                    <ul id="buildsGrid" class="modalList default_list">
                         @*BUILDS GO HERE*@
                     </ul>
                 </div>

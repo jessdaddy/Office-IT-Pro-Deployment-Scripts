@@ -137,6 +137,7 @@
     <Content Include="Content\imgs\office-icon-orange.png" />
     <Content Include="Content\imgs\office-icon-white.png" />
     <Content Include="Content\imgs\office-icon.svg" />
+    <Content Include="Content\taggle.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -213,6 +214,9 @@
     <Content Include="Scripts\knockout-2.2.0.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\ss.js" />
+    <Content Include="Scripts\taggle-ie8.js" />
+    <Content Include="Scripts\taggle-ie9.js" />
+    <Content Include="Scripts\taggle.js" />
     <Content Include="Scripts\ui-bootstrap-tpls-0.13.2.min.js" />
     <Content Include="Scripts\vkbeautify.0.99.00.beta.js" />
     <Content Include="Scripts\_references.js" />

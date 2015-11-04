@@ -74,10 +74,21 @@ textarea {
     margin-bottom: -2px !important;
     cursor:pointer;
 }
-.squareButton{
+.squareButton, .squareButton-build{
     display:inline-block;
     padding: 10px 10px;
 }
+
+.squareButton-build:hover > button{
+    background-color:#0078D7;
+}
+
+.squareButton-build:hover > button > i,
+.squareButton-build:hover > button > p,
+.squareButton-build:hover > button > div{
+    color:white;
+}
+
 .modalList{
     text-align:center;
 }
