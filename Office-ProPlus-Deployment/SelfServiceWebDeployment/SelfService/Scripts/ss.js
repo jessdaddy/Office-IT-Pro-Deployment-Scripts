@@ -242,7 +242,7 @@ function getLocations( callback) {
     });
 }
 
-function getFilterOne() {
+function getFilterOne(callback) {
 
     var filters = [];
     $.ajax({
@@ -260,9 +260,12 @@ function getFilterOne() {
                     var filter= $(this).attr('FilterOne');
                     if ($.inArray(filter, filters) === -1) {
                         filters.push(filter);
+                        $("#ddl-FilterOne").siblings('ul').attr('id', 'ul-FilterOne');
                         $("#ddl-FilterOne").siblings('ul').append("<li class='ms-Dropdown-item'>" + filter + "</li>");
                     }
                 });
+                
+                callback();
             }
     });
 }
@@ -272,7 +275,7 @@ function searchBoxFilter() {
     
     $('#buildsGrid li p').each(function () {
 
-        if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) < 0) {
+        if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) < 0 && $(this).is(':visible')) {
             $(this).parent().hide();
         }
         else {
@@ -286,11 +289,9 @@ function searchBoxFilter() {
 
 function locationFilter(location) {
 
-
-
-    $('#buildsGrid li p').each(function() {
-
-        if ($(this).text().split(',')[0].toLocaleLowerCase().indexOf(location) < 0) {
+    $('#buildsGrid li p').each(function () {
+        var temp_location = $(this).text().split(',')[0].split(" ")[$(this).text().split(',')[0].split(" ").length - 1].toLocaleLowerCase();
+        if (temp_location !== location) {
             $(this).parent().hide();
         }
         else {
@@ -298,11 +299,32 @@ function locationFilter(location) {
         }
     });
 
-    if (location === 'location filter') {
+    if (location.toLocaleLowerCase().indexOf('filter') >= 0) {
         $('#buildsGrid li p').each(function() {
             $(this).parent().show();
         });
     }
+
+}
+
+function filterOne(filter) {
+
+    $('#buildsGrid li p').each(function () {
+        console.log($(this).text().split(",")[1] === filter);
+        if ($(this).text().split(',')[1].toLocaleLowerCase() !== filter) {
+            $(this).parent().hide();
+        }
+        else {
+            $(this).parent().show();
+        }
+    });
+
+    if (filter.toLocaleLowerCase().indexOf('filter') >= 0) {
+        $('#buildsGrid li p').each(function () {
+            $(this).parent().show();
+        });
+    }
+
 }
 
 function addLocationClick() {
@@ -311,14 +333,21 @@ function addLocationClick() {
     });
 }
 
+function addFilterOneClick() {
+    $('#ul-FilterOne li').each(function () {
+        $(this).attr('onclick', "filterOne('" + $(this).text().toLocaleLowerCase() + "')");
+    });
+}
+
 
 $(document).ready(function () {
 
 
     getLocations(addLocationClick);
+    getFilterOne(addFilterOneClick);
     getVersions();
     getBuild();
-    getFilterOne();
+   
 
     //searchbox filter
     $("#searchBox").keyup(function(){
