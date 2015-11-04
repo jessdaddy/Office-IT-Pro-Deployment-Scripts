@@ -87,13 +87,13 @@ function setProduct(product, build) {
     buildID = build;
     getLanguages();
     productToInstall = product;
-    $('#productSpan')[0].innerText = product;
+    $('#productSpan').text(product);
     showModal('languageModal');
 }
 
 function setVersion(version) {
     versionToInstall = version;
-    $('#versionSpan')[0].innerText = version;
+    $('#versionSpan').text(version);
     showModal('productModal');
 }
 
@@ -101,7 +101,7 @@ function setLanguage() {
     var checkboxes = null;
     languages = null;
     checkboxes = $(".languageCheckBox:checked");
-    $('#languageSpan')[0].innerText = languageDictionary[checkboxes[0].id];
+    $('#languageSpan').text(languageDictionary[checkboxes[0].id]);
     languages = [checkboxes[0].id];
     if (checkboxes.length > 1) {
         for (var i = 1; i < checkboxes.length; i++) {
@@ -122,6 +122,11 @@ function showModal(modalId) {
     if (modalId == "downloadModal") {
         $('#directDL').text(versionToInstall);
     }
+
+    if (modalId === 'productModal')
+    {
+        resetFilters();
+}
 }
 
 function getLanguages() {
@@ -133,13 +138,11 @@ function getLanguages() {
         success:
             function (xml) {
                 $('#languagesGrid > .ms-Grid-row').empty();
-                console.log(buildID);
                 $xml = $(xml);
                 var languages = $xml.find("[ID='" + buildID + "']").attr('Languages').split(",");
                 $.each(languages, function (index, value) {
                     var label = value;
                     var id = value.split(" ").pop().replace(")",'').replace("(",'');
-                    console.log(label + " " + id);
                     $('#languagesGrid > .ms-Grid-row').append("<div class='ms-Grid-col ms-u-lg4 ms-u-xl4 ms-u-md4'><label> <input type='checkbox' id='" + id + "' class='languageCheckBox' /> \
                                     <span class='ms-Label checkboxLabel'>" + label + "</span></label></div>");
                 });  
@@ -156,8 +159,6 @@ function getVersions() {
         success:
             function (xml) {
                 var optional = $(xml).find('Versions').attr('Optional');
-                console.log(optional);
-
                 if (optional === "true") {
                     $(xml).find('Version').each(function () {
                         var version = $(this).attr('ID');
@@ -175,18 +176,18 @@ function getVersions() {
                                     <img src='Content/imgs/office-icon-white.png' style='height:100px'/>\
                                     <p class='ms-font-xl ms-fontColor-white' style='display:block'>2016</p>\
                                     </div>\
-                                    </li>")
+                                    </li>");
                         }
                     });
                 }
                 else
                 {
                     $('#versions').prepend("<li class='squareButton'>\
-                                    <div class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"Office 365 ProPlus\")' style='text-align:center;width:225px;height:250px;max-height:250px;padding-top:50px;'>\
+                                    <div class='ms-Dialog-action ms-Button ms-Button--primary' onclick='setVersion(\"365 ProPlus\")' style='text-align:center;width:225px;height:250px;max-height:250px;padding-top:50px;'>\
                                     <img src='Content/imgs/office-icon-white.png' style='height:100px;'/>\
                                     <p class='ms-font-xl ms-fontColor-white' style='display:block;r'>Office 365 ProPlus</p>\
                                     </div>\
-                                    </li>")
+                                    </li>");
                 }
             }
     });
@@ -203,10 +204,10 @@ function getBuild() {
                 $(xml).find('Build').each(function () {
                     var buildType = $(this).attr('Type');
                     $("#buildsGrid").append("<li class='squareButton-build'>\
-                                    <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")' style='width:225px;height:250px;'>\
+                                    <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")' style='width:225px;height:250px;display:inline-block'>\
                                     <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
-                                    <p class='ms-font-xl' style='display:block'>" + $(this).attr('Type') + "</p>\
-                                    <div id='tag' class='ms-font-md' style='display:block:padding-bottom:2px;'>Tags: " + $(this).attr('Location') +","+$(this).attr('FilterOne') + "</div>\
+                                    <p class='ms-font-xl filter-field' style='display:block'>" + $(this).attr('Type') + "\
+                                    <br>" + $(this).attr('Location') + "," + $(this).attr('FilterOne') + "</p>\
                                     </button>\
                                     </li>");
                 });
@@ -214,8 +215,7 @@ function getBuild() {
     });
 }
 
-
-function getLocations() {
+function getLocations( callback) {
 
     var locations = [];
     $.ajax({
@@ -232,14 +232,17 @@ function getLocations() {
                     if($.inArray(location,locations) === -1)
                     {
                         locations.push(location);
+                        $("#ddl-Location").siblings('ul').attr('id','ul-Location');
                         $("#ddl-Location").siblings('ul').append("<li class='ms-Dropdown-item'>" + location + "</li>");
                     }
                 });
+
+                callback();
             }
     });
 }
 
-function getFilterOne() {
+function getFilterOne(callback) {
 
     var filters = [];
     $.ajax({
@@ -257,10 +260,79 @@ function getFilterOne() {
                     var filter= $(this).attr('FilterOne');
                     if ($.inArray(filter, filters) === -1) {
                         filters.push(filter);
+                        $("#ddl-FilterOne").siblings('ul').attr('id', 'ul-FilterOne');
                         $("#ddl-FilterOne").siblings('ul').append("<li class='ms-Dropdown-item'>" + filter + "</li>");
                     }
                 });
+                
+                callback();
             }
+    });
+}
+
+function searchBoxFilter() {
+
+    var searchTerm = $('#searchBox').val().toLocaleLowerCase();
+    
+    $('#buildsGrid li p').each(function () {
+
+        if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) < 0 && $(this).parent().css('display') === 'inline-block') {
+            $(this).parent().parent().hide();
+        }
+
+    });
+
+    if (searchTerm.length === 0) {
+        $('#buildsGrid li p').each(function () {
+            $(this).parent().parent().show();
+        })
+
+    }
+}
+
+function locationFilter(location) {
+
+    $('#buildsGrid li p').each(function () {
+        var temp_location = $(this).text().split(',')[0].split(" ")[$(this).text().split(',')[0].split(" ").length - 1].toLocaleLowerCase();
+
+        if (temp_location !== location && $(this).parent().parent().css('display') === 'inline-block') {
+            $(this).parent().parent().hide();
+
+        }
+                });
+
+    if (location.toLocaleLowerCase().indexOf('filter') >= 0) {
+        $('#buildsGrid li p').each(function() {
+            $(this).parent().parent().show();
+        });
+    }
+
+}
+
+function filterOne(filter) {
+
+    $('#buildsGrid li p').each(function () {
+        if ($(this).text().split(',')[1].toLocaleLowerCase() !== filter && $(this).parent().css('display') === 'inline-block') {
+            $(this).parent().parent().hide();
+        }
+    });
+
+    if (filter.toLocaleLowerCase().indexOf('filter') >= 0) {
+        $('#buildsGrid li p').each(function () {
+            $(this).parent().parent().show();
+        });
+    }
+}
+
+function addLocationClick() {
+    $('#ul-Location li').each(function () {
+        $(this).attr('onclick', "locationFilter('"+$(this).text().toLocaleLowerCase()+"')");
+    });
+            }
+
+function addFilterOneClick() {
+    $('#ul-FilterOne li').each(function () {
+        $(this).attr('onclick', "filterOne('" + $(this).text().toLocaleLowerCase() + "')");
     });
 }
 
@@ -284,10 +356,24 @@ function prepTags() {
 }
 
 $(document).ready(function () {
-    //new Taggle('searchBox');
+
+
+    getLocations(addLocationClick);
+    getFilterOne(addFilterOneClick);
     getVersions();
     getBuild();
-    getLocations();
-    getFilterOne();
+   
+    //searchbox filter
+    $("#searchBox").keyup(function(){
+        searchBoxFilter();
+    });
+
+    //filter reset
+    $('#btn-Reset').click(function () {
+        resetFilters();
+    })
+
+  
+
     prepTags();
 });
