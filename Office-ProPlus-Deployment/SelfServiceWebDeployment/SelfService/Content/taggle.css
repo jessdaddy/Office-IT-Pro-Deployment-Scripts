@@ -115,6 +115,8 @@ p a:hover {
 .taggle_list {
   float: left;
   width: 100%;
+  padding-top: 2px;
+  padding-left:5px;
 }
 
 .taggle_input {
@@ -135,7 +137,7 @@ p a:hover {
 .taggle_list .taggle {
   margin-right: 8px;
   background: #E2E1DF;
-  padding: 5px 10px;
+  padding: 3px 10px;
   border-radius: 3px;
   position: relative;
   cursor: pointer;
@@ -350,7 +352,7 @@ textarea.input {
 
 .autocomplete {
   max-height: 200px;
-  overflow: scroll;
+  overflow: auto;
   position: absolute;
   top: 66px;
   background: white;
@@ -372,7 +374,7 @@ textarea.input {
 
 .ui-autocomplete {
   max-height: 200px;
-  overflow: scroll;
+  overflow: auto;
   width: 99% !important;
 }
 

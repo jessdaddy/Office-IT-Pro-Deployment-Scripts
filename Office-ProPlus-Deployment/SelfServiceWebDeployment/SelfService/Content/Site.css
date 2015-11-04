@@ -256,3 +256,34 @@ input[type=checkbox]
     text-align:left;
     line-height:normal;
 }
+
+.custom-SearchBox{
+    min-width:100px;
+    width:auto;
+    padding-top:0px;
+    padding-left:0px
+}
+
+.custom-SearchBox .taggle_list .taggle{
+    color: white;
+    background-color: #0078d7;
+    border-color:#0078d7;
+}
+
+.custom-SearchBox .taggle_list .taggle:hover {
+  padding: 5px;
+  padding-right: 15px;
+  background: #005a9e;
+  transition: all .3s;
+}
+
+.custom-SearchBox .autocomplete ul li {
+  background: #0078d7;
+  background-color: #0078d7;
+  color: white;
+  cursor: pointer;
+}
+
+.custom-SearchBox .ui-menu .ui-menu-item a:hover{
+    background: #0078d7;
+}
