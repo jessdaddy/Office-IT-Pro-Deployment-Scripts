@@ -214,7 +214,6 @@ function getBuild() {
     });
 }
 
-
 function getLocations( callback) {
 
     var locations = [];
@@ -277,17 +276,16 @@ function searchBoxFilter() {
     $('#buildsGrid li p').each(function () {
 
         if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) < 0 && $(this).parent().css('display') === 'inline-block') {
-            $(this).parent().hide();
+            $(this).parent().parent().hide();
         }
-        //else if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0 && $(this).parent().css('display') === 'none') {
-        //    $(this).parent().show();
-        //}
+
     });
 
     if (searchTerm.length === 0) {
         $('#buildsGrid li p').each(function () {
-            $(this).parent().show();
+            $(this).parent().parent().show();
         })
+
     }
 }
 
@@ -296,17 +294,15 @@ function locationFilter(location) {
     $('#buildsGrid li p').each(function () {
         var temp_location = $(this).text().split(',')[0].split(" ")[$(this).text().split(',')[0].split(" ").length - 1].toLocaleLowerCase();
 
-        if (temp_location !== location && $(this).parent().css('display') === 'inline-block') {
-            $(this).parent().hide();
+        if (temp_location !== location && $(this).parent().parent().css('display') === 'inline-block') {
+            $(this).parent().parent().hide();
+
         }
-        //else if (temp_location === location && $(this).parent().css('display') === 'none') {
-        //    $(this).parent().show();
-        //}
     });
 
     if (location.toLocaleLowerCase().indexOf('filter') >= 0) {
         $('#buildsGrid li p').each(function() {
-            $(this).parent().show();
+            $(this).parent().parent().show();
         });
     }
 
@@ -316,21 +312,15 @@ function filterOne(filter) {
 
     $('#buildsGrid li p').each(function () {
         if ($(this).text().split(',')[1].toLocaleLowerCase() !== filter && $(this).parent().css('display') === 'inline-block') {
-            $(this).parent().hide();
+            $(this).parent().parent().hide();
         }
-        //else if ($(this).text().split(',')[1].toLocaleLowerCase() === filter && $(this).parent().css('display') === 'none') {
-        //    $(this).parent().show();
-        //}
     });
 
     if (filter.toLocaleLowerCase().indexOf('filter') >= 0) {
         $('#buildsGrid li p').each(function () {
-            $(this).parent().show();
+            $(this).parent().parent().show();
         });
     }
-    var location = $('#ul-Location li.is-selected').text();
-
-    //locationFilter(location);
 }
 
 function addLocationClick() {
