@@ -665,7 +665,8 @@
 
         this.tag.values.push(text);
         this.tag.elements.push(li);
-
+        addFilter(text);
+        applyFilters();
         return li;
     };
 
@@ -703,6 +704,8 @@
         this.settings.onTagRemove(e, text);
 
         this._focusInput();
+        removeFilter(text);
+        setTaggleFilters();
     };
 
     /**

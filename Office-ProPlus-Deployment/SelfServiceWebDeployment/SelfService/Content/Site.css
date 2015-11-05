@@ -79,6 +79,12 @@ textarea {
     padding: 10px 10px;
 }
 
+.squareButton-build button{
+    width:225px;
+    height:250px;
+    display:inline-block;
+}
+
 .squareButton-build:hover > button{
     background-color:#0078D7;
 }
@@ -287,3 +293,4 @@ input[type=checkbox]
 .custom-SearchBox .ui-menu .ui-menu-item a:hover{
     background: #0078d7;
 }
+
