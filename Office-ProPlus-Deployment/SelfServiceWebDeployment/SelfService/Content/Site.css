@@ -276,6 +276,10 @@ input[type=checkbox]
     border-color:#0078d7;
 }
 
+.custom-SearchBox .taggle_placeholder{
+    top:6px;
+}
+
 .custom-SearchBox .taggle_list .taggle:hover {
   padding: 5px;
   padding-right: 15px;
