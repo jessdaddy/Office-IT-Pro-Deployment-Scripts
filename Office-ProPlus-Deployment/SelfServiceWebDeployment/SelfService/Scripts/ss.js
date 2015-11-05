@@ -89,6 +89,7 @@ var currentLocation;
 var currentFilter;
 
 var appliedFilters = [];
+var previousSearch = "";
 
 function setProduct(product, build) {
     buildID = build;
@@ -138,7 +139,7 @@ function showModal(modalId) {
 
 function resetFilters() {
     appliedFilters = [];
-    $('#searchBox').val('');
+    $(searchBoxTaggle.getInput()).val('');
     searchBoxFilter();
     $('#ul-Location li:first').click();
     $('#ul-FilterOne li:first').click();
@@ -218,7 +219,7 @@ function getBuild() {
             function (xml) {
                 $(xml).find('Build').each(function () {
                     var buildType = $(this).attr('Type');
-                    $("#buildsGrid").append("<li class='squareButton-build " + $(this).attr('FilterOne').toLocaleLowerCase() + "-filter " + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
+                    $("#buildsGrid").append("<li class='squareButton-build shown " + $(this).attr('FilterOne').toLocaleLowerCase() + "-filter " + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
                                     <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")'>\
                                     <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
                                     <p class='ms-font-xl filter-field' style='display:block'>" + $(this).attr('Type') + "\
@@ -287,31 +288,20 @@ function getFilterOne(callback) {
     });
 }
 
-function searchBoxFilter(e) {
+function searchBoxFilter() {
     var searchTerm = searchBoxTaggle.getInput().value;
+    searchTerm = searchTerm.toLocaleLowerCase();
+    $(".squareButton-build").removeClass('search-filter');
+    removeFilter("search");
     if (searchTerm) {
-        searchTerm = searchTerm.toLocaleLowerCase();
-
-    
-        $('#buildsGrid li p').each(function () {
-
-            if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) < 0 && $(this).parent().css('display') === 'inline-block') {
-                $(this).parent().parent().hide();
+        $(".squareButton-build p").each(function () {
+            if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
+                $(this).parent().parent().addClass('search-filter');
             }
-
-        });
-
-        if (searchTerm.length === 0) {
-            $('#buildsGrid li p').each(function () {
-                $(this).parent().parent().show();
-            })
-
-        }
-    } else {
-        $('#buildsGrid li p').each(function () {
-            $(this).parent().parent().show();
         })
+        addFilter("search");
     }
+    applyFilters();
 }
 
 function setTaggleFilters() {
@@ -345,7 +335,7 @@ function applyFilters() {
         filterString += "." + element + "-filter";
     });
     $(".squareButton-build").addClass("hidden");
-    $(filterString).removeClass("hidden");
+    $(filterString).removeClass("hidden").addClass('shown');
 }
 
 function removeFilter(filter) {
@@ -378,7 +368,20 @@ function addFilterOneClick() {
 }
 
 function prepTags() {
-    searchBoxTaggle = new Taggle('outerSearchBox');
+    searchBoxTaggle = new Taggle('outerSearchBox',
+        {
+            saveOnBlur: true,
+            placeholder: "search...",
+            onTagAdd: function (event, tag) {
+                $(searchBoxTaggle.getInput()).val('');
+                addFilter(tag);
+                applyFilters();
+            },
+            onTagRemove: function (event, tag) {
+                removeFilter(tag);
+                applyFilters();
+            }
+        });
 }
 
 function updateAutocomplete() {
