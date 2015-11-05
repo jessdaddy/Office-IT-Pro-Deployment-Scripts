@@ -121,6 +121,18 @@ textarea {
     height: 80%;
     max-width: none;
     overflow:auto;
+    box-shadow:none;
+    border:3px solid #0078D7;
+    padding: 10px 15px;
+}
+
+.custom-Dialog-title{
+    color:#0078D7;
+    font-size:x-large;
+}
+
+hr{
+    border-color: #0078D7;
 }
 
 .custom-back-button{
@@ -148,7 +160,9 @@ textarea {
 
 .custom-Dialog-inner{
     width:100%;
-    height:auto
+    height:80%;
+    overflow:auto;
+
 }
 
 .custom-Dialog-actions{
