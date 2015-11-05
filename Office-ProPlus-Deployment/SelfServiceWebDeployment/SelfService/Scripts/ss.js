@@ -400,6 +400,19 @@ function updateAutocomplete() {
     });
 }
 
+function getVersionDescription(){
+    $.ajax({
+        type: "GET",
+        url: "SelfServiceConfig.xml",
+        datatype: "xml",
+        success:
+            function (xml) {
+                var description = $(xml).find('Description').text();
+                $('#versionDescription').text(description);
+            }
+    });
+}
+
 $(document).ready(function () {
 
 
@@ -407,6 +420,7 @@ $(document).ready(function () {
     getFilters();
     getVersions();
     getBuild();
+    getVersionDescription();
    
     //searchbox filter
     $("#outerSearchBox").keyup(function (e) {

@@ -23,20 +23,21 @@
         <div class="ms-Dialog-main custom-Dialog-main" >
          
             <div class="ms-Dialog-header">
-                <p class="ms-Dialog-title">Select Version</p>
+                <p class="ms-Dialog-title">What version of Office do you Need?</p>
                 <hr />
             </div>
             <div class="ms-Dialog-inner custom-Dialog-inner">
+                <p id="versionDescription" class="ms-font-l"></p>
                 <div class="ms-dialog-actions custom-Dialog-actions">
                     <div>
-                        <ul id="versions" class="modalList">
+                        <ul id="versions" class="modalListVersion">
                             
                         </ul>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
     <div id="productModal" class="ms-Dialog custom-Dialog hidden">
         @Html.Partial("~/Views/SHared/_banner.cshtml")
