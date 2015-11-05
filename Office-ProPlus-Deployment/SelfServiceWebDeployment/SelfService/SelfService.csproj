@@ -237,6 +237,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\SelfService\Index.cshtml" />
     <Content Include="Views\Shared\_banner.cshtml" />
+    <Content Include="Views\Shared\_help.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
