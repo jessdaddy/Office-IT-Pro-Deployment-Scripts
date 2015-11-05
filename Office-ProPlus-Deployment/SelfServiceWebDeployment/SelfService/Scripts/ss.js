@@ -138,6 +138,7 @@ function showModal(modalId) {
 }
 
 function resetFilters() {
+    searchBoxTaggle.removeAll();
     appliedFilters = [];
     $(searchBoxTaggle.getInput()).val('');
     searchBoxFilter();
@@ -391,7 +392,7 @@ function updateAutocomplete() {
     $(input).autocomplete({
         source: availableFilters,
         appendTo: container,
-        position: { at: "left bottom", of: container },
+        position: { at: "left bottom", my: "left top" },
         select: function (event, data) {
             event.preventDefault();
             //Add the tag if user clicks

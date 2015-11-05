@@ -264,7 +264,7 @@ input[type=checkbox]
 }
 
 .custom-SearchBox{
-    min-width:100px;
+    min-width:200px;
     width:auto;
     padding-top:0px;
     padding-left:0px
@@ -292,5 +292,10 @@ input[type=checkbox]
 
 .custom-SearchBox .ui-menu .ui-menu-item a:hover{
     background: #0078d7;
+}
+
+::selection {
+  background: #0078d7;
+  color: #fff;
 }
 

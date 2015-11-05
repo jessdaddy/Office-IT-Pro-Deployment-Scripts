@@ -57,12 +57,12 @@ p a:hover {
 }
 
 ::selection {
-  background: #990033;
+  background: #0078d7;
   color: #fff;
 }
 
 ::-moz-selection {
-  background: #990033;
+  background: #0078d7;
   color: #fff;
 }
 
@@ -315,7 +315,7 @@ textarea.input {
 .ui-state-focus,
 .ui-widget-content .ui-state-focus,
 .ui-widget-header .ui-state-focus {
-  background: #990033;
+  background: #0078d7;
   color: #fff !important;
 }
 
