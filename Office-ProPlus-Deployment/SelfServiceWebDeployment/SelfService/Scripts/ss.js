@@ -143,7 +143,6 @@ function resetFilters() {
     $(searchBoxTaggle.getInput()).val('');
     searchBoxFilter();
     $('#ul-Location li:first').click();
-    $('#ul-FilterOne li:first').click();
 }
 
 function getLanguages() {
@@ -220,11 +219,25 @@ function getBuild() {
             function (xml) {
                 $(xml).find('Build').each(function () {
                     var buildType = $(this).attr('Type');
-                    $("#buildsGrid").append("<li class='squareButton-build shown " + $(this).attr('FilterOne').toLocaleLowerCase() + "-filter " + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
+                    var filters = $(this).attr('Filters').split(',');
+                    var classString = "";
+                    var textString = "";
+                    if (Array.isArray(filters)) {
+                        filters.forEach(function (element, index, array) {
+                            classString += element.toLocaleLowerCase() + "-filter ";
+                            textString += ", " + element;
+                        });
+                    } else {
+                        if (filters) {
+                            classString += filters + "-filter ";
+                            textString += ", " + filters;
+                        }
+                    }
+                    $("#buildsGrid").append("<li class='squareButton-build shown " + classString + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
                                     <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")'>\
                                     <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
                                     <p class='ms-font-xl filter-field' style='display:block'>" + $(this).attr('Type') + "\
-                                    <br>" + $(this).attr('Location') + "," + $(this).attr('FilterOne') + "</p>\
+                                    <br>" + $(this).attr('Location') + textString + "</p>\
                                     </button>\
                                     </li>");
                 });
@@ -260,31 +273,32 @@ function getLocations( callback) {
     });
 }
 
-function getFilterOne(callback) {
+function getFilters() {
 
-    var filters = [];
     $.ajax({
         type: "GET",
         url: "SelfServiceConfig.xml",
         datatype: "xml",
         success:
             function (xml) {
-
-                var filterOneLabel = $(xml).find('FilterOne').attr('Filter');
-                $("#ddl-FilterOne").siblings('span.ms-Dropdown-title').text(filterOneLabel + " Filter");
-                $("#ddl-FilterOne").siblings('ul').append("<li class='ms-Dropdown-item'>" + filterOneLabel + " Filter</li>");
                 $(xml).find('Build').each(function () {
 
-                    var filter = $(this).attr('FilterOne');
-                    if ($.inArray(filter, filters) === -1) {
-                        filters.push(filter);
-                        availableFilters.push(filter);
-                        $("#ddl-FilterOne").siblings('ul').attr('id', 'ul-FilterOne');
-                        $("#ddl-FilterOne").siblings('ul').append("<li class='ms-Dropdown-item'>" + filter + "</li>");
+                    var filter = $(this).attr('Filters').split(',');
+                    if (Array.isArray(filter)) {
+                        filter.forEach(function (element, index, array) {
+                            if (availableFilters.indexOf(element.toLocaleLowerCase()) < 0) {
+                                availableFilters.push(element.toLocaleLowerCase());
+                            }
+                        });
+                    } else {
+                        if (filter) {
+                            if (availableFilters.indexOf(filter.toLocaleLowerCase()) < 0) {
+                                availableFilters.push(filter.toLocaleLowerCase());
+                            }
+                        }
                     }
                 });
                 updateAutocomplete();
-                callback();
             }
     });
 }
@@ -345,28 +359,11 @@ function removeFilter(filter) {
     }
 }
 
-function filterOne(filter) {
-    if (filter) {
-        removeFilter(currentFilter);
-        if (filter.toLocaleLowerCase().indexOf('filter') < 0) {
-            addFilter(filter);
-        }
-        applyFilters();
-    }
-    currentFilter = filter;
-}
-
 function addLocationClick() {
     $('#ul-Location li').each(function () {
         $(this).attr('onclick', "locationFilter('"+$(this).text().toLocaleLowerCase()+"')");
     });
             }
-
-function addFilterOneClick() {
-    $('#ul-FilterOne li').each(function () {
-        $(this).attr('onclick', "filterOne('" + $(this).text().toLocaleLowerCase() + "')");
-    });
-}
 
 function prepTags() {
     searchBoxTaggle = new Taggle('outerSearchBox',
@@ -407,7 +404,7 @@ $(document).ready(function () {
 
 
     getLocations(addLocationClick);
-    getFilterOne(addFilterOneClick);
+    getFilters();
     getVersions();
     getBuild();
    
