@@ -82,7 +82,15 @@ var languageDictionary = {
     "tr-tr": "Turkish",
     "uk-ua": "Ukrainian"
 }
-var availableLanguages;
+
+var availableFilters = [];
+var searchBoxTaggle;
+var currentLocation;
+var currentFilter;
+
+var appliedFilters = [];
+var previousSearch = "";
+
 function setProduct(product, build) {
     buildID = build;
     getLanguages();
@@ -127,6 +135,14 @@ function showModal(modalId) {
     {
         resetFilters();
     }
+}
+
+function resetFilters() {
+    appliedFilters = [];
+    $(searchBoxTaggle.getInput()).val('');
+    searchBoxFilter();
+    $('#ul-Location li:first').click();
+    $('#ul-FilterOne li:first').click();
 }
 
 function getLanguages() {
@@ -203,8 +219,8 @@ function getBuild() {
             function (xml) {
                 $(xml).find('Build').each(function () {
                     var buildType = $(this).attr('Type');
-                    $("#buildsGrid").append("<li class='squareButton-build'>\
-                                    <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")' style='width:225px;height:250px;display:inline-block'>\
+                    $("#buildsGrid").append("<li class='squareButton-build shown " + $(this).attr('FilterOne').toLocaleLowerCase() + "-filter " + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
+                                    <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")'>\
                                     <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
                                     <p class='ms-font-xl filter-field' style='display:block'>" + $(this).attr('Type') + "\
                                     <br>" + $(this).attr('Location') + "," + $(this).attr('FilterOne') + "</p>\
@@ -231,12 +247,13 @@ function getLocations( callback) {
                     var location = $(this).attr('Location');
                     if($.inArray(location,locations) === -1)
                     {
+                        availableFilters.push(location);
                         locations.push(location);
                         $("#ddl-Location").siblings('ul').attr('id','ul-Location');
                         $("#ddl-Location").siblings('ul').append("<li class='ms-Dropdown-item'>" + location + "</li>");
                     }
                 });
-
+                updateAutocomplete();
                 callback();
             }
     });
@@ -257,78 +274,92 @@ function getFilterOne(callback) {
                 $("#ddl-FilterOne").siblings('ul').append("<li class='ms-Dropdown-item'>" + filterOneLabel + " Filter</li>");
                 $(xml).find('Build').each(function () {
 
-                    var filter= $(this).attr('FilterOne');
+                    var filter = $(this).attr('FilterOne');
                     if ($.inArray(filter, filters) === -1) {
                         filters.push(filter);
+                        availableFilters.push(filter);
                         $("#ddl-FilterOne").siblings('ul').attr('id', 'ul-FilterOne');
                         $("#ddl-FilterOne").siblings('ul').append("<li class='ms-Dropdown-item'>" + filter + "</li>");
                     }
                 });
-                
+                updateAutocomplete();
                 callback();
             }
     });
 }
 
 function searchBoxFilter() {
-
-    var searchTerm = $('#searchBox').val().toLocaleLowerCase();
-    
-    $('#buildsGrid li p').each(function () {
-
-        if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) < 0 && $(this).parent().css('display') === 'inline-block') {
-            $(this).parent().parent().hide();
-        }
-
-    });
-
-    if (searchTerm.length === 0) {
-        $('#buildsGrid li p').each(function () {
-            $(this).parent().parent().show();
+    var searchTerm = searchBoxTaggle.getInput().value;
+    searchTerm = searchTerm.toLocaleLowerCase();
+    $(".squareButton-build").removeClass('search-filter');
+    removeFilter("search");
+    if (searchTerm) {
+        $(".squareButton-build p").each(function () {
+            if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
+                $(this).parent().parent().addClass('search-filter');
+            }
         })
-
+        addFilter("search");
     }
+    applyFilters();
+}
+
+function setTaggleFilters() {
+    taggles = searchBoxTaggle.getTagValues();
+    taggles.forEach(function (element, index, array) {
+        addFilter(element);
+    })
+    applyFilters();
 }
 
 function locationFilter(location) {
-
-    $('#buildsGrid li p').each(function () {
-        var temp_location = $(this).text().split(',')[0].split(" ")[$(this).text().split(',')[0].split(" ").length - 1].toLocaleLowerCase();
-
-        if (temp_location !== location && $(this).parent().parent().css('display') === 'inline-block') {
-            $(this).parent().parent().hide();
-
+    if (location) {
+        removeFilter(currentLocation);
+        if (location.toLocaleLowerCase().indexOf('filter') < 0) {
+            addFilter(location);
         }
-    });
-
-    if (location.toLocaleLowerCase().indexOf('filter') >= 0) {
-        $('#buildsGrid li p').each(function() {
-            $(this).parent().parent().show();
-        });
+        applyFilters();
     }
+    currentLocation = location;
+}
 
+function addFilter(filter) {
+    if (appliedFilters.indexOf(filter) == -1) {
+        appliedFilters.push(filter);
+    }
+}
+
+function applyFilters() {
+    var filterString = ".squareButton-build";
+    appliedFilters.forEach(function (element, index, array) {
+        filterString += "." + element + "-filter";
+    });
+    $(".squareButton-build").addClass("hidden");
+    $(filterString).removeClass("hidden").addClass('shown');
+}
+
+function removeFilter(filter) {
+    if (appliedFilters.indexOf(filter) >= 0) {
+        appliedFilters.splice(appliedFilters.indexOf(filter), 1);
+    }
 }
 
 function filterOne(filter) {
-
-    $('#buildsGrid li p').each(function () {
-        if ($(this).text().split(',')[1].toLocaleLowerCase() !== filter && $(this).parent().css('display') === 'inline-block') {
-            $(this).parent().parent().hide();
+    if (filter) {
+        removeFilter(currentFilter);
+        if (filter.toLocaleLowerCase().indexOf('filter') < 0) {
+            addFilter(filter);
         }
-    });
-
-    if (filter.toLocaleLowerCase().indexOf('filter') >= 0) {
-        $('#buildsGrid li p').each(function () {
-            $(this).parent().parent().show();
-        });
+        applyFilters();
     }
+    currentFilter = filter;
 }
 
 function addLocationClick() {
     $('#ul-Location li').each(function () {
         $(this).attr('onclick', "locationFilter('"+$(this).text().toLocaleLowerCase()+"')");
     });
-}
+            }
 
 function addFilterOneClick() {
     $('#ul-FilterOne li').each(function () {
@@ -336,14 +367,40 @@ function addFilterOneClick() {
     });
 }
 
-function resetFilters() {
-    $('#searchBox').val('');
-    searchBoxFilter();
-
-    $('#ul-Location li:first').click();
-    $('#ul-FilterOne li:first').click();
+function prepTags() {
+    searchBoxTaggle = new Taggle('outerSearchBox',
+        {
+            saveOnBlur: true,
+            placeholder: "search...",
+            onTagAdd: function (event, tag) {
+                $(searchBoxTaggle.getInput()).val('');
+                addFilter(tag);
+                applyFilters();
+            },
+            onTagRemove: function (event, tag) {
+                removeFilter(tag);
+                applyFilters();
+            }
+        });
 }
 
+function updateAutocomplete() {
+    var container = searchBoxTaggle.getContainer();
+    var input = searchBoxTaggle.getInput();
+    searchBoxTaggle.settings.allowedTags = availableFilters;
+    $(input).autocomplete({
+        source: availableFilters,
+        appendTo: container,
+        position: { at: "left bottom", of: container },
+        select: function (event, data) {
+            event.preventDefault();
+            //Add the tag if user clicks
+            if (event.which === 1) {
+                searchBoxTaggle.add(data.item.value);
+            }
+        }
+    });
+}
 
 $(document).ready(function () {
 
@@ -354,8 +411,8 @@ $(document).ready(function () {
     getBuild();
    
     //searchbox filter
-    $("#searchBox").keyup(function(){
-        searchBoxFilter();
+    $("#outerSearchBox").keyup(function (e) {
+        searchBoxFilter(e);
     });
 
     //filter reset
@@ -363,6 +420,5 @@ $(document).ready(function () {
         resetFilters();
     })
 
-  
-
+    prepTags();
 });
