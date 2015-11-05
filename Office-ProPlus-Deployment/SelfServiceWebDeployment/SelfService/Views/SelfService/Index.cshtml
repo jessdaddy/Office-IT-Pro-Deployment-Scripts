@@ -92,14 +92,14 @@
                 <div class="ms-Dialog-inner custom-Dialog-inner">
                     <div class="ms-Grid">
                         <div id="languagesGrid" class="ms-Grid languagesGrid">
-                            <div class='ms-Grid-row'>
+                            <ul class="languageul">
                                 @*LANGUAGES GO HERE*@
-                            </div>
+                            </ul>
                         </div>
                     </div>
                     <div class="ms-dialog-actions custom-Dialog-actions">
                         <div class="languagesContinue">
-                            <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="setLanguage()">
+                            <button id="languageButton" class="ms-Dialog-action ms-Button ms-Button--primary" onclick="setLanguage()" disabled>
                                 <span class="ms-Button-label">Continue</span>
                             </button>
                         </div>

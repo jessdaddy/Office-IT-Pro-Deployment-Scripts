@@ -197,6 +197,7 @@ hr{
     width:100%; height: 100%;
     margin-right:auto;
     margin-left:auto;
+    text-align:center;
 }
 
 .confirmationField{
@@ -315,5 +316,15 @@ input[type=checkbox]
 ::selection {
   background: #0078d7;
   color: #fff;
+}
+
+.languageli{
+    display:inline-block;
+    width:33%;
+    text-align:left;
+}
+
+.languageul{
+    text-align:center;
 }
 

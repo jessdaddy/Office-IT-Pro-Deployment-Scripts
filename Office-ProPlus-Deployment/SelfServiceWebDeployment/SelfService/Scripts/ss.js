@@ -145,6 +145,15 @@ function resetFilters() {
     $('#ul-Location li:first').click();
 }
 
+function verifyLanguageInput() {
+    sl = $('.languageCheckBox:checked');
+    if (sl.length > 0) {
+        $('#languageButton').prop('disabled', false);
+    } else {
+        $('#languageButton').prop('disabled', true);
+    }
+}
+
 function getLanguages() {
 
     $.ajax({
@@ -159,8 +168,8 @@ function getLanguages() {
                 $.each(languages, function (index, value) {
                     var label = value;
                     var id = value.split(" ").pop().replace(")",'').replace("(",'');
-                    $('#languagesGrid > .ms-Grid-row').append("<div class='ms-Grid-col ms-u-lg4 ms-u-xl4 ms-u-md4'><label> <input type='checkbox' id='" + id + "' class='languageCheckBox' /> \
-                                    <span class='ms-Label checkboxLabel'>" + label + "</span></label></div>");
+                    $('#languagesGrid > ul').append("<li class='languageli'><label> <input type='checkbox' id='" + id + "' class='languageCheckBox' onclick='verifyLanguageInput()'/> \
+                                    <span class='ms-Label checkboxLabel'>" + label + "</span></label></li>");
                 });  
             }
     });
