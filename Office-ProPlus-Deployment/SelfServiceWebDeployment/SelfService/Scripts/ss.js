@@ -162,7 +162,7 @@ function getLanguages() {
         datatype: "xml",
         success:
             function (xml) {
-                $('#languagesGrid > .ms-Grid-row').empty();
+                $('#languagesGrid li').remove();
                 $xml = $(xml);
                 var languages = $xml.find("[ID='" + buildID + "']").attr('Languages').split(",");
                 $.each(languages, function (index, value) {
@@ -254,7 +254,7 @@ function getBuild() {
     });
 }
 
-function getLocations( callback) {
+function getLocations(callback) {
 
     var locations = [];
     $.ajax({

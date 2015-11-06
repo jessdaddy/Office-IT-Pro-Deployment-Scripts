@@ -127,10 +127,11 @@ textarea {
     width: 80%;
     height: 80%;
     max-width: none;
-    overflow:auto;
     box-shadow:none;
+    overflow:hidden;
     border:3px solid #0078D7;
     padding: 10px 15px;
+    z-index:2;
 }
 
 .custom-Dialog-title{
@@ -167,9 +168,9 @@ hr{
 
 .custom-Dialog-inner{
     width:100%;
-    height:auto;
-    /*overflow:auto;*/
-
+    height:75%;
+    overflow:auto;
+    z-index:1;
 }
 
 .custom-Dialog-actions{
