@@ -130,6 +130,7 @@ textarea {
     box-shadow:none;
     border:3px solid #0078D7;
     padding: 10px 15px;
+    z-index:2;
 }
 
 .custom-Dialog-title{
@@ -168,7 +169,7 @@ hr{
     width:100%;
     height:75%;
     overflow:auto;
-
+    z-index:1;
 }
 
 .custom-Dialog-actions{
