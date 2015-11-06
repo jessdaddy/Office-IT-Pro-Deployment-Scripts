@@ -80,7 +80,7 @@ textarea {
 }
 
 .squareButton-build button{
-    width:225px;
+    width:250px;
     height:250px;
     display:inline-block;
 }
@@ -343,20 +343,19 @@ input[type=checkbox]
 }
 
 .version-box > p{ 
-    padding-top:25%;
-    height:80%;
-    width:60%;
+    padding-top:20px;
+    width:100%;
     text-align:left;
     vertical-align:bottom;
 }
 
 .version-img{
-    height:150px;
+    height:100px;
     margin-top:15%;
 }
 
 .squareButton{
-    height:400px;
-    width:400px;
+    height:250px;
+    width:250px;
     margin:1%;
 }
