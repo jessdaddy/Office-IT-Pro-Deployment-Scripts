@@ -128,6 +128,7 @@ textarea {
     height: 80%;
     max-width: none;
     box-shadow:none;
+    overflow:hidden;
     border:3px solid #0078D7;
     padding: 10px 15px;
     z-index:2;

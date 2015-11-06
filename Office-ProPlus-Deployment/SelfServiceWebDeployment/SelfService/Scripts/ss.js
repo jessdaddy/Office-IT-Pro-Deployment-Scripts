@@ -254,7 +254,7 @@ function getBuild() {
     });
 }
 
-function getLocations( callback) {
+function getLocations(callback) {
 
     var locations = [];
     $.ajax({
