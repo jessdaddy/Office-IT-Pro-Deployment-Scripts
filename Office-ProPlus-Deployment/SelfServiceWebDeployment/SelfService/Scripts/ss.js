@@ -312,6 +312,31 @@ function getFilters() {
     });
 }
 
+function getHelp() {
+
+    $.ajax({
+        type: "GET",
+        url: "SelfServiceConfig.xml",
+        datatype: "xml",
+        success:
+            function (xml) {
+                $(xml).find('Help').find('Item').each(function () {
+
+                    var qtext = $(this).find('Question').text();
+                    var atext = $(this).find('Answer').text();
+                    $('#helpContent').append(
+                    "<div class='questionDiv'>\
+                        <h4 class='ms-font-xl'>"+ qtext + "</h4>\
+                        <p class='ms-font-m questionAnswer'>"
+                            + atext +
+                        "</p>\
+                    </div>");
+                });
+                updateAutocomplete();
+            }
+    });
+}
+
 function searchBoxFilter() {
     var searchTerm = searchBoxTaggle.getInput().value;
     searchTerm = searchTerm.toLocaleLowerCase();
@@ -430,7 +455,7 @@ $(document).ready(function () {
     getVersions();
     getBuild();
     getVersionDescription();
-   
+    getHelp();
     //searchbox filter
     $("#outerSearchBox").keyup(function (e) {
         searchBoxFilter(e);
