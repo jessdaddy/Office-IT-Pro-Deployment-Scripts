@@ -332,7 +332,27 @@ function getHelp() {
                         "</p>\
                     </div>");
                 });
-                updateAutocomplete();
+            }
+    });
+}
+
+function getCompanyInfo() {
+
+    $.ajax({
+        type: "GET",
+        url: "SelfServiceConfig.xml",
+        datatype: "xml",
+        success:
+            function (xml) {
+                $(xml).find('Company').each(function () {
+                    $('.companyName').text($(this).attr('Name'));
+                    if ($(this).attr('LogoSrc')) {
+                        $('.companyLogo').src($(this).attr('LogoSrc'));
+                    } else {
+                        $('.companyLogo').addClass('hidden');
+                    }
+                    
+                });
             }
     });
 }
@@ -449,7 +469,7 @@ function getVersionDescription(){
 
 $(document).ready(function () {
 
-
+    getCompanyInfo();
     getLocations(addLocationClick);
     getFilters();
     getVersions();
