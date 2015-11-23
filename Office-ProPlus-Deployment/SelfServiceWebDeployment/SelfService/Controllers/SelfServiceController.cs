@@ -1,41 +1,53 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.OpenIdConnect;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SelfService.Models;
+using SelfService.Utils;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
+using System.IdentityModel.Tokens;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
 namespace SelfService.Controllers
 {
+    //[Authorize]
     public class SelfServiceController : Controller
     {
+
+        private const string TenantIdClaimType = "http://schemas.microsoft.com/identity/claims/tenantid";
+        private static readonly string clientId = ConfigurationManager.AppSettings["ida:ClientId"];
+        private static readonly string appKey = ConfigurationManager.AppSettings["ida:AppKey"];
+        private readonly string graphResourceId = ConfigurationManager.AppSettings["ida:GraphUrl"];
+
+        private readonly string graphUserUrl = "https://graph.windows.net/{0}/me?api-version=" +
+                                               ConfigurationManager.AppSettings["ida:GraphApiVersion"];
+
         //
         // GET: /SelfService/
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
+            if (!Request.IsAuthenticated) {
+                HttpContext.GetOwinContext()
+                    .Authentication.Challenge(new AuthenticationProperties { RedirectUri = "/SelfService" },
+                        OpenIdConnectAuthenticationDefaults.AuthenticationType);
+                
+            }
+
             return View();
-        }
-
-        //
-        //Get: /SelfService/Languages
-        public string Languages()
-        {
-            return ConfigurationManager.AppSettings["Language"];
-        }
-
-        //
-        //Get: /SelfService/Products
-        public string Products()
-        {
-            return ConfigurationManager.AppSettings["Product"];
-        }
-
-        //
-        //Get: /SelfService/Versions
-        public string Versions()
-        {
-            return ConfigurationManager.AppSettings["Version"];
         }
 
 
