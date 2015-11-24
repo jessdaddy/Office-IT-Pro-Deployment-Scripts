@@ -475,7 +475,7 @@ $(document).ready(function () {
     getFilters();
     //getVersions();
     //getVersionDescription();
-    getBuild();
+    //getBuild();
     getHelp();
     //searchbox filter
     $("#outerSearchBox").keyup(function (e) {

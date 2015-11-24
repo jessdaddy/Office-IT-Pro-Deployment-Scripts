@@ -105,6 +105,7 @@ textarea {
 
 .modalList{
     text-align:center;
+    list-style-type:none;
 }
 
 /*.ms-Button--primary.ms-bgColor-orangeLight{
