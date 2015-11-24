@@ -423,7 +423,7 @@ function prepTags() {
     searchBoxTaggle = new Taggle('outerSearchBox',
         {
             saveOnBlur: true,
-            placeholder: "search...",
+            placeholder: "",
             onTagAdd: function (event, tag) {
                 $(searchBoxTaggle.getInput()).val('');
                 addFilter(tag);
@@ -473,8 +473,8 @@ $(document).ready(function () {
     getLocations(addLocationClick);
     getFilters();
     //getVersions();
+    //getVersionDescription();
     getBuild();
-    getVersionDescription();
     getHelp();
     //searchbox filter
     $("#outerSearchBox").keyup(function (e) {

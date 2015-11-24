@@ -3,6 +3,7 @@
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
     color: #232323;
     background-color: #fff;
+    width:100%;
 }
 
 header, footer, nav, section {
@@ -106,7 +107,7 @@ textarea {
     text-align:center;
 }
 
-.ms-Button--primary.ms-bgColor-orangeLight{
+/*.ms-Button--primary.ms-bgColor-orangeLight{
     background-color:orange;
     border-color:orange;
 }
@@ -117,31 +118,27 @@ textarea {
 .ms-bgColor-orangeLight.ms-Button--primary.ms-Button:hover{
     background-color:#ff8c00;
     border-color:#ff8c00;
-}
+}*/
 .custom-Dialog {
-    height:100%;
+    height:70%;
     width:100%;
 }
 
 .custom-Dialog-main {
-    width: 80%;
-    height: 80%;
-    max-width: none;
-    box-shadow:none;
+    height:90%;
+    width:90%;
+    margin-left:5%;
+    margin-right:auto;
+    margin-top:2%;
     overflow:hidden;
-    border:3px solid #0078D7;
-    padding: 10px 15px;
-    z-index:2;
+    overflow-x:hidden;
 }
 
 .custom-Dialog-title{
     color:#0078D7;
-    font-size:x-large;
+    font-size:xX-large
 }
 
-hr{
-    border-color: #0078D7;
-}
 
 .custom-back-button{
     display:block;
@@ -288,7 +285,7 @@ input[type=checkbox]
 
 .custom-SearchBox{
     min-width:200px;
-    width:auto;
+    width:300%;
     padding-top:0px;
     padding-left:0px
 }
@@ -336,26 +333,28 @@ input[type=checkbox]
     text-align:center;
 }
 
-.version-box{
-    height:100%;
-    width:100%;
-
-}
-
-.version-box > p{ 
-    padding-top:20px;
-    width:100%;
-    text-align:left;
-    vertical-align:bottom;
-}
-
-.version-img{
-    height:100px;
-    margin-top:15%;
-}
-
 .squareButton{
     height:250px;
     width:250px;
     margin:1%;
+}
+
+.customBanner{
+    height:20%;
+    width:100%;
+    overflow-x:hidden;
+    border-bottom:1px solid #0078d7;
+}
+
+.custom-header{
+    width:90%;
+    margin-left:5%;
+    margin-right:auto;
+    padding-bottom:2%;
+}
+
+.custom-footer{
+    margin-top:200px;
+    padding-top:100px;
+    background-color:#F4F4F4;
 }

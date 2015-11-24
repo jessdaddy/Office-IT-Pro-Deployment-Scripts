@@ -6,7 +6,6 @@
 <head>
     <title>SelfService</title>
     <meta charset="utf-8" name="viewport" content="width=device-width" />
-    @*<link href="stylesheets/typeahead.css" rel="stylesheet">*@
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.min.css">
     <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.components.min.css">
@@ -18,59 +17,67 @@
 
 </head>
 <body>
-    @*<div id="versionModal" class="ms-Dialog custom-Dialog" >
-        @Html.Partial("~/Views/SHared/_banner.cshtml")
-        <div class="ms-Dialog-main custom-Dialog-main" >
-         
-            <div class="ms-Dialog-header">
-                <p class="ms-Dialog-title">What version of Office do you Need?</p>
-                <hr />
-            </div>
-            <div class="ms-Dialog-inner custom-Dialog-inner">
-                <p id="versionDescription" class="ms-font-l"></p>
-                <div class="ms-dialog-actions custom-Dialog-actions">
-                    <div>
-                        <ul id="versions" class="modalListVersion">
-                            
-                        </ul>
+    @*<div id="versionModal" class=" custom-Dialog" >
+            @Html.Partial("~/Views/SHared/_banner.cshtml")
+            <div class=" custom-Dialog-main" >
+
+                <div class="-header">
+                    <p class="-title">What version of Office do you Need?</p>
+
+                </div>
+                <div class="-inner custom-Dialog-inner">
+                    <p id="versionDescription" class="ms-font-l"></p>
+                    <div class="-actions custom-Dialog-actions">
+                        <div>
+                            <ul id="versions" class="modalListVersion">
+
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>*@
+        </div>*@
 
-    <div id="productModal" class="ms-Dialog custom-Dialog">
+    <div id="banner" class="customBanner">
+        <img id="imgBanner" src="~/Content/imgs/temp_banner.png" />
+    </div>
+
+    <div id="productModal" class="custom-Dialog">
         @Html.Partial("~/Views/SHared/_banner.cshtml")
-        <div class="ms-Dialog-main custom-Dialog-main">
-            <button class="ms-Dialog-button custom-back-button" onclick="showModal('versionModal')">
-                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
-                <span class="ms-font-l">Back</span>
-            </button>
-            <div class="ms-Dialog-header">
+        <div class=" custom-Dialog-main">
+            <div class="-header custom-header">
                 <div class="ms-Grid-row">
                     <div class="ms-Grid-col">
-                <p class="ms-Dialog-title">Select Package</p>
+                        <p class="ms-font-xl"><b>Select a Package</b></p>
                     </div>
                     <div class="ms-Grid-col">
-                        <div id="outerSearchBox" class="ms-SearchBox ms-SearchBox-field custom-SearchBox">
+                        <div class="ms-SearchBox">
+                            <div id="outerSearchBox" class="ms-SearchBox-field">
+                                <label class="ms-SearchBox-label">
+                                    <i class="ms-SearchBox-icon ms-Icon ms-Icon--search"></i>
+                                    Search
+                                </label>
+                                <button class="ms-SearchBox-closeButton">
+                                    <i class="ms-Icon ms-Icon---x"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="ms-Grid-col">
                         <div class="ms-Dropdown" style="width:150px">
                             <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                            <select id="ddl-Location" class="ms-Dropdown-select">
-                            </select>
+                            <select id="ddl-Location" class="ms-Dropdown-select"></select>
                         </div>
                     </div>
                     <div class="ms-Grid-col">
-                        <button id="btn-Reset" class="ms-Button">
-                            <span class="ms-Button-label">Reset Filters</span>
+                        <button id="btn-Reset" class="ms-Button ms-Button--primary">
+                            <span class="ms-Button-label">Search</span>
                         </button>
                     </div>
                 </div>
-                <hr />
+
             </div>
-            <div class="ms-Dialog-inner custom-Dialog-inner">
+            <div class="-inner custom-Dialog-inner">
                 <div class="languages">
                     <ul id="buildsGrid" class="modalList default_list">
                         @*BUILDS GO HERE*@
@@ -80,48 +87,48 @@
         </div>
     </div>
 
-    <div id="languageModal" class="ms-Dialog custom-Dialog hidden">
+    <div id="languageModal" class=" custom-Dialog hidden">
         @Html.Partial("~/Views/SHared/_banner.cshtml")
-            <div class="ms-Dialog-main custom-Dialog-main">
-                <button class="ms-Dialog-button custom-back-button" onclick="showModal('productModal')">
-                    <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
-                    <span class="ms-font-l">Back</span>
-                </button>
-                <div class="ms-Dialog-header">
-                    <p class="ms-Dialog-title">Select Languages</p>
-                    <hr />
+        <div class=" custom-Dialog-main">
+            <button class="-button custom-back-button" onclick="showModal('productModal')">
+                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg" />
+                <span class="ms-font-l">Back</span>
+            </button>
+            <div class="-header">
+                <p class="-title">Select Languages</p>
+
+            </div>
+            <div class="-inner custom-Dialog-inner">
+                <div class="ms-Grid">
+                    <div id="languagesGrid" class="ms-Grid languagesGrid">
+                        <ul class="languageul">
+                            @*LANGUAGES GO HERE*@
+                        </ul>
+                    </div>
                 </div>
-                <div class="ms-Dialog-inner custom-Dialog-inner">
-                    <div class="ms-Grid">
-                        <div id="languagesGrid" class="ms-Grid languagesGrid">
-                            <ul class="languageul">
-                                @*LANGUAGES GO HERE*@
-                            </ul>
-                        </div>
+                <div class="-actions custom-Dialog-actions">
+                    <div class="languagesContinue">
+                        <button id="languageButton" class="-action ms-Button ms-Button--primary" onclick="setLanguage()" disabled>
+                            <span class="ms-Button-label">Continue</span>
+                        </button>
                     </div>
-                    <div class="ms-dialog-actions custom-Dialog-actions">
-                        <div class="languagesContinue">
-                            <button id="languageButton" class="ms-Dialog-action ms-Button ms-Button--primary" onclick="setLanguage()" disabled>
-                                <span class="ms-Button-label">Continue</span>
-                            </button>
-                        </div>
-                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="confirmationModal" class="ms-Dialog custom-Dialog hidden">
+    <div id="confirmationModal" class=" custom-Dialog hidden">
         @Html.Partial("~/Views/SHared/_banner.cshtml")
-        <div class="ms-Dialog-main custom-Dialog-main">
-            <button class="ms-Dialog-button custom-back-button" onclick="showModal('languageModal')">
-                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg"/>
+        <div class=" custom-Dialog-main">
+            <button class="-button custom-back-button" onclick="showModal('languageModal')">
+                <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg" />
                 <span class="ms-font-l">Back</span>
             </button>
-            <div class="ms-Dialog-header">
-                <p class="ms-Dialog-title">Lets make sure you're getting what you need...</p>
-                <hr />
+            <div class="-header">
+                <p class="-title">Lets make sure you're getting what you need...</p>
+
             </div>
-            <div class="ms-Dialog-inner confirmation-Dialog-inner">
+            <div class="-inner confirmation-Dialog-inner">
                 <p class="ms-font-l">Here's what you are about to download. If this is correct please click the  <b>Confirm</b> button to proceed downloading</p>
                 <div class="ms-Grid">
                     <div class="ms-Grid-row">
@@ -132,13 +139,13 @@
                             <p id="versionSpan" class="ms-font-l"></p>
                         </div>
                     </div>
-                   <div class="ms-Grid-row">
+                    <div class="ms-Grid-row">
                         <div class="ms-Grid-col confirmationField">
                             <p class="ms-font-l">Product Package:</p>
                         </div>
-                       <div class="ms-Grid-col confirmationField">
-                           <p id="productSpan" class="ms-font-l"></p>
-                       </div>
+                        <div class="ms-Grid-col confirmationField">
+                            <p id="productSpan" class="ms-font-l"></p>
+                        </div>
                     </div>
                     <div class="ms-Grid-row">
                         <div class="ms-Grid-col confirmationField">
@@ -148,10 +155,10 @@
                             <p id="languageSpan" class="ms-font-l"></p>
                         </div>
                     </div>
-            </div>
-                <div class=" ms-dialog-actions confirmationActions">
+                </div>
+                <div class=" -actions confirmationActions">
                     <div>
-                        <button class="ms-Dialog-action ms-Button ms-Button--primary" onclick="showModal('downloadModal')">
+                        <button class="-action ms-Button ms-Button--primary" onclick="showModal('downloadModal')">
                             <span class="ms-Button-label">Install</span>
                         </button>
                     </div>
@@ -160,28 +167,32 @@
         </div>
     </div>
 
-    <div id="downloadModal" class="ms-Dialog custom-Dialog hidden">
+    <div id="downloadModal" class=" custom-Dialog hidden">
         @Html.Partial("~/Views/SHared/_banner.cshtml")
-        <div class="ms-Dialog-main custom-Dialog-main">
-            <button class="ms-Dialog-button custom-back-button" onclick="showModal('confirmationModal')">
+        <div class=" custom-Dialog-main">
+            <button class="-button custom-back-button" onclick="showModal('confirmationModal')">
                 @*hide first SVG until bug fixed*@
-                <img class="ms-Icon ms-Icon--x hidden"  src="~/Content/imgs/arrow-left-icon.svg"/>
+                <img class="ms-Icon ms-Icon--x hidden" src="~/Content/imgs/arrow-left-icon.svg" />
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/arrow-left-icon.svg" />
                 <span class="ms-font-l">Back</span>
             </button>
-            <div class="ms-Dialog-header">
-                <p class="ms-Dialog-title">You're all set! Your download will begin shortly...</p>
-                <hr />
-                </div>
-            <div class="ms-Dialog-inner custom-Dialog-inner">
-               <p class="ms-font-l">If your download doesn't start after 10 seconds please download Office <a id="directDL" href="#"></a> here.</p>
+            <div class="-header">
+                <p class="-title">You're all set! Your download will begin shortly...</p>
+
+            </div>
+            <div class="-inner custom-Dialog-inner">
+                <p class="ms-font-l">If your download doesn't start after 10 seconds please download Office <a id="directDL" href="#"></a> here.</p>
             </div>
         </div>
     </div>
 
-    <div id="helpModal" class="ms-Dialog custom-Dialog hidden">
+    <div id="helpModal" class=" custom-Dialog hidden">
         @Html.Partial("~/Views/SHared/_banner.cshtml")
         @Html.Partial("~/Views/SHared/_help.cshtml")
+    </div>
+
+    <div id="pageFooter" class="custom-footer">
+        
     </div>
 </body>
 </html>
