@@ -467,6 +467,18 @@ function getVersionDescription(){
     });
 }
 
+function getUserInfo(){
+    $.ajax({
+        type: "GET",
+        url: "/SelfService/UserInfo",
+        success:
+            function (response) {
+                console.log(response);
+            }
+    });
+}
+
+
 $(document).ready(function () {
 
     getCompanyInfo();
@@ -476,6 +488,7 @@ $(document).ready(function () {
     getBuild();
     getVersionDescription();
     getHelp();
+    getUserInfo();
     //searchbox filter
     $("#outerSearchBox").keyup(function (e) {
         searchBoxFilter(e);

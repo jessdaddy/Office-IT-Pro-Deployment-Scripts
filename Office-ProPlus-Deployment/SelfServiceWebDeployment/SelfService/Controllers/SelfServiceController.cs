@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
-using System.IdentityModel.Tokens;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -44,7 +43,6 @@ namespace SelfService.Controllers
                 HttpContext.GetOwinContext()
                     .Authentication.Challenge(new AuthenticationProperties { RedirectUri = "/SelfService" },
                         OpenIdConnectAuthenticationDefaults.AuthenticationType);
-                
             }
 
             return View();
@@ -57,6 +55,44 @@ namespace SelfService.Controllers
         public ActionResult Details(int id)
         {
             return View();
+        }
+
+        //
+        // GET: /SelfService/UserInfo
+
+        public async Task<Object> UserInfo()
+        {
+            string tenantId = ClaimsPrincipal.Current.FindFirst(TenantIdClaimType).Value;
+            AuthenticationResult result = null;
+
+            // Get the access token from the cache
+            string userObjectID =
+                ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")
+                    .Value;
+            AuthenticationContext authContext = new AuthenticationContext(Startup.Authority,
+                new NaiveSessionCache(userObjectID));
+            ClientCredential credential = new ClientCredential(clientId, appKey);
+            result = authContext.AcquireTokenSilent(graphResourceId, credential,
+                new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
+
+            // Call the Graph API manually and retrieve the user's profile.
+            string requestUrl = String.Format(
+                CultureInfo.InvariantCulture,
+                graphUserUrl,
+                HttpUtility.UrlEncode(tenantId));
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
+            HttpResponseMessage response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string responseString = await response.Content.ReadAsStringAsync();
+                var profile = JsonConvert.DeserializeObject(responseString);
+                return profile;
+            }
+
+            return 0;
         }
 
         //
