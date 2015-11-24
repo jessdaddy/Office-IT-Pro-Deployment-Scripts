@@ -3,14 +3,14 @@
 
 	<Company LogoSrc="" Name="Company Name"/>
 	
-  <Versions Optional="true">
+  <!--<Versions Optional="true">
     <Version ID="2016"/>
     <Version ID="2013"/>
   </Versions>
 
   <VersionDescription>
     <Description>Here are the versions of Office 365 ProPlus available to you for installation.</Description>
-  </VersionDescription>
+  </VersionDescription>-->
 
 	<Help>
 		<Item>

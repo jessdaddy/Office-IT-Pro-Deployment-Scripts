@@ -175,48 +175,48 @@ function getLanguages() {
     });
 }
 
-function getVersions() {
+//function getVersions() {
 
-    $.ajax({
-        type: "GET",
-        url: "SelfServiceConfig.xml",
-        datatype: "xml",
-        success:
-            function (xml) {
-                var optional = $(xml).find('Versions').attr('Optional');
-                if (optional === "true") {
-                    $(xml).find('Version').each(function () {
-                        var version = $(this).attr('ID');
-                        if (version === "2013") {
-                            $('#versions').prepend("<li class='squareButton'>\
-                                        <div class='ms-Dialog-action ms-Button ms-Button--primary ms-bgColor-orangeLight version-box' onclick='setVersion(\"2013\")'>\
-                                        <img class='version-img' src='Content/imgs/office-icon-white.png'/>\
-                                        <p class='ms-font-xl ms-fontColor-white version-box-text'>Office 365 ProPlus (2013)</p>\
-                                        </div>\
-                                        </li>");
-                        }
-                        if (version === "2016") {
-                            $('#versions').prepend("<li class='squareButton'>\
-                                    <div class='ms-Dialog-action ms-Button ms-Button--primary version-box' onclick='setVersion(\"2016\")'>\
-                                    <img  class='version-img'  src='Content/imgs/office-icon-white.png'>\
-                                    <p class='ms-font-xl ms-fontColor-white'>Office 365 ProPlus (2016)</p>\
-                                    </div>\
-                                    </li>");
-                        }
-                    });
-                }
-                else
-                {
-                    $('#versions').prepend("<li class='squareButton'>\
-                                    <div class='ms-Dialog-action ms-Button ms-Button--primary version-box' onclick='setVersion(\"365 ProPlus\")'>\
-                                    <img  class='version-img'  src='Content/imgs/office-icon-white.png'/>\
-                                    <p class='ms-font-xl ms-fontColor-white'>Office 365 ProPlus</p>\
-                                    </div>\
-                                    </li>");
-                }
-            }
-    });
-}
+//    $.ajax({
+//        type: "GET",
+//        url: "SelfServiceConfig.xml",
+//        datatype: "xml",
+//        success:
+//            function (xml) {
+//                var optional = $(xml).find('Versions').attr('Optional');
+//                if (optional === "true") {
+//                    $(xml).find('Version').each(function () {
+//                        var version = $(this).attr('ID');
+//                        if (version === "2013") {
+//                            $('#versions').prepend("<li class='squareButton'>\
+//                                        <div class='ms-Dialog-action ms-Button ms-Button--primary ms-bgColor-orangeLight version-box' onclick='setVersion(\"2013\")'>\
+//                                        <img class='version-img' src='Content/imgs/office-icon-white.png'/>\
+//                                        <p class='ms-font-xl ms-fontColor-white version-box-text'>Office 365 ProPlus (2013)</p>\
+//                                        </div>\
+//                                        </li>");
+//                        }
+//                        if (version === "2016") {
+//                            $('#versions').prepend("<li class='squareButton'>\
+//                                    <div class='ms-Dialog-action ms-Button ms-Button--primary version-box' onclick='setVersion(\"2016\")'>\
+//                                    <img  class='version-img'  src='Content/imgs/office-icon-white.png'>\
+//                                    <p class='ms-font-xl ms-fontColor-white'>Office 365 ProPlus (2016)</p>\
+//                                    </div>\
+//                                    </li>");
+//                        }
+//                    });
+//                }
+//                else
+//                {
+//                    $('#versions').prepend("<li class='squareButton'>\
+//                                    <div class='ms-Dialog-action ms-Button ms-Button--primary version-box' onclick='setVersion(\"365 ProPlus\")'>\
+//                                    <img  class='version-img'  src='Content/imgs/office-icon-white.png'/>\
+//                                    <p class='ms-font-xl ms-fontColor-white'>Office 365 ProPlus</p>\
+//                                    </div>\
+//                                    </li>");
+//                }
+//            }
+//    });
+//}
 
 function getBuild() {
 
@@ -454,25 +454,25 @@ function updateAutocomplete() {
     });
 }
 
-function getVersionDescription(){
-    $.ajax({
-        type: "GET",
-        url: "SelfServiceConfig.xml",
-        datatype: "xml",
-        success:
-            function (xml) {
-                var description = $(xml).find('Description').text();
-                $('#versionDescription').text(description);
-            }
-    });
-}
+//function getVersionDescription(){
+//    $.ajax({
+//        type: "GET",
+//        url: "SelfServiceConfig.xml",
+//        datatype: "xml",
+//        success:
+//            function (xml) {
+//                var description = $(xml).find('Description').text();
+//                $('#versionDescription').text(description);
+//            }
+//    });
+//}
 
 $(document).ready(function () {
 
     getCompanyInfo();
     getLocations(addLocationClick);
     getFilters();
-    getVersions();
+    //getVersions();
     getBuild();
     getVersionDescription();
     getHelp();
@@ -481,7 +481,7 @@ $(document).ready(function () {
         searchBoxFilter(e);
     });
 
-    //filter reset
+    //filter reset --REMOVE THIS--
     $('#btn-Reset').click(function () {
         resetFilters();
     })
