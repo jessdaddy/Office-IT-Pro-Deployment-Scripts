@@ -281,7 +281,7 @@ input[type=checkbox]
 }
 
 .custom-SearchBox{
-    min-width:200px;
+    min-width:500px !important;
     width:300%;
     padding-top:0px;
     padding-left:0px
