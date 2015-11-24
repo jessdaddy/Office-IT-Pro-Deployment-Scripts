@@ -216,9 +216,11 @@
         this.sizer = document.createElement('div');
         this.pasting = false;
         this.placeholder = null;
+        this.searchIcon = null; 
+        
 
         if (this.settings.placeholder) {
-            this.placeholder = document.createElement('span');
+            this.placeholder = document.createElement('span');            
         }
 
         if (!this.settings.submitKeys.length) {
@@ -274,6 +276,8 @@
         if (this.placeholder) {
             this.placeholder.style.opacity = 0;
             this.placeholder.classList.add('taggle_placeholder');
+
+            
             this.container.appendChild(this.placeholder);
             _setText(this.placeholder, this.settings.placeholder);
 

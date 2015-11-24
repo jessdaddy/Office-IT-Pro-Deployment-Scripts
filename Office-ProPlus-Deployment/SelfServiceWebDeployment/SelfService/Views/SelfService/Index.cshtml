@@ -9,7 +9,7 @@
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.min.css">
     <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.components.min.css">
-    <link href="~/Content/Site.css" rel="stylesheet" />
+
     <script type="text/javascript" src="./Scripts/vkbeautify.0.99.00.beta.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
     <script src="//code.jquery.com/jquery-2.1.4.js"></script>
@@ -50,17 +50,8 @@
                     <div class="ms-Grid-col">
                         <p class="ms-font-xl"><b>Select a Package</b></p>
                     </div>
-                    <div class="ms-Grid-col">
-                        <div class="ms-SearchBox">
-                            <div id="outerSearchBox" class="ms-SearchBox-field">
-                                <label class="ms-SearchBox-label">
-                                    <i class="ms-SearchBox-icon ms-Icon ms-Icon--search"></i>
-                                    Search
-                                </label>
-                                <button class="ms-SearchBox-closeButton">
-                                    <i class="ms-Icon ms-Icon---x"></i>
-                                </button>
-                            </div>
+                    <div class="ms-Grid-col">                       
+                        <div id="outerSearchBox" class="ms-SearchBox ms-SearchBox-field custom-SearchBox">
                         </div>
                     </div>
                     <div class="ms-Grid-col">
@@ -81,6 +72,9 @@
                 <div class="languages">
                     <ul id="buildsGrid" class="modalList default_list">
                         @*BUILDS GO HERE*@
+                        @*<li style="width:400px;height:200px;box-shadow: 1px 1px 5px #E5E5E5;">
+                            <div style="height:100px;background-color:#F2F2F2;"></div>
+                        </li>*@
                     </ul>
                 </div>
             </div>
@@ -192,7 +186,7 @@
     </div>
 
     <div id="pageFooter" class="custom-footer">
-        
+
     </div>
 </body>
 </html>

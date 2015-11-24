@@ -423,7 +423,7 @@ function prepTags() {
     searchBoxTaggle = new Taggle('outerSearchBox',
         {
             saveOnBlur: true,
-            placeholder: "",
+            placeholder: "Search",
             onTagAdd: function (event, tag) {
                 $(searchBoxTaggle.getInput()).val('');
                 addFilter(tag);
@@ -434,6 +434,7 @@ function prepTags() {
                 applyFilters();
             }
         });
+    $('.taggle_placeholder').prepend('<i class="ms-SearchBox-icon ms-Icon ms-Icon--search"></i>');
 }
 
 function updateAutocomplete() {

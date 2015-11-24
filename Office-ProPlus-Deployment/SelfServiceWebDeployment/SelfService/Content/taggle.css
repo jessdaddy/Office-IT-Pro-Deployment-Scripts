@@ -126,6 +126,8 @@ p a:hover {
   font-weight: 300;
 }
 
+
+
 .taggle_list li {
   float: left;
   display: inline-block;
@@ -190,11 +192,13 @@ p a:hover {
   color: #CCC;
   top: 12px;
   left: 8px;
+  padding-bottom:10px;
   transition: opacity, .25s;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
+
 }
 
 .taggle_input {

@@ -130,13 +130,12 @@ textarea {
     margin-left:5%;
     margin-right:auto;
     margin-top:2%;
-    overflow:hidden;
     overflow-x:hidden;
 }
 
 .custom-Dialog-title{
     color:#0078D7;
-    font-size:xX-large
+    font-size:xx-large
 }
 
 
@@ -166,8 +165,6 @@ textarea {
 .custom-Dialog-inner{
     width:100%;
     height:75%;
-    overflow:auto;
-    z-index:1;
 }
 
 .custom-Dialog-actions{
@@ -356,5 +353,12 @@ input[type=checkbox]
 .custom-footer{
     margin-top:200px;
     padding-top:100px;
-    background-color:#F4F4F4;
+    background-color:#F2F2F2;
+}
+
+.outerSearchBox{
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
 }
