@@ -86,15 +86,12 @@ textarea {
     display:inline-block;
 }
 
-.squareButton-build:hover > button{
-    background-color:#0078D7;
-}
 
-.squareButton-build:hover > button > i,
+/*.squareButton-build:hover > button > i,
 .squareButton-build:hover > button > p,
 .squareButton-build:hover > button > div{
     color:white;
-}
+}*/
 
 .modalListVersion{
     text-align:center;
@@ -368,6 +365,7 @@ input[type=checkbox]
     width:300px;
     height:125px;
     box-shadow:1px 1px 5px #e5e5e5;
+    margin:15px;
 }
 
 .package-inner{
@@ -385,7 +383,8 @@ input[type=checkbox]
     float:right;
     padding:15px;
     font-size:15px;
-    color:#767676
+    color:#767676;
+    cursor:pointer;
 }
 
 .package-label{
@@ -399,10 +398,21 @@ input[type=checkbox]
 .package-bottom{
     float:right;
     padding:10px;
-    cursor:default;
+    cursor:pointer;
 }
 
 .package-download{
     font-size:25px;
     
+}
+
+.package-main:hover > .package-inner,
+.package-main:hover > .package-inner > .package-label,
+.package-main:hover > .package-inner > span > .package-tag{
+    background-color:#0078D7;
+    color:white;
+}
+
+.package-main:hover{
+     box-shadow:1px 1px 5px #0078D7;
 }
