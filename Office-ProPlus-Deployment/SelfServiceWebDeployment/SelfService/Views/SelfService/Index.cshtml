@@ -17,27 +17,6 @@
 
 </head>
 <body>
-    @*<div id="versionModal" class=" custom-Dialog" >
-            @Html.Partial("~/Views/SHared/_banner.cshtml")
-            <div class=" custom-Dialog-main" >
-
-                <div class="-header">
-                    <p class="-title">What version of Office do you Need?</p>
-
-                </div>
-                <div class="-inner custom-Dialog-inner">
-                    <p id="versionDescription" class="ms-font-l"></p>
-                    <div class="-actions custom-Dialog-actions">
-                        <div>
-                            <ul id="versions" class="modalListVersion">
-
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>*@
-
     <div id="banner" class="customBanner">
         <img id="imgBanner" src="~/Content/imgs/temp_banner.png" />
     </div>
@@ -64,29 +43,52 @@
 
             </div>
             <div class="-inner custom-Dialog-inner">
-                <div class="languages">
-                    <ul id="buildsGrid" class="modalList default_list">
+                @*<div class="languages">*@
+                    <div id="buildsGrid" class="ms-Grid default_list">
                         @*BUILDS GO HERE*@
-
-                        @*<li class='package-main'>
-                            <div class='package-inner'>
-                                <span>
-                                    <i class='ms-Icon ms-Icon--people package-people'></i>
-                                    <i class='ms-Icon ms-Icon--tag package-tag'></i>
-                                </span>
-                                <p class='ms-font-xl package-label filter-field'><b>IT Pro</b></p><br /><br />
-                                <p class='ms-font-sm package-label package-label-two'>Texas</p>
+                        @*<li class='package'>
+                            <div class="ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft" style="float:right;width:200px;box-shadow:none;margin-left:-50px;margin-top:-25px;">
+                                <div class="ms-Callout-main">
+                                    <div class="ms-Callout-header" style="background-color: #0078D7;color:white;">
+                                        <p class="ms-Callout-title" style="margin-left:-100px">Tags</p>
+                                        <i class="ms-Icon ms-Icon--x" style="float:right;margin-top:-55px;margin-right:-8px;cursor:pointer"></i>
+                                    </div>
+                                    <div class="ms-Callout-inner" style="max-height:70px;overflow-y:scroll;padding-bottom:10px">
+                                        <div class="ms-Callout-content">
+                                            <ul id="tags-list" style="list-style-type:none;margin-left:-150px;">
+                                                <li>Tag 1</li>
+                                                <li>Tag 2</li>
+                                                <li>Tag 3</li>
+                                                <li>Tag 4</li>
+                                                <li>Tag 1</li>
+                                                <li>Tag 2</li>
+                                                <li>Tag 3</li>
+                                                <li>Tag 4</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <span class='package-bottom'>
-                                <i class='ms-Icon ms-Icon--download package-download'></i>
-                                <a href='#' class='ms-link'>Install</a>
-                            </span>
+                            <div class="package-main">
+                                <div class='package-inner'>
+                                    <span>
+                                        <i class='ms-Icon ms-Icon--people package-people'></i>
+                                        <i class='ms-Icon ms-Icon--tag package-tag'></i>
+                                    </span>
+                                    <p class='ms-font-xl package-label filter-field'><b>IT Pro</b></p><br /><br />
+                                    <p class='ms-font-sm package-label package-label-two'>Texas</p>
+                                </div>
+                                <span class='package-bottom'>
+                                    <i class='ms-Icon ms-Icon--download package-download'></i>
+                                    <a href='#' class='ms-link'>Install</a>
+                                </span>
+                            </div>
                         </li>*@
-                    </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    @*</div>*@
 
     <div id="languageModal" class=" custom-Dialog hidden">
         @Html.Partial("~/Views/SHared/_banner.cshtml")

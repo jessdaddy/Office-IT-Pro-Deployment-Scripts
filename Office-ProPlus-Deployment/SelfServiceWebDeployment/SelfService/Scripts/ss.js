@@ -255,7 +255,7 @@ function getBuild() {
                     //                </button>\
                     //                </li>");
 
-                    $("#buildsGrid").append("<li class='package-main shown" + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
+                    $("#buildsGrid").append("<div class='ms-Grid-col package-main shown" + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
                                                  <div class='package-inner'>\
                                                     <span>\
                                                         <i class='ms-Icon ms-Icon--people package-people'></i>\
@@ -268,7 +268,7 @@ function getBuild() {
                                                     <i class=' ms-Icon ms-Icon--download package-download'></i>\
                                                     <a href='#' class='ms-link'>Install</a>\
                                                 </span>\
-                                            </li>")
+                                            </div>")
 
                 });
             }
@@ -303,35 +303,35 @@ function getLocations(callback) {
     });
 }
 
-function getFilters() {
+//function getFilters() {
 
-    $.ajax({
-        type: "GET",
-        url: "SelfServiceConfig.xml",
-        datatype: "xml",
-        success:
-            function (xml) {
-                $(xml).find('Build').each(function () {
+//    $.ajax({
+//        type: "GET",
+//        url: "SelfServiceConfig.xml",
+//        datatype: "xml",
+//        success:
+//            function (xml) {
+//                $(xml).find('Build').each(function () {
 
-                    var filter = $(this).attr('Filters').split(',');
-                    if (Array.isArray(filter)) {
-                        filter.forEach(function (element, index, array) {
-                            if (availableFilters.indexOf(element.toLocaleLowerCase()) < 0) {
-                                availableFilters.push(element.toLocaleLowerCase());
-                            }
-                        });
-                    } else {
-                        if (filter) {
-                            if (availableFilters.indexOf(filter.toLocaleLowerCase()) < 0) {
-                                availableFilters.push(filter.toLocaleLowerCase());
-                            }
-                        }
-                    }
-                });
-                updateAutocomplete();
-            }
-    });
-}
+//                    var filter = $(this).attr('Filters').split(',');
+//                    if (Array.isArray(filter)) {
+//                        filter.forEach(function (element, index, array) {
+//                            if (availableFilters.indexOf(element.toLocaleLowerCase()) < 0) {
+//                                availableFilters.push(element.toLocaleLowerCase());
+//                            }
+//                        });
+//                    } else {
+//                        if (filter) {
+//                            if (availableFilters.indexOf(filter.toLocaleLowerCase()) < 0) {
+//                                availableFilters.push(filter.toLocaleLowerCase());
+//                            }
+//                        }
+//                    }
+//                });
+//                updateAutocomplete();
+//            }
+//    });
+//}
 
 function getHelp() {
 
@@ -381,10 +381,10 @@ function getCompanyInfo() {
 function searchBoxFilter() {
     var searchTerm = searchBoxTaggle.getInput().value;
     searchTerm = searchTerm.toLocaleLowerCase();
-    $(".squareButton-build").removeClass('search-filter');
+    $(".package-main").removeClass('search-filter');
     removeFilter("search");
     if (searchTerm) {
-        $(".squareButton-build p").each(function () {
+        $(".package-main p").each(function () {
             if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
                 $(this).parent().parent().addClass('search-filter');
             }
@@ -420,11 +420,11 @@ function addFilter(filter) {
 }
 
 function applyFilters() {
-    var filterString = ".squareButton-build";
+    var filterString = ".package-main";
     appliedFilters.forEach(function (element, index, array) {
         filterString += "." + element + "-filter";
     });
-    $(".squareButton-build").addClass("hidden");
+    $(".package-main").addClass("hidden");
     $(filterString).removeClass("hidden").addClass('shown');
 }
 

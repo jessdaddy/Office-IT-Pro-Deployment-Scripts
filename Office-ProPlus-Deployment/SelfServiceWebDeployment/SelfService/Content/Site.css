@@ -75,7 +75,7 @@ textarea {
     margin-bottom: -2px !important;
     cursor:pointer;
 }
-.squareButton, .squareButton-build{
+/*.squareButton, .squareButton-build{
     display:inline-block;
     padding: 10px 10px;
 }
@@ -84,7 +84,7 @@ textarea {
     width:250px;
     height:250px;
     display:inline-block;
-}
+}*/
 
 
 /*.squareButton-build:hover > button > i,
@@ -100,7 +100,7 @@ textarea {
     margin:10% auto;
 }
 
-.modalList{
+.package-list{
     text-align:center;
     list-style-type:none;
 }
@@ -343,9 +343,10 @@ input[type=checkbox]
 
 .custom-header{
     width:90%;
-    margin-left:5%;
+    margin-left:2%;
     margin-right:auto;
     padding-bottom:2%;
+    overflow-x:visible !important;
 }
 
 .custom-footer{
@@ -361,11 +362,21 @@ input[type=checkbox]
     text-decoration: inherit;
 }
 
+.package{
+    width:550px;
+    height:200px;
+    margin-top:25px;
+    display:inline-block;
+    z-index:-1;
+}
 .package-main{
     width:300px;
     height:125px;
     box-shadow:1px 1px 5px #e5e5e5;
     margin:15px;
+    padding-left: 0 !important; 
+    padding-right: 0 !important;
+   
 }
 
 .package-inner{
@@ -381,7 +392,8 @@ input[type=checkbox]
 
 .package-tag{
     float:right;
-    padding:15px;
+    padding-top:15px;
+    padding-right:5px;
     font-size:15px;
     color:#767676;
     cursor:pointer;
