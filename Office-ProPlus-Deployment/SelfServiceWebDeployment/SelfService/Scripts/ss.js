@@ -227,28 +227,49 @@ function getBuild() {
         success:
             function (xml) {
                 $(xml).find('Build').each(function () {
-                    var buildType = $(this).attr('Type');
-                    var filters = $(this).attr('Filters').split(',');
-                    var classString = "";
-                    var textString = "";
-                    if (Array.isArray(filters)) {
-                        filters.forEach(function (element, index, array) {
-                            classString += element.toLocaleLowerCase() + "-filter ";
-                            textString += ", " + element;
-                        });
-                    } else {
-                        if (filters) {
-                            classString += filters + "-filter ";
-                            textString += ", " + filters;
-                        }
-                    }
-                    $("#buildsGrid").append("<li class='squareButton-build shown " + classString + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
-                                    <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")'>\
-                                    <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
-                                    <p class='ms-font-xl filter-field' style='display:block'>" + $(this).attr('Type') + "\
-                                    <br>" + $(this).attr('Location') + textString + "</p>\
-                                    </button>\
-                                    </li>");
+                    //var buildType = $(this).attr('Type');
+                    //var filters = $(this).attr('Filters').split(',');
+                    //var classString = "";
+                    //var textString = "";
+                    //if (Array.isArray(filters)) {
+                    //    filters.forEach(function (element, index, array) {
+                    //        classString += element.toLocaleLowerCase() + "-filter ";
+                    //        textString += ", " + element;
+                    //    });
+                    //} else {
+                    //    if (filters) {
+                    //        classString += filters + "-filter ";
+                    //        textString += ", " + filters;
+                    //    }
+                    //}
+
+                    //console.log(classString);
+                    //console.log(textString);
+                    //console.log("----------");
+
+                    //$("#buildsGrid").append("<li class='squareButton-build shown " + classString + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
+                    //                <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")'>\
+                    //                <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
+                    //                <p class='ms-font-xl filter-field' style='display:block'>" + $(this).attr('Type') + "\
+                    //                <br>" + $(this).attr('Location') + textString + "</p>\
+                    //                </button>\
+                    //                </li>");
+
+                    $("#buildsGrid").append("<li class='package-main shown" + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
+                                                 <div class='package-inner'>\
+                                                    <span>\
+                                                        <i class='ms-Icon ms-Icon--people package-people'></i>\
+                                                        <i class='ms-Icon ms-Icon--tag package-tag'></i>\
+                                                    </span>\
+                                                    <p class='ms-font-xl package-label filter-field'>"+ $(this).attr('Type')+"</b></p><br /><br />\
+                                                    <p class='ms-font-sm package-label package-label-two' >"+$(this).attr('Location')+ "</p>\
+                                                </div>\
+                                                <span class='package-bottom' onclick='setProduct(versionToInstall,\"" + $(this).attr('ID') + ")'>\
+                                                    <i class=' ms-Icon ms-Icon--download package-download'></i>\
+                                                    <a href='#' class='ms-link'>Install</a>\
+                                                </span>\
+                                            </li>")
+
                 });
             }
     });
@@ -472,10 +493,10 @@ $(document).ready(function () {
 
     getCompanyInfo();
     getLocations(addLocationClick);
-    getFilters();
+    //getFilters();
     //getVersions();
     //getVersionDescription();
-    //getBuild();
+    getBuild();
     getHelp();
     //searchbox filter
     $("#outerSearchBox").keyup(function (e) {
