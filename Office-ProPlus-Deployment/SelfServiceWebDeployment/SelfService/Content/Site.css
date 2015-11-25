@@ -367,7 +367,7 @@ input[type=checkbox]
     height:200px;
     margin-top:25px;
     display:inline-block;
-    z-index:-1;
+
 }
 .package-main{
     width:300px;
@@ -376,6 +376,7 @@ input[type=checkbox]
     margin:15px;
     padding-left: 0 !important; 
     padding-right: 0 !important;
+    z-index:1;
    
 }
 
