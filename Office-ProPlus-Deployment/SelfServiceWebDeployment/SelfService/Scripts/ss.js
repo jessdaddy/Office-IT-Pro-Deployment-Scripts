@@ -278,11 +278,11 @@ function getBuild() {
                                                     </div>\
                                                 </div>\
                                             </div>\
-                                            <div class=' package package-main shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
+                                            <div class='package package-main shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
                                                  <div class='package-inner'>\
                                                     <span>\
                                                         <i class='ms-Icon ms-Icon--people package-people'></i>\
-                                                        <i class='ms-Icon ms-Icon--tag package-tag'></i>\
+                                                        <i class='ms-Icon ms-Icon--tag package-tag' onclick='toggleCallout(event)'></i>\
                                                     </span>\
                                                     <p class='ms-font-xl package-label filter-field'>"+ $(this).attr('Type')+"</b></p><br /><br />\
                                                     <p class='ms-font-sm package-label package-label-two' >"+$(this).attr('Location')+ "</p>\
@@ -297,6 +297,10 @@ function getBuild() {
                 });
             }
     });
+}
+
+function toggleCallout(event) {
+    $(event.target).parents().eq(3).find('#custom-callout:first').toggleClass('hidden');
 }
 
 function getLocations(callback) {
@@ -532,7 +536,9 @@ $(document).ready(function () {
     //filter reset --REMOVE THIS--
     $('#btn-Reset').click(function () {
         resetFilters();
-    })
+    });
+
+ 
 
     prepTags();
 });

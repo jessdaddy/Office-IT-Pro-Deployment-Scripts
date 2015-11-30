@@ -437,11 +437,6 @@ input[type=checkbox]
    margin-right: -300px ; 
    margin-left:-10px ;
    margin-bottom:0 ;
-   /*width:300px !important;
-   margin-top:-15px !important;
-   margin-right:0 !important; 
-   margin-left:-10px !important;
-   margin-bottom:0 !important;*/
    z-index:2;
 }
 
