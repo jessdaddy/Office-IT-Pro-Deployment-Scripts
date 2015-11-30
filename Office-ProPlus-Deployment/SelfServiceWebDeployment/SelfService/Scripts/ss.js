@@ -256,15 +256,15 @@ function getBuild() {
                     //                </li>");
 
                     $("#buildsGrid").append("<div class='ms-Grid-col'>\
-                                            <div class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft ' style='float:right;width:200px;box-shadow:none;margin-top:-15px;margin-right:-200px; margin-left:-10px;z-index:2'>\
+                                            <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
                                                 <div class='ms-Callout-main'>\
-                                                    <div class='ms-Callout-header' style='background-color: #0078D7;color:white'>\
+                                                    <div class='ms-Callout-header custom-callout-header'>\
                                                         <p class='ms-Callout-title' >Tags</p>\
-                                                        <i class='ms-Icon ms-Icon--x' style='float:right;margin-top:-55px;margin-right:-8px;cursor:pointer'></i>\
+                                                        <i class='ms-Icon ms-Icon--x custom-x'></i>\
                                                     </div>\
-                                                    <div class='ms-Callout-inner' style='max-height:70px;overflow-y:scroll;padding-bottom:10px'>\
+                                                    <div class='ms-Callout-inner custom-callout-inner'>\
                                                         <div class='ms-Callout-content'>\
-                                                            <ul id='tags-list' style='list-style-type:none;margin-left:-150px;'>\
+                                                            <ul id='tags-list' class='tags-list'>\
                                                                 <li>Tag 1</li>\
                                                                 <li>Tag 2</li>\
                                                                 <li>Tag 3</li>\
@@ -278,7 +278,7 @@ function getBuild() {
                                                     </div>\
                                                 </div>\
                                             </div>\
-                                            <div class=' package package-main shown" + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
+                                            <div class=' package package-main shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
                                                  <div class='package-inner'>\
                                                     <span>\
                                                         <i class='ms-Icon ms-Icon--people package-people'></i>\
@@ -450,6 +450,7 @@ function applyFilters() {
     });
     $(".package-main").addClass("hidden");
     $(".package").addClass("hidden");
+    $("#custom-callout").addClass("hidden");
     $(filterString).removeClass("hidden").addClass('shown');
 }
 

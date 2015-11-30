@@ -429,3 +429,41 @@ input[type=checkbox]
 .package-main:hover{
      box-shadow:1px 1px 5px #0078D7;
 }
+
+#custom-callout{
+   float:right;
+   width:300px ;
+   margin-top:-15px ;
+   margin-right: -300px ; 
+   margin-left:-10px ;
+   margin-bottom:0 ;
+   /*width:300px !important;
+   margin-top:-15px !important;
+   margin-right:0 !important; 
+   margin-left:-10px !important;
+   margin-bottom:0 !important;*/
+   z-index:2;
+}
+
+.custom-callout-header{
+    background-color: #0078D7;
+    color:white
+}
+
+.custom-x{
+    float:right;
+    margin-top:-55px;
+    margin-right:-8px;
+    cursor:pointer
+}
+
+.custom-callout-inner{
+    max-height:70px;
+    overflow-y:scroll;
+    padding-bottom:10px
+}
+
+.tags-list{
+    list-style-type:none;
+    margin-left:-150px;
+}
