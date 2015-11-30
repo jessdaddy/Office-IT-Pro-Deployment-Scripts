@@ -120,6 +120,7 @@ textarea {
 .custom-Dialog {
     height:70%;
     width:100%;
+    z-index:1;
 }
 
 .custom-Dialog-main {
@@ -128,7 +129,7 @@ textarea {
     margin-left:10%;
     margin-right:auto;
     margin-top:2%;
-    overflow-x:hidden;
+
 }
 
 .custom-Dialog-title{
@@ -280,7 +281,7 @@ input[type=checkbox]
 
 .custom-SearchBox{
     min-width:500px !important;
-    width:300%;
+    /*width:300%;*/
     padding-top:0px;
     padding-left:0px
 }
@@ -346,7 +347,7 @@ input[type=checkbox]
     margin-left:2%;
     margin-right:auto;
     padding-bottom:2%;
-    overflow-x:visible !important;
+    z-index:2;
 }
 
 .custom-footer{
@@ -355,12 +356,7 @@ input[type=checkbox]
     background-color:#F2F2F2;
 }
 
-.outerSearchBox{
-    font-family: FontAwesome;
-    font-style: normal;
-    font-weight: normal;
-    text-decoration: inherit;
-}
+
 
 .package{
     width:550px;

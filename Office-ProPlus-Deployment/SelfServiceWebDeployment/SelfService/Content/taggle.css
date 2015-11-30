@@ -383,7 +383,8 @@ textarea.input {
 .ui-autocomplete {
   max-height: 200px;
   overflow: auto;
-  width: 99% !important;
+  width: 485px !important;
+  margin-top:6px !important;
 }
 
 .custom.textarea {

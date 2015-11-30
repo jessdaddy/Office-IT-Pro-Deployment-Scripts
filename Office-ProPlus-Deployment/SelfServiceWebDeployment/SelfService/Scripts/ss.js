@@ -233,10 +233,7 @@ function getBuild() {
                     var textString = "";
                     if (Array.isArray(filters)) {
                         filters.forEach(function (element, index, array) {
-                            classString = "";
-                            textString = "";
-                            
-                           classString +=  element.toLocaleLowerCase() + "-filter ";
+                            classString +=  element.toLocaleLowerCase() + "-filter ";
                             textString += "<li class='"+classString  + "'>" + element + "</li>";
                         });
                     } else {
@@ -245,16 +242,6 @@ function getBuild() {
                             textString += "<li class='"+classString  + "'>" + filters + "</li>";
                         }
                     }
-
-         
-                    console.log(classString);
-                    //$("#buildsGrid").append("<li class='squareButton-build shown " + classString + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
-                    //                <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")'>\
-                    //                <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
-                    //                <p class='ms-font-xl filter-field' style='display:block'>" + $(this).attr('Type') + "\
-                    //                <br>" + $(this).attr('Location') + textString + "</p>\
-                    //                </button>\
-                    //                </li>");
 
                     $("#buildsGrid").append("<div class='ms-Grid-col package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter "+ classString+"'>\
                                             <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
@@ -422,7 +409,6 @@ function searchBoxFilter() {
         $(".tags-list li").each(function () {
 
             if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
-                console.log($(this).text());
                 $(this).parent().parent().parent().parent().parent().parent().addClass('search-filter');
             }
         })
