@@ -233,7 +233,10 @@ function getBuild() {
                     var textString = "";
                     if (Array.isArray(filters)) {
                         filters.forEach(function (element, index, array) {
-                            classString += element.toLocaleLowerCase() + "-filter ";
+                            classString = "";
+                            textString = "";
+                            
+                           classString +=  element.toLocaleLowerCase() + "-filter ";
                             textString += "<li class='"+classString  + "'>" + element + "</li>";
                         });
                     } else {
@@ -243,9 +246,7 @@ function getBuild() {
                         }
                     }
 
-                    console.log(classString);
-                    console.log(textString);
-                    console.log("----------");
+         
 
                     //$("#buildsGrid").append("<li class='squareButton-build shown " + classString + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
                     //                <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")'>\
@@ -255,7 +256,7 @@ function getBuild() {
                     //                </button>\
                     //                </li>");
 
-                    $("#buildsGrid").append("<div class='ms-Grid-col'>\
+                    $("#buildsGrid").append("<div class='ms-Grid-col package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
                                             <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
                                                 <div class='ms-Callout-main'>\
                                                     <div class='ms-Callout-header custom-callout-header'>\
@@ -271,7 +272,7 @@ function getBuild() {
                                                     </div>\
                                                 </div>\
                                             </div>\
-                                            <div class='package package-main shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
+                                            <div class='package package-main'>\
                                                  <div class='package-inner'>\
                                                     <span>\
                                                         <i class='ms-Icon ms-Icon--people package-people'></i>\
@@ -407,14 +408,16 @@ function getCompanyInfo() {
 function searchBoxFilter() {
     var searchTerm = searchBoxTaggle.getInput().value;
     searchTerm = searchTerm.toLocaleLowerCase();
-    $(".package-main").removeClass('search-filter');
+    $(".package-group").removeClass('search-filter');
     removeFilter("search");
     if (searchTerm) {
+
         $(".package-main p").each(function () {
             if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
-                $(this).parent().parent().addClass('search-filter');
+                $(this).parent().parent().parent().addClass('search-filter');
             }
         })
+
         addFilter("search");
     }
     applyFilters();
@@ -446,13 +449,13 @@ function addFilter(filter) {
 }
 
 function applyFilters() {
-    var filterString = ".package-main";
+    var filterString = ".package-group";
     appliedFilters.forEach(function (element, index, array) {
         filterString += "." + element + "-filter";
     });
-    $(".package-main").addClass("hidden");
-    $(".package").addClass("hidden");
-    $("#custom-callout").addClass("hidden");
+
+  
+    $(".package-group").addClass("hidden");
     $(filterString).removeClass("hidden").addClass('shown');
 }
 
@@ -521,7 +524,7 @@ $(document).ready(function () {
 
     getCompanyInfo();
     getLocations(addLocationClick);
-    //getFilters();
+    getFilters();
     //getVersions();
     //getVersionDescription();
     getBuild();
