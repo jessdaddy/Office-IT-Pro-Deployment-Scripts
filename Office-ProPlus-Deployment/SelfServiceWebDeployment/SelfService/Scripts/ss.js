@@ -247,7 +247,7 @@ function getBuild() {
                     }
 
          
-
+                    console.log(classString);
                     //$("#buildsGrid").append("<li class='squareButton-build shown " + classString + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
                     //                <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")'>\
                     //                <i class='ms-Icon ms-Icon--people' style='font-size:125px'></i>\
@@ -256,7 +256,7 @@ function getBuild() {
                     //                </button>\
                     //                </li>");
 
-                    $("#buildsGrid").append("<div class='ms-Grid-col package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
+                    $("#buildsGrid").append("<div class='ms-Grid-col package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter "+ classString+"'>\
                                             <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
                                                 <div class='ms-Callout-main'>\
                                                     <div class='ms-Callout-header custom-callout-header'>\
@@ -418,6 +418,16 @@ function searchBoxFilter() {
             }
         })
 
+
+        $(".tags-list li").each(function () {
+
+            if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
+                console.log($(this).text());
+                $(this).parent().parent().parent().parent().parent().parent().addClass('search-filter');
+            }
+        })
+       
+
         addFilter("search");
     }
     applyFilters();
@@ -454,7 +464,7 @@ function applyFilters() {
         filterString += "." + element + "-filter";
     });
 
-  
+    
     $(".package-group").addClass("hidden");
     $(filterString).removeClass("hidden").addClass('shown');
 }
