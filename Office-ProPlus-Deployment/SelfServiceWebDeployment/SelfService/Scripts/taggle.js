@@ -184,7 +184,7 @@
 
     function _setText(el, text) {
         if (window.attachEvent && !window.addEventListener) { // <= IE8
-            el.innerText = text;
+            el.text(text);
         }
         else {
             el.textContent = text;
