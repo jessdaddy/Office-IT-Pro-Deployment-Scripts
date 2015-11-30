@@ -227,25 +227,25 @@ function getBuild() {
         success:
             function (xml) {
                 $(xml).find('Build').each(function () {
-                    //var buildType = $(this).attr('Type');
-                    //var filters = $(this).attr('Filters').split(',');
-                    //var classString = "";
-                    //var textString = "";
-                    //if (Array.isArray(filters)) {
-                    //    filters.forEach(function (element, index, array) {
-                    //        classString += element.toLocaleLowerCase() + "-filter ";
-                    //        textString += ", " + element;
-                    //    });
-                    //} else {
-                    //    if (filters) {
-                    //        classString += filters + "-filter ";
-                    //        textString += ", " + filters;
-                    //    }
-                    //}
+                    var buildType = $(this).attr('Type');
+                    var filters = $(this).attr('Filters').split(',');
+                    var classString = "";
+                    var textString = "";
+                    if (Array.isArray(filters)) {
+                        filters.forEach(function (element, index, array) {
+                            classString += element.toLocaleLowerCase() + "-filter ";
+                            textString += "<li class='"+classString  + "'>" + element + "</li>";
+                        });
+                    } else {
+                        if (filters) {
+                            classString += filters + "-filter ";
+                            textString += "<li class='"+classString  + "'>" + filters + "</li>";
+                        }
+                    }
 
-                    //console.log(classString);
-                    //console.log(textString);
-                    //console.log("----------");
+                    console.log(classString);
+                    console.log(textString);
+                    console.log("----------");
 
                     //$("#buildsGrid").append("<li class='squareButton-build shown " + classString + $(this).attr('Location').toLocaleLowerCase() + "-filter'>\
                     //                <button class='ms-Dialog-action ms-Button' onclick='setProduct(versionToInstall,\""+ $(this).attr('ID') + "\")'>\
@@ -264,15 +264,8 @@ function getBuild() {
                                                     </div>\
                                                     <div class='ms-Callout-inner custom-callout-inner'>\
                                                         <div class='ms-Callout-content'>\
-                                                            <ul id='tags-list' class='tags-list'>\
-                                                                <li>Tag 1</li>\
-                                                                <li>Tag 2</li>\
-                                                                <li>Tag 3</li>\
-                                                                <li>Tag 4</li>\
-                                                                <li>Tag 1</li>\
-                                                                <li>Tag 2</li>\
-                                                                <li>Tag 3</li>\
-                                                                <li>Tag 4</li>\
+                                                            <ul id='tags-list' class='tags-list'>"
+                                                            +textString+"\
                                                             </ul>\
                                                         </div>\
                                                     </div>\
@@ -336,35 +329,35 @@ function getLocations(callback) {
     });
 }
 
-//function getFilters() {
+function getFilters() {
 
-//    $.ajax({
-//        type: "GET",
-//        url: "SelfServiceConfig.xml",
-//        datatype: "xml",
-//        success:
-//            function (xml) {
-//                $(xml).find('Build').each(function () {
+    $.ajax({
+        type: "GET",
+        url: "SelfServiceConfig.xml",
+        datatype: "xml",
+        success:
+            function (xml) {
+                $(xml).find('Build').each(function () {
 
-//                    var filter = $(this).attr('Filters').split(',');
-//                    if (Array.isArray(filter)) {
-//                        filter.forEach(function (element, index, array) {
-//                            if (availableFilters.indexOf(element.toLocaleLowerCase()) < 0) {
-//                                availableFilters.push(element.toLocaleLowerCase());
-//                            }
-//                        });
-//                    } else {
-//                        if (filter) {
-//                            if (availableFilters.indexOf(filter.toLocaleLowerCase()) < 0) {
-//                                availableFilters.push(filter.toLocaleLowerCase());
-//                            }
-//                        }
-//                    }
-//                });
-//                updateAutocomplete();
-//            }
-//    });
-//}
+                    var filter = $(this).attr('Filters').split(',');
+                    if (Array.isArray(filter)) {
+                        filter.forEach(function (element, index, array) {
+                            if (availableFilters.indexOf(element.toLocaleLowerCase()) < 0) {
+                                availableFilters.push(element.toLocaleLowerCase());
+                            }
+                        });
+                    } else {
+                        if (filter) {
+                            if (availableFilters.indexOf(filter.toLocaleLowerCase()) < 0) {
+                                availableFilters.push(filter.toLocaleLowerCase());
+                            }
+                        }
+                    }
+                });
+                updateAutocomplete();
+            }
+    });
+}
 
 function getHelp() {
 

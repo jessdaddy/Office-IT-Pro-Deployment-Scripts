@@ -125,7 +125,7 @@ textarea {
 .custom-Dialog-main {
     height:90%;
     width:90%;
-    margin-left:5%;
+    margin-left:10%;
     margin-right:auto;
     margin-top:2%;
     overflow-x:hidden;
@@ -432,12 +432,11 @@ input[type=checkbox]
 
 #custom-callout{
    float:right;
-   width:300px ;
+   width:300px;
    margin-top:-15px ;
    margin-right: -300px ; 
    margin-left:-10px ;
    margin-bottom:0 ;
-   z-index:2;
 }
 
 .custom-callout-header{
@@ -455,10 +454,11 @@ input[type=checkbox]
 .custom-callout-inner{
     max-height:70px;
     overflow-y:scroll;
-    padding-bottom:10px
+    padding-bottom:10px;
 }
 
 .tags-list{
     list-style-type:none;
-    margin-left:-150px;
+    margin-left:-50px;
+    color:black;
 }
