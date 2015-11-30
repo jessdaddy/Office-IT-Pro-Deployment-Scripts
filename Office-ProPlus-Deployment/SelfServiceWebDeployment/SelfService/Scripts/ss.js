@@ -260,7 +260,7 @@ function getBuild() {
                                                 <div class='ms-Callout-main'>\
                                                     <div class='ms-Callout-header custom-callout-header'>\
                                                         <p class='ms-Callout-title' >Tags</p>\
-                                                        <i class='ms-Icon ms-Icon--x custom-x'></i>\
+                                                        <i class='ms-Icon ms-Icon--x custom-x' onclick='closeCallout(event)'></i>\
                                                     </div>\
                                                     <div class='ms-Callout-inner custom-callout-inner'>\
                                                         <div class='ms-Callout-content'>\
@@ -300,7 +300,12 @@ function getBuild() {
 }
 
 function toggleCallout(event) {
-    $(event.target).parents().eq(3).find('#custom-callout:first').toggleClass('hidden');
+    $(event.target).parents().eq(3).find('#custom-callout').toggleClass('hidden');
+}
+
+function closeCallout(event)
+{
+    $(event.target).parents().eq(3).find('#custom-callout').addClass('hidden');
 }
 
 function getLocations(callback) {
