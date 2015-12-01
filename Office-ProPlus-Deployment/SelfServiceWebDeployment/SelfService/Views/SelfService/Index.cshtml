@@ -29,7 +29,7 @@
                     <div class="ms-Grid-col">
                         <p class="ms-font-xl"><b>Select a Package</b></p>
                     </div>
-                    <div class="ms-Grid-col">                       
+                    <div class="ms-Grid-col">
                         <div id="outerSearchBox" class="ms-SearchBox ms-SearchBox-field custom-SearchBox">
                         </div>
                     </div>
@@ -40,55 +40,23 @@
                         </div>
                     </div>
                 </div>
-
-            </div>
-            <div class="-inner custom-Dialog-inner">
-                @*<div class="languages">*@
-                    <div id="buildsGrid" class="ms-Grid">
-                        @*BUILDS GO HERE*@
-                        @*<li class='package'>
-                            <div class="ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft" style="float:right;width:200px;box-shadow:none;margin-left:-50px;margin-top:-25px;">
-                                <div class="ms-Callout-main">
-                                    <div class="ms-Callout-header" style="background-color: #0078D7;color:white;">
-                                        <p class="ms-Callout-title" style="margin-left:-100px">Tags</p>
-                                        <i class="ms-Icon ms-Icon--x" style="float:right;margin-top:-55px;margin-right:-8px;cursor:pointer"></i>
-                                    </div>
-                                    <div class="ms-Callout-inner" style="max-height:70px;overflow-y:scroll;padding-bottom:10px">
-                                        <div class="ms-Callout-content">
-                                            <ul id="tags-list" style="list-style-type:none;margin-left:-150px;">
-                                                <li>Tag 1</li>
-                                                <li>Tag 2</li>
-                                                <li>Tag 3</li>
-                                                <li>Tag 4</li>
-                                                <li>Tag 1</li>
-                                                <li>Tag 2</li>
-                                                <li>Tag 3</li>
-                                                <li>Tag 4</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="package-main">
-                                <div class='package-inner'>
-                                    <span>
-                                        <i class='ms-Icon ms-Icon--people package-people'></i>
-                                        <i class='ms-Icon ms-Icon--tag package-tag'></i>
-                                    </span>
-                                    <p class='ms-font-xl package-label filter-field'><b>IT Pro</b></p><br /><br />
-                                    <p class='ms-font-sm package-label package-label-two'>Texas</p>
-                                </div>
-                                <span class='package-bottom'>
-                                    <i class='ms-Icon ms-Icon--download package-download'></i>
-                                    <a href='#' class='ms-link'>Install</a>
-                                </span>
-                            </div>
-                        </li>*@
+                <div class="display-controls">
+                    <div class="ms-Grid-col display-control-outer">
+                        <i class="ms-Icon ms-Icon--tile display-control-icon"></i>
+                    </div>
+                    <div class="ms-Grid-col display-control-outer">
+                        <i class="ms-Icon ms-Icon--listBullets  display-control-icon"></i>
                     </div>
                 </div>
             </div>
+            <div class="-inner custom-Dialog-inner">
+                <div id="buildsGrid" class="ms-Grid">
+                    @*BUILDS GO HERE*@
+                </div>
+            </div>
         </div>
-    @*</div>*@
+    </div>
+
 
     <div id="languageModal" class=" custom-Dialog hidden">
         @Html.Partial("~/Views/SHared/_banner.cshtml")
@@ -195,7 +163,7 @@
     </div>
 
     <div id="pageFooter" class="custom-footer">
-
+     
     </div>
 </body>
 </html>

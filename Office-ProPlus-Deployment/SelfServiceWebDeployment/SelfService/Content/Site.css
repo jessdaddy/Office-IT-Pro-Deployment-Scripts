@@ -347,13 +347,14 @@ input[type=checkbox]
     margin-left:2%;
     margin-right:auto;
     padding-bottom:2%;
-    z-index:2;
 }
 
 .custom-footer{
     margin-top:200px;
     padding-top:100px;
     background-color:#F2F2F2;
+    text-align:right;
+  
 }
 
 
@@ -417,7 +418,8 @@ input[type=checkbox]
 
 .package-main:hover > .package-inner,
 .package-main:hover > .package-inner > .package-label,
-.package-main:hover > .package-inner > span > .package-tag{
+.package-main:hover > .package-inner > span > .package-tag,
+.display-control-outer:hover{
     background-color:#0078D7;
     color:white;
 }
@@ -457,4 +459,24 @@ input[type=checkbox]
     list-style-type:none;
     margin-left:-50px;
     color:black;
+}
+
+.display-controls{
+    width:100%;
+    padding-left:84%;
+}
+
+.display-control-outer{
+    height:30px;
+    width:30px;
+    padding:7.5px;
+    background-color:#EFF6FC;
+    color:#666666;
+    cursor:pointer;
+}
+
+.display-control-icon{
+    cursor:pointer;
+    font-size:15px;
+   
 }
