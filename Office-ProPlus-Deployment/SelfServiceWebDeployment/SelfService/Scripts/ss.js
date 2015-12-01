@@ -228,12 +228,15 @@ function getBuild() {
         success:
             function (xml) {
 
-                $("#buildsTable").append("<div class='ms-Table-row'>\
+                if (listView === 1)
+                {
+                    $("#buildsTable").append("<div class='ms-Table-row'>\
                             <span class='ms-Table-cell custom-cell' style='padding-left:4%'>Name</span>\
                             <span class='ms-Table-cell custom-cell' style=''>Location</span>\
                             <span class='ms-Table-cell custom-cell'>Tags</span>\
                             <span class='ms-Table-cell custom-cell'></span>\
                             </div>")
+                }
 
                 $(xml).find('Build').each(function () {
                     var buildType = $(this).attr('Type');
