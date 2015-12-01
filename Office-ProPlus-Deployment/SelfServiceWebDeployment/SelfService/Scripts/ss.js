@@ -87,6 +87,7 @@ var availableFilters = [];
 var searchBoxTaggle;
 var currentLocation;
 var currentFilter;
+var listView = 0;
 
 var appliedFilters = [];
 var previousSearch = "";
@@ -226,55 +227,91 @@ function getBuild() {
         datatype: "xml",
         success:
             function (xml) {
+
+                $("#buildsTable").append("<div class='ms-Table-row'>\
+                            <span class='ms-Table-cell custom-cell' style='padding-left:4%'>Name</span>\
+                            <span class='ms-Table-cell custom-cell' style=''>Location</span>\
+                            <span class='ms-Table-cell custom-cell'>Tags</span>\
+                            <span class='ms-Table-cell custom-cell'></span>\
+                            </div>")
+
                 $(xml).find('Build').each(function () {
                     var buildType = $(this).attr('Type');
                     var filters = $(this).attr('Filters').split(',');
                     var classString = "";
                     var textString = "";
-                    if (Array.isArray(filters)) {
-                        filters.forEach(function (element, index, array) {
-                            classString +=  element.toLocaleLowerCase() + "-filter ";
-                            textString += "<li class='"+classString  + "'>" + element + "</li>";
-                        });
-                    } else {
-                        if (filters) {
-                            classString += filters + "-filter ";
-                            textString += "<li class='"+classString  + "'>" + filters + "</li>";
-                        }
-                    }
 
-                    $("#buildsGrid").append("<div class='ms-Grid-col package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter "+ classString+"'>\
-                                            <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
-                                                <div class='ms-Callout-main'>\
-                                                    <div class='ms-Callout-header custom-callout-header'>\
-                                                        <p class='ms-Callout-title' >Tags</p>\
-                                                        <i class='ms-Icon ms-Icon--x custom-x' onclick='closeCallout(event)'></i>\
-                                                    </div>\
-                                                    <div class='ms-Callout-inner custom-callout-inner'>\
-                                                        <div class='ms-Callout-content'>\
-                                                            <ul id='tags-list' class='tags-list'>"
-                                                            +textString+"\
-                                                            </ul>\
+                    if (listView === 1)
+                    {
+                       
+
+                        if (Array.isArray(filters)) {
+                            filters.forEach(function (element, index, array) {
+                                classString += element.toLocaleLowerCase() + "-filter ";
+                                textString +=   " "+element + ",";
+                            });
+                        } else {
+                            if (filters) {
+                                classString += filters + "-filter ";
+                                textString += " " + element + ",";
+                            }
+                        }
+
+                       
+                        $("#buildsTable").append("<div class='ms-Table-row custom-table-row shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
+                            <span class='ms-Table-cell ms-font-l custom-first-cell custom-cell filter-field'><i class='ms-Icon ms-Icon--people package-people-table'></i>"+ $(this).attr('Type') + "</span>\
+                            <span class='ms-Table-cell custom-cell'>"+ $(this).attr('Location') + "</span>\
+                            <span class='ms-Table-cell custom-cell'><i class='ms-Icon ms-Icon--tag custom-table-tag'></i>"+ textString + "</span>\
+                            <span class='ms-Table-cell custom-cell custom-last-cell'><i class='ms-Icon ms-Icon--download custom-table-tag' ></i><a class='ms-link' href='#'>Install</a></span>\
+                        </div>")
+
+                    }
+                    else
+                    {
+                        if (Array.isArray(filters)) {
+                            filters.forEach(function (element, index, array) {
+                                classString += element.toLocaleLowerCase() + "-filter ";
+                                textString += "<li class='" + classString + "'>" + element + "</li>";
+                            });
+                        } else {
+                            if (filters) {
+                                classString += filters + "-filter ";
+                                textString += "<li class='" + classString + "'>" + filters + "</li>";
+                            }
+                        }
+
+                        $("#buildsGrid").append("<div class='ms-Grid-col package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter "+ classString+"'>\
+                                                <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
+                                                    <div class='ms-Callout-main'>\
+                                                        <div class='ms-Callout-header custom-callout-header'>\
+                                                            <p class='ms-Callout-title' >Tags</p>\
+                                                            <i class='ms-Icon ms-Icon--x custom-x' onclick='closeCallout(event)'></i>\
+                                                        </div>\
+                                                        <div class='ms-Callout-inner custom-callout-inner'>\
+                                                            <div class='ms-Callout-content'>\
+                                                                <ul id='tags-list' class='tags-list'>"
+                                                                +textString+"\
+                                                                </ul>\
+                                                            </div>\
                                                         </div>\
                                                     </div>\
                                                 </div>\
-                                            </div>\
-                                            <div class='package package-main'>\
-                                                 <div class='package-inner'>\
-                                                    <span>\
-                                                        <i class='ms-Icon ms-Icon--people package-people'></i>\
-                                                        <i class='ms-Icon ms-Icon--tag package-tag' onclick='toggleCallout(event)'></i>\
+                                                <div class='package package-main'>\
+                                                     <div class='package-inner'>\
+                                                        <span>\
+                                                            <i class='ms-Icon ms-Icon--people package-people'></i>\
+                                                            <i class='ms-Icon ms-Icon--tag package-tag' onclick='toggleCallout(event)'></i>\
+                                                        </span>\
+                                                        <p class='ms-font-xl package-label filter-field'>"+ $(this).attr('Type')+"</b></p><br /><br />\
+                                                        <p class='ms-font-sm package-label package-label-two' >"+$(this).attr('Location')+ "</p>\
+                                                    </div>\
+                                                    <span class='package-bottom' onclick='setProduct(versionToInstall,\"" + $(this).attr('ID') + ")'>\
+                                                        <i class=' ms-Icon ms-Icon--download package-download'></i>\
+                                                        <a href='#' class='ms-link'>Install</a>\
                                                     </span>\
-                                                    <p class='ms-font-xl package-label filter-field'>"+ $(this).attr('Type')+"</b></p><br /><br />\
-                                                    <p class='ms-font-sm package-label package-label-two' >"+$(this).attr('Location')+ "</p>\
                                                 </div>\
-                                                <span class='package-bottom' onclick='setProduct(versionToInstall,\"" + $(this).attr('ID') + ")'>\
-                                                    <i class=' ms-Icon ms-Icon--download package-download'></i>\
-                                                    <a href='#' class='ms-link'>Install</a>\
-                                                </span>\
-                                            </div>\
-                                            </div>")
-
+                                                </div>")
+                    }
                 });
             }
     });
@@ -503,6 +540,21 @@ function updateAutocomplete() {
     });
 }
 
+function isListView() {
+    listView = 1;
+    $('#buildsTable').empty();
+    $('#buildsGrid').empty();
+    getBuild(); 
+
+}
+
+function isTileView() {
+    listView = 0;
+    $('#buildsTable').empty();
+    $('#buildsGrid').empty();
+    getBuild();
+}
+
 //function getVersionDescription(){
 //    $.ajax({
 //        type: "GET",
@@ -523,7 +575,7 @@ $(document).ready(function () {
     getFilters();
     //getVersions();
     //getVersionDescription();
-    //getBuild();
+    getBuild();
     getHelp();
     //searchbox filter
     $("#outerSearchBox").keyup(function (e) {
