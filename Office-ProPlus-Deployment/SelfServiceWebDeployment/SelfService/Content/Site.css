@@ -211,8 +211,9 @@ textarea {
 .confirmationActions{
     width:100%; 
     height: 100%;
+    margin:10px;
     margin-right:auto;
-    margin-left:auto
+    margin-left:10%;
 }
 
 .confirmationActions > div{
@@ -226,16 +227,21 @@ textarea {
     width:20%;
     height:50px;
     margin-left:30%;
+    margin-bottom:40px;
     margin-right:auto;
 }
 
+.confirmationActions >
+
 .confirmation-Dialog-inner{
-    width:80%;
     height:auto;
-    margin-left:20%;
-    margin-right:auto; 
+   
 }
 
+
+.confirmationField {
+    margin-left:3.5%;
+}
 .hidden{
     display:none;
 }
@@ -426,8 +432,10 @@ input[type=checkbox]
 }
 
 .custom-footer{
-    margin-top:200px;
-    padding-top:100px;
+    height:100px;
+    margin-top:30%;
+    bottom:0;
+    left:0;
     background-color:#F2F2F2;
     text-align:right;
   
@@ -557,8 +565,6 @@ input[type=checkbox]
    
 }
 
-
-
 .package-people-table{
     font-size:25px;
     margin-left:25px;
@@ -573,6 +579,7 @@ input[type=checkbox]
       border-bottom: 2px solid #eaeaea;
 
 }
+
 .custom-last-cell{
    width:8%;
 }
@@ -584,6 +591,7 @@ input[type=checkbox]
 .download-link{
     padding-bottom:0;
 }
+
 .custom-table-download{
     padding-bottom:0;
 }
@@ -601,4 +609,20 @@ input[type=checkbox]
 .languages-button{
     height:50px !important;
     width:150px;
+}
+
+.confirmation-information{
+
+    width:825px;
+    margin-left:17%;
+    margin-right:2%;
+    background-color:#F4F4F4;
+}
+
+.confirmation-Dialog-inner > p
+{
+    width:800px;
+    height:100%;
+    margin-left:20%;
+    margin-right:5%;
 }

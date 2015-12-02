@@ -120,12 +120,12 @@
                 <span class="ms-font-l ms-fontWeight-regular">Back</span>
             </button>
             <div class="-header">
-                <p class="-title">Lets make sure you're getting what you need...</p>
-
+                <p class="-title ms-font-xl">Lets make sure you're getting what you need...</p>
+                <hr />
             </div>
             <div class="-inner confirmation-Dialog-inner">
-                <p class="ms-font-l">Here's what you are about to download. If this is correct please click the  <b>Confirm</b> button to proceed downloading</p>
-                <div class="ms-Grid">
+                <p class="ms-font-m-plus">Here's what you are about to download. If this is correct please click the  <b>Install</b> button to proceed downloading</p>
+                <div class="confirmation-information">
                     <div class="ms-Grid-row">
                         <div class="ms-Grid-col confirmationField">
                             <p class="ms-font-l">Office Version:</p>
@@ -150,14 +150,14 @@
                             <p id="languageSpan" class="ms-font-l"></p>
                         </div>
                     </div>
-                </div>
-                <div class=" -actions confirmationActions">
-                    <div>
-                        <button class="-action ms-Button ms-Button--primary" onclick="showModal('downloadModal')">
-                            <span class="ms-Button-label">Install</span>
-                        </button>
+                    <div class=" -actions confirmationActions">
+                        <div>
+                            <button class="-action ms-Button ms-Button--primary" onclick="showModal('downloadModal')">
+                                <span class="ms-Button-label">Install</span>
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </div>               
             </div>
         </div>
     </div>
@@ -184,7 +184,7 @@
         @Html.Partial("~/Views/SHared/_help.cshtml")
     </div>
 
-    <div id="pageFooter" class="custom-footer">
+    <div id="pageFooter" class="custom-footer footer">
 
     </div>
 </body>
