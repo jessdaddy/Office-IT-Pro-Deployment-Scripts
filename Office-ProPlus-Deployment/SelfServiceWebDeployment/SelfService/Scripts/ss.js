@@ -468,7 +468,8 @@ function searchBoxFilter() {
 
             $(".custom-table-row span").each(function () {
                 if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
-                    $(this).parent().parent().addClass('search-filter');
+                    console.log($(this).text().toLocaleLowerCase());
+                    $(this).parent().addClass('search-filter');
                 }
             })
 

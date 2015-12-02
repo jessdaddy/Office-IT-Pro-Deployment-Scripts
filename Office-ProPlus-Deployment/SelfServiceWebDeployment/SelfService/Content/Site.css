@@ -6,62 +6,6 @@
     width:100%;
 }
 
-header, footer, nav, section {
-    display: block;
-}
-
-
-/* Styles for basic forms
------------------------------------------------------------*/
-fieldset {
-    border: 1px solid #ddd;
-    padding: 0 1.4em 1.4em 1.4em;
-    margin: 0 0 1.5em 0;
-}
-
-legend {
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-textarea {
-    min-height: 75px;
-}
-
-.editor-label {
-    margin: 1em 0 0 0;
-}
-
-.editor-field {
-    margin: 0.5em 0 0 0;
-}
-
-
-/* Styles for validation helpers
------------------------------------------------------------*/
-.field-validation-error {
-    color: #f00;
-}
-
-.field-validation-valid {
-    display: none;
-}
-
-.input-validation-error {
-    border: 1px solid #f00;
-    background-color: #fee;
-}
-
-.validation-summary-errors {
-    font-weight: bold;
-    color: #f00;
-}
-
-.validation-summary-valid {
-    display: none;
-}
-
-
 /*Moving Inline css to custom classes*/ 
 .checkboxLabel {
     display:inline;
@@ -75,48 +19,8 @@ textarea {
     margin-bottom: -2px !important;
     cursor:pointer;
 }
-/*.squareButton, .squareButton-build{
-    display:inline-block;
-    padding: 10px 10px;
-}
-
-.squareButton-build button{
-    width:250px;
-    height:250px;
-    display:inline-block;
-}*/
 
 
-/*.squareButton-build:hover > button > i,
-.squareButton-build:hover > button > p,
-.squareButton-build:hover > button > div{
-    color:white;
-}*/
-
-.modalListVersion{
-    text-align:center;
-    width:80%;
-    height:80%;
-    margin:10% auto;
-}
-
-.package-list{
-    text-align:center;
-    list-style-type:none;
-}
-
-/*.ms-Button--primary.ms-bgColor-orangeLight{
-    background-color:orange;
-    border-color:orange;
-}
-.ms-bgColor-orangeLight.ms-Button--primary.ms-Button:focus{
-    background-color:#ff8c00;
-    border-color:#ff8c00;
-}
-.ms-bgColor-orangeLight.ms-Button--primary.ms-Button:hover{
-    background-color:#ff8c00;
-    border-color:#ff8c00;
-}*/
 .custom-Dialog {
     height:70%;
     width:100%;
@@ -132,10 +36,6 @@ textarea {
 
 }
 
-.custom-Dialog-title{
-    color:#0078D7;
-    font-size:xx-large
-}
 
 
 .custom-back-button{
@@ -177,22 +77,6 @@ textarea {
     width:100%;
 }
 
-.squareButton > button{
-    width:225px;height:250px;
-}
-
-.squareButton > button > i{
-    font-size:100px;
-}
-
-.squareButton > button > p{
-    display:block;
-}
-
-.languages{
-    width:100%;
-}
-
 .languagesGrid{
     margin-bottom:1%;
 }
@@ -231,12 +115,6 @@ textarea {
     margin-right:auto;
 }
 
-.confirmationActions >
-
-.confirmation-Dialog-inner{
-    height:auto;
-   
-}
 
 
 .confirmationField {
@@ -257,6 +135,11 @@ input[type=checkbox]
 
 .questionDiv{
     margin-bottom:10px;
+}
+
+.taggle_list > .taggle{
+    background: #0078d7 !important;
+    color:white;
 }
 
 .questionAnswer{
@@ -294,11 +177,6 @@ input[type=checkbox]
     padding-left:0px
 }
 
-.custom-SearchBox .taggle_list .taggle{
-    color: white;
-    background-color: #0078d7;
-    border-color:#0078d7;
-}
 
 .custom-SearchBox .taggle_placeholder{
     top:6px;
@@ -311,20 +189,9 @@ input[type=checkbox]
   transition: all .3s;
 }
 
-.custom-SearchBox .autocomplete ul li {
-  background: #0078d7;
-  background-color: #0078d7;
-  color: white;
-  cursor: pointer;
-}
 
 .custom-SearchBox .ui-menu .ui-menu-item a:hover{
     background: #0078d7;
-}
-
-::selection {
-  background: #0078d7;
-  color: #fff;
 }
 
 .languageli{
@@ -338,12 +205,6 @@ input[type=checkbox]
 .languageul{
     text-align:center;
     padding-left:0;
-}
-
-.squareButton{
-    height:250px;
-    width:250px;
-    margin:1%;
 }
 
 .custom-banner{
