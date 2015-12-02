@@ -119,6 +119,7 @@ function setLanguage() {
             $('#languageSpan')[0].innerText += ", "+languageDictionary[checkboxes[i].id];
         }
     }
+    console.log(languages);
     showModal('confirmationModal');
 }
 
@@ -170,8 +171,8 @@ function getLanguages() {
                 $.each(languages, function (index, value) {
                     var label = value;
                     var id = value.split(" ").pop().replace(")",'').replace("(",'');
-                    $('#languagesGrid > ul').append("<li class='languageli'><label> <input type='checkbox' id='" + id + "' class='languageCheckBox' onclick='verifyLanguageInput()'/> \
-                                    <span class='ms-Label checkboxLabel'>" + label + "</span></label></li>");
+                    $('#languagesGrid > ul').append("<li class='languageli'><input type='checkbox' id='" + id + "' class='languageCheckBox' onclick='verifyLanguageInput()'/> \
+                                    <label> <span class='ms-font-m checkboxLabel'>" + label + "</span></label></li>");
                 });  
             }
     });
@@ -275,12 +276,12 @@ function getBuild() {
                         if (Array.isArray(filters)) {
                             filters.forEach(function (element, index, array) {
                                 classString += element.toLocaleLowerCase() + "-filter ";
-                                textString += "<li class='" + classString + "'>" + element + "</li>";
+                                textString += "<li class='ms-font-m " + classString + "'>" + element + "</li>";
                             });
                         } else {
                             if (filters) {
                                 classString += filters + "-filter ";
-                                textString += "<li class='" + classString + "'>" + filters + "</li>";
+                                textString += "<li class='ms-font-m " + classString + "'>" + filters + "</li>";
                             }
                         }
 
@@ -288,7 +289,7 @@ function getBuild() {
                                                 <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
                                                     <div class='ms-Callout-main'>\
                                                         <div class='ms-Callout-header custom-callout-header'>\
-                                                            <p class='ms-Callout-title' >Tags</p>\
+                                                            <div class='ms-Callout-title ms-font-xxl ms-fontWeight-regular' >Tags</div>\
                                                             <i class='ms-Icon ms-Icon--x custom-x' onclick='closeCallout(event)'></i>\
                                                         </div>\
                                                         <div class='ms-Callout-inner custom-callout-inner'>\
@@ -307,9 +308,9 @@ function getBuild() {
                                                             <i class='ms-Icon ms-Icon--tag package-tag' onclick='toggleCallout(event)'></i>\
                                                         </span>\
                                                         <p class='ms-font-xl package-label filter-field'>"+ $(this).attr('Type')+"</b></p><br /><br />\
-                                                        <p class='ms-font-sm package-label package-label-two' >"+$(this).attr('Location')+ "</p>\
+                                                        <p class='ms-font-s-plus package-label package-label-two' >"+$(this).attr('Location')+ "</p>\
                                                     </div>\
-                                                    <span class='package-bottom' onclick='setProduct(\"2016\",\""+ $(this).attr('ID')+"\")'>\
+                                                    <span class='package-bottom ms-font-m' onclick='setProduct(\"2016\",\""+ $(this).attr('ID')+"\")'>\
                                                         <i class=' ms-Icon ms-Icon--download package-download'></i>\
                                                         <a class='ms-link'>Install</a>\
                                                     </span>\
@@ -610,6 +611,7 @@ function toggleBanner() {
     $('#banner').toggleClass('hidden');
     $('#mini-banner').toggleClass('hidden');
 }
+
 //function getVersionDescription(){
 //    $.ajax({
 //        type: "GET",

@@ -138,7 +138,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\imgs\arrow-left-icon.svg" />
+    <Content Include="Content\imgs\Custom-Back-Arrow.png" />
     <Content Include="Content\imgs\illustration%402x.png" />
     <Content Include="Content\taggle.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
