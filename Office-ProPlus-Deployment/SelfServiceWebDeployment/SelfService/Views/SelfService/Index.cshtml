@@ -17,8 +17,18 @@
 
 </head>
 <body>
-    <div id="banner" class="customBanner">
-        <img id="imgBanner" src="~/Content/imgs/temp_banner.png" />
+    <div id="banner" class="custom-banner">
+        <i class="ms-Icon ms-Icon--x" onclick="closeBanner()"></i>
+        <img src="~/Content/imgs/illustration@2x.png" />
+        <div class="banner-text">
+            <div class="ms-font-su">What's Office Self Service Deployment?</div>
+            <div  class="ms-font-plus description">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tempus malesuada condimentum. Duis eleifend, dolor at vehicula rhoncus, leo
+                nibh dapibus nisl, in faucibus orci ex sed metus. Proin ut erat in lectus mattis molestie. In cursus sit amet ipsum at sollicitudin. Duis quis
+                ipsum vitae purus pharetra facilisis nec ac nulla. Suspendisse sagittis convallis erat in cursus. Sed aliquet eget massa sed dignissim. Duis et placerat felis.
+            </div>
+        </div>
+        <button class="ms-button" onclick="focusSearch()"><span class="ms-Button-label ms-font-md ms-fontWeight-semibold"><i class="ms-Icon ms-Icon--arrowDown2"></i>Begin Searching</span></button>
     </div>
 
     <div id="productModal" class="custom-Dialog">
@@ -27,7 +37,7 @@
             <div class="-header custom-header">
                 <div class="ms-Grid-row">
                     <div class="ms-Grid-col">
-                        <p class="ms-font-xl"><b>Select a Package</b></p>
+                        <p class="ms-font-xl">Select a Package</p>
                     </div>
                     <div class="ms-Grid-col">
                         <div id="outerSearchBox" class="ms-SearchBox ms-SearchBox-field custom-SearchBox">
@@ -42,7 +52,7 @@
                 </div>
             </div>
             <div class="-inner custom-Dialog-inner">
-               
+
                 <div class="ms-Grid-row display-controls">
                     <div id="tileViewToggle" class="ms-Grid-col display-control-outer" onclick="isTileView()">
                         <i class="ms-Icon ms-Icon--tile display-control-icon"></i>
@@ -55,7 +65,7 @@
                 <div id="buildsGrid" class="ms-Grid">
                     @*BUILDS GO HERE*@
                 </div>
-                     
+
                 <div id="buildsTable" class="ms-Table" style="font-weight:bold;width:90%">
                     @*BUILDS GO HERE*@
                 </div>
