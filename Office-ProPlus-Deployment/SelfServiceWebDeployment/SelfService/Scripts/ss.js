@@ -93,6 +93,7 @@ var appliedFilters = [];
 var previousSearch = "";
 
 function setProduct(product, build) {
+    console.log(product + " " + build);
     buildID = build;
     getLanguages();
     productToInstall = product;
@@ -265,7 +266,7 @@ function getBuild() {
                             <span class='ms-Table-cell ms-font-l custom-first-cell custom-cell filter-field'><i class='ms-Icon ms-Icon--people package-people-table'></i>"+ $(this).attr('Type') + "</span>\
                             <span class='ms-Table-cell custom-cell'>"+ $(this).attr('Location') + "</span>\
                             <span class='ms-Table-cell custom-cell'><i class='ms-Icon ms-Icon--tag custom-table-tag'></i>"+ textString + "</span>\
-                            <span class='ms-Table-cell custom-cell custom-last-cell'><i class='ms-Icon ms-Icon--download custom-table-tag' ></i><a class='ms-link' href='#'>Install</a></span>\
+                            <span class='ms-Table-cell custom-cell custom-last-cell' onclick='setProduct(\"2016\",\""+ $(this).attr('ID')+"\")'><i class='ms-Icon ms-Icon--download custom-table-tag' ></i><a class='ms-link'>Install</a></span>\
                         </div>")
 
                     }
@@ -308,9 +309,9 @@ function getBuild() {
                                                         <p class='ms-font-xl package-label filter-field'>"+ $(this).attr('Type')+"</b></p><br /><br />\
                                                         <p class='ms-font-sm package-label package-label-two' >"+$(this).attr('Location')+ "</p>\
                                                     </div>\
-                                                    <span class='package-bottom' onclick='setProduct(versionToInstall,\"" + $(this).attr('ID') + ")'>\
+                                                    <span class='package-bottom' onclick='setProduct(\"2016\",\""+ $(this).attr('ID')+"\")'>\
                                                         <i class=' ms-Icon ms-Icon--download package-download'></i>\
-                                                        <a href='#' class='ms-link'>Install</a>\
+                                                        <a class='ms-link'>Install</a>\
                                                     </span>\
                                                 </div>\
                                                 </div>")
