@@ -602,6 +602,14 @@ function isTileView() {
     getBuild();
 }
 
+function focusDialog() {
+    $('.custom-Dialog').trigger('focus');
+}
+
+function toggleBanner() {
+    $('#banner').toggleClass('hidden');
+    $('#mini-banner').toggleClass('hidden');
+}
 //function getVersionDescription(){
 //    $.ajax({
 //        type: "GET",
