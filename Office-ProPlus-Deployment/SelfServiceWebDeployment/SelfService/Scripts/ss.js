@@ -471,15 +471,6 @@ function searchBoxFilter() {
                 }
             })
 
-
-            //$(".tags-list li").each(function () {
-
-            //    if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
-            //        $(this).parent().parent().parent().parent().parent().parent().addClass('search-filter');
-            //    }
-            //})
-
-
             addFilter("search");
         }
 
@@ -595,6 +586,8 @@ function isListView() {
     $('#buildsTable').empty();
     $('#buildsGrid').empty();
     resetFilters();
+    $('#tileViewToggle').attr('background-color', '#EFF6FC');
+    $('#listViewToggle').attr('background-color', '#C7E0F4');
     getBuild(); 
 
 }
@@ -603,6 +596,8 @@ function isTileView() {
     listView = 0;
     $('#buildsTable').empty();
     $('#buildsGrid').empty();
+    $('#tileViewToggle').attr('background-color', '#C7E0F4');
+    $('#listViewToggle').attr('background-color', '#EFF6FC');
     resetFilters();
     getBuild();
 }
