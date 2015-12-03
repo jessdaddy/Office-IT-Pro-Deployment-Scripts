@@ -93,7 +93,6 @@ var appliedFilters = [];
 var previousSearch = "";
 
 function setProduct(product, build) {
-    console.log(product + " " + build);
     buildID = build;
     getLanguages();
     productToInstall = product;
@@ -104,7 +103,6 @@ function setProduct(product, build) {
 function setVersion(version) {
     versionToInstall = version;
     $('#versionSpan').text(version);
-    showModal('productModal');
 }
 
 function setLanguage() {
@@ -119,7 +117,6 @@ function setLanguage() {
             $('#languageSpan')[0].innerText += ", "+languageDictionary[checkboxes[i].id];
         }
     }
-    console.log(languages);
     showModal('confirmationModal');
 }
 
@@ -177,49 +174,6 @@ function getLanguages() {
             }
     });
 }
-
-//function getVersions() {
-
-//    $.ajax({
-//        type: "GET",
-//        url: "SelfServiceConfig.xml",
-//        datatype: "xml",
-//        success:
-//            function (xml) {
-//                var optional = $(xml).find('Versions').attr('Optional');
-//                if (optional === "true") {
-//                    $(xml).find('Version').each(function () {
-//                        var version = $(this).attr('ID');
-//                        if (version === "2013") {
-//                            $('#versions').prepend("<li class='squareButton'>\
-//                                        <div class='ms-Dialog-action ms-Button ms-Button--primary ms-bgColor-orangeLight version-box' onclick='setVersion(\"2013\")'>\
-//                                        <img class='version-img' src='Content/imgs/office-icon-white.png'/>\
-//                                        <p class='ms-font-xl ms-fontColor-white version-box-text'>Office 365 ProPlus (2013)</p>\
-//                                        </div>\
-//                                        </li>");
-//                        }
-//                        if (version === "2016") {
-//                            $('#versions').prepend("<li class='squareButton'>\
-//                                    <div class='ms-Dialog-action ms-Button ms-Button--primary version-box' onclick='setVersion(\"2016\")'>\
-//                                    <img  class='version-img'  src='Content/imgs/office-icon-white.png'>\
-//                                    <p class='ms-font-xl ms-fontColor-white'>Office 365 ProPlus (2016)</p>\
-//                                    </div>\
-//                                    </li>");
-//                        }
-//                    });
-//                }
-//                else
-//                {
-//                    $('#versions').prepend("<li class='squareButton'>\
-//                                    <div class='ms-Dialog-action ms-Button ms-Button--primary version-box' onclick='setVersion(\"365 ProPlus\")'>\
-//                                    <img  class='version-img'  src='Content/imgs/office-icon-white.png'/>\
-//                                    <p class='ms-font-xl ms-fontColor-white'>Office 365 ProPlus</p>\
-//                                    </div>\
-//                                    </li>");
-//                }
-//            }
-//    });
-//}
 
 function getBuild() {
 
@@ -446,7 +400,7 @@ function searchBoxFilter() {
                 if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
                     $(this).parent().parent().parent().addClass('search-filter');
                 }
-            })
+            });
 
 
             $(".tags-list li").each(function () {
@@ -454,7 +408,7 @@ function searchBoxFilter() {
                 if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
                     $(this).parent().parent().parent().parent().parent().parent().addClass('search-filter');
                 }
-            })
+            });
 
 
             addFilter("search");
@@ -471,7 +425,7 @@ function searchBoxFilter() {
                     console.log($(this).text().toLocaleLowerCase());
                     $(this).parent().addClass('search-filter');
                 }
-            })
+            });
 
             addFilter("search");
         }
@@ -613,28 +567,15 @@ function toggleBanner() {
     $('#mini-banner').toggleClass('hidden');
 }
 
-//function getVersionDescription(){
-//    $.ajax({
-//        type: "GET",
-//        url: "SelfServiceConfig.xml",
-//        datatype: "xml",
-//        success:
-//            function (xml) {
-//                var description = $(xml).find('Description').text();
-//                $('#versionDescription').text(description);
-//            }
-//    });
-//}
-
 $(document).ready(function () {
 
+    setVersion('2016');
     getCompanyInfo();
     getLocations(addLocationClick);
     getFilters();
-    //getVersions();
-    //getVersionDescription();
     getBuild();
     getHelp();
+
     //searchbox filter
     $("#outerSearchBox").keyup(function (e) {
         searchBoxFilter(e);
