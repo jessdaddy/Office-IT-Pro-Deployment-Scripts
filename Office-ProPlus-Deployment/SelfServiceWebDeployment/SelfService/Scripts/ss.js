@@ -168,8 +168,8 @@ function getLanguages() {
                 $.each(languages, function (index, value) {
                     var label = value;
                     var id = value.split(" ").pop().replace(")",'').replace("(",'');
-                    $('#languagesGrid > ul').append("<li class='languageli'><input type='checkbox' id='" + id + "' class='languageCheckBox' onclick='verifyLanguageInput()'/> \
-                                    <label> <span class='ms-font-m checkboxLabel'>" + label + "</span></label></li>");
+                    $('#languagesGrid > ul').append("<li class='languageli'><label><input type='checkbox' id='" + id + "' class='languageCheckBox' onclick='verifyLanguageInput()'/> \
+                                     <span class='ms-font-m checkboxLabel'>" + label + "</span></label></li>");
                 });  
             }
     });
@@ -186,6 +186,7 @@ function getBuild() {
 
                 if (listView === 1)
                 {
+
                     $("#buildsTable").append("<div class='ms-Table-row'>\
                             <span class='ms-Table-cell custom-cell' style='padding-left:4%'>Name</span>\
                             <span class='ms-Table-cell custom-cell' style=''>Location</span>\
