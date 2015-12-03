@@ -55,32 +55,38 @@
 
     <div id="productModal" class="custom-Dialog" tabindex="1">
         @Html.Partial("~/Views/SHared/_banner.cshtml")
-        <div class=" custom-Dialog-main">
-            <div class="ms-Grid -header custom-header">
-                <div class="ms-Grid-row">
-                    <div class="ms-Grid-col ms-u-sm2">
-                        <p class="ms-font-xl">Select a Package</p>
-                    </div>
-                    <div class="ms-Grid-col ms-u-sm4">
-                        <div id="outerSearchBox" class="ms-SearchBox ms-SearchBox-field custom-SearchBox">
-                        </div>
-                    </div>
-                    <div class="ms-Grid-col ms-u-sm2">
-                        <div class="ms-Dropdown" style="width:150px">
-                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                            <select id="ddl-Location" class="ms-Dropdown-select"></select>
+        <div class="ms-Grid custom-Dialog-main">
+            <div class="ms-Grid-row">
+                <div class="ms-Grid-col ms-u-sm12">
+                    <div class="ms-Grid -header custom-header">
+                        <div class="ms-Grid-row">
+                            <div class="ms-Grid-col ms-u-sm2">
+                                <p class="ms-font-xl">Select a Package</p>
+                            </div>
+                            <div class="ms-Grid-col ms-u-sm4">
+                                <div id="outerSearchBox" class="ms-SearchBox ms-SearchBox-field custom-SearchBox">
+                                </div>
+                            </div>
+                            <div class="ms-Grid-col ms-u-sm2">
+                                <div class="ms-Dropdown" style="width:150px">
+                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                    <select id="ddl-Location" class="ms-Dropdown-select"></select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="ms-Grid -inner custom-Dialog-inner">
 
-                <div class="display-controls">
-                    <div id="tileViewToggle" class="ms-Grid-col display-control-outer" onclick="isTileView()">
-                        <i class="ms-Icon ms-Icon--tile display-control-icon"></i>
-                    </div>
-                    <div id="listViewToggle" class="ms-Grid-col display-control-outer" onclick="isListView()">
-                        <i class="ms-Icon ms-Icon--listBullets  display-control-icon"></i>
+            <div class="ms-Grid -inner custom-Dialog-inner">
+                <div class="ms-Grid-row">
+                    <div class="display-controls">
+                        <div id="tileViewToggle" class="ms-Grid-col display-control-outer" onclick="isTileView()">
+                            <i class="ms-Icon ms-Icon--tile display-control-icon"></i>
+                        </div>
+                        <div id="listViewToggle" class="ms-Grid-col display-control-outer" onclick="isListView()">
+                            <i class="ms-Icon ms-Icon--listBullets  display-control-icon"></i>
+                        </div>
                     </div>
                 </div>
 

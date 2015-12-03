@@ -240,37 +240,84 @@ function getBuild() {
                             }
                         }
 
-                        $("#buildsGrid").append("<div class='ms-Grid-col package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
+                        //$("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm3 package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
+                        //                        <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
+                        //                            <div class='ms-Callout-main'>\
+                        //                                <div class='ms-Callout-header custom-callout-header'>\
+                        //                                    <div class='ms-Callout-title ms-font-xxl ms-fontWeight-regular' >Tags</div>\
+                        //                                    <i class='ms-Icon ms-Icon--x custom-x' onclick='closeCallout(event)'></i>\
+                        //                                </div>\
+                        //                                <div class='ms-Callout-inner custom-callout-inner'>\
+                        //                                    <div class='ms-Callout-content'>\
+                        //                                        <ul id='tags-list' class='tags-list'>"
+                        //                                        + textString + "\
+                        //                                        </ul>\
+                        //                                    </div>\
+                        //                                </div>\
+                        //                            </div>\
+                        //                        </div>\
+                        //                        <div class='ms-Grid package package-main'>\
+                        //                             <div class='ms-Grid-row package-inner'>\
+                        //                                <span>\
+                        //                                    <i class='ms-Icon ms-Icon--people package-people'></i>\
+                        //                                    <i class='ms-Icon ms-Icon--tag package-tag' onclick='toggleCallout(event)'></i>\
+                        //                                </span>\
+                        //                                <p class='ms-font-xl package-label filter-field'>"+ buildType + "</b></p><br /><br />\
+                        //                                <p class='ms-font-s-plus package-label package-label-two' >"+ $(this).attr('Location') + "</p>\
+                        //                            </div>\
+                        //                            <span class='package-bottom ms-font-m' onclick='setProduct(\"2016\",\""+ $(this).attr('ID') + "\")'>\
+                        //                                <i class=' ms-Icon ms-Icon--download package-download'></i>\
+                        //                                <a class='ms-link'>Install</a>\
+                        //                            </span>\
+                        //                        </div>\
+                        //                        </div>");
+                        $("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm3 package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
                                                 <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
-                                                    <div class='ms-Callout-main'>\
-                                                        <div class='ms-Callout-header custom-callout-header'>\
-                                                            <div class='ms-Callout-title ms-font-xxl ms-fontWeight-regular' >Tags</div>\
-                                                            <i class='ms-Icon ms-Icon--x custom-x' onclick='closeCallout(event)'></i>\
-                                                        </div>\
-                                                        <div class='ms-Callout-inner custom-callout-inner'>\
-                                                            <div class='ms-Callout-content'>\
-                                                                <ul id='tags-list' class='tags-list'>"
-                                                                + textString + "\
-                                                                </ul>\
+                                                    <div class='ms-Grid'>\
+                                                        <div class='ms-Grid-row'>\
+                                                            <div class='ms-Callout-main'>\
+                                                                <div class='ms-Callout-header custom-callout-header'>\
+                                                                    <div class='ms-Callout-title ms-font-xxl ms-fontWeight-regular' >Tags</div>\
+                                                                    <i class='ms-Icon ms-Icon--x custom-x' onclick='closeCallout(event)'></i>\
+                                                                </div>\
+                                                                <div class='ms-Callout-inner custom-callout-inner'>\
+                                                                    <div class='ms-Callout-content'>\
+                                                                        <ul id='tags-list' class='tags-list'>"
+                                                                  + textString + "\
+                                                                        </ul>\
+                                                                    </div>\
+                                                                </div>\
                                                             </div>\
                                                         </div>\
                                                     </div>\
                                                 </div>\
-                                                <div class='package package-main'>\
-                                                     <div class='package-inner'>\
-                                                        <span>\
+                                                <div class='ms-Grid package package-main'>\
+                                                     <div class='ms-Grid-row package-inner'>\
+                                                        <div class='ms-Grid-col ms-u-sm4'>\
                                                             <i class='ms-Icon ms-Icon--people package-people'></i>\
+                                                        </div>\
+                                                        <div class='ms-Grid-col ms-u-sm6'>\
+                                                            <div class='ms-Grid'>\
+                                                                <div class='ms-Grid-row'>\
+                                                                    <p class='type-label filter-field'>"+ buildType + "</b></p><br /><br />\
+                                                                </div>\
+                                                                <div class='ms-Grid-row'>\
+                                                                    <p class='location-label ' >"+ $(this).attr('Location') + "</p>\
+                                                                </div>\
+                                                            </div>\
+                                                        </div>\
+                                                        <div class='ms-Grid-col ms-u-sm2'>\
                                                             <i class='ms-Icon ms-Icon--tag package-tag' onclick='toggleCallout(event)'></i>\
-                                                        </span>\
-                                                        <p class='ms-font-xl package-label filter-field'>"+ buildType + "</b></p><br /><br />\
-                                                        <p class='ms-font-s-plus package-label package-label-two' >"+ $(this).attr('Location') + "</p>\
+                                                        </div>\
                                                     </div>\
-                                                    <span class='package-bottom ms-font-m' onclick='setProduct(\"2016\",\""+ $(this).attr('ID') + "\")'>\
-                                                        <i class=' ms-Icon ms-Icon--download package-download'></i>\
-                                                        <a class='ms-link'>Install</a>\
-                                                    </span>\
+                                                    <div class='ms-Grid-row'>\
+                                                        <span class='package-bottom ms-font-m' onclick='setProduct(\"2016\",\""+ $(this).attr('ID') + "\")'>\
+                                                            <i class=' ms-Icon ms-Icon--download package-download'></i>\
+                                                            <a class='ms-link'>Install</a>\
+                                                        </span>\
+                                                    </div>\
                                                 </div>\
-                                                </div>");
+                                            </div>");
                     }
                 });
             }
@@ -283,7 +330,7 @@ function toggleCallout(event) {
 
 function closeCallout(event)
 {
-    $(event.target).parents().eq(3).find('#custom-callout').addClass('hidden');
+    $(event.target).parents().eq(5).find('#custom-callout').addClass('hidden');
 }
 
 function getLocations(callback) {
