@@ -65,6 +65,7 @@
 .custom-Dialog-inner{
     width:100%;
     height:75%;
+    padding-left:8px;
 }
 
 .custom-Dialog-actions{

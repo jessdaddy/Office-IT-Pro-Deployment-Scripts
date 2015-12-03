@@ -81,7 +81,7 @@ var languageDictionary = {
     "th-th": "Thai",
     "tr-tr": "Turkish",
     "uk-ua": "Ukrainian"
-}
+};
 
 var availableFilters = [];
 var searchBoxTaggle;
@@ -113,7 +113,7 @@ function setLanguage() {
     languages = [checkboxes[0].id];
     if (checkboxes.length > 1) {
         for (var i = 1; i < checkboxes.length; i++) {
-            languages[i] = checkboxes[i].id
+            languages[i] = checkboxes[i].id;
             $('#languageSpan')[0].innerText += ", "+languageDictionary[checkboxes[i].id];
         }
     }
@@ -127,7 +127,7 @@ function startInstall() {
 function showModal(modalId) {
     $(".custom-Dialog").removeClass("hidden").addClass("hidden");
     $("#" + modalId).removeClass("hidden");
-    if (modalId == "downloadModal") {
+    if (modalId === "downloadModal") {
         $('#directDL').text(versionToInstall);
     }
 
@@ -191,7 +191,7 @@ function getBuild() {
                             <span class='ms-Table-cell custom-cell' style=''>Location</span>\
                             <span class='ms-Table-cell custom-cell'>Tags</span>\
                             <span class='ms-Table-cell custom-cell'></span>\
-                            </div>")
+                            </div>");
                 }
 
                 $(xml).find('Build').each(function () {
@@ -205,7 +205,7 @@ function getBuild() {
                        
 
                         if (Array.isArray(filters)) {
-                            filters.forEach(function (element, index, array) {
+                            filters.forEach(function (element) {
                                 classString += element.toLocaleLowerCase() + "-filter ";
                                 textString +=   " "+element + ",";
                             });
@@ -218,17 +218,17 @@ function getBuild() {
 
                        
                         $("#buildsTable").append("<div class='ms-Table-row custom-table-row shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
-                            <span class='ms-Table-cell ms-font-l custom-first-cell custom-cell filter-field'><i class='ms-Icon ms-Icon--people package-people-table'></i>"+ $(this).attr('Type') + "</span>\
+                            <span class='ms-Table-cell ms-font-l custom-first-cell custom-cell filter-field'><i class='ms-Icon ms-Icon--people package-people-table'></i>"+ buildType + "</span>\
                             <span class='ms-Table-cell custom-cell'>"+ $(this).attr('Location') + "</span>\
                             <span class='ms-Table-cell custom-cell'><i class='ms-Icon ms-Icon--tag custom-table-tag'></i>"+ textString + "</span>\
-                            <span class='ms-Table-cell custom-cell custom-last-cell' onclick='setProduct(\"2016\",\""+ $(this).attr('ID')+"\")'><i class='ms-Icon ms-Icon--download custom-table-tag' ></i><a class='ms-link'>Install</a></span>\
-                        </div>")
+                            <span class='ms-Table-cell custom-cell custom-last-cell' onclick='setProduct(\"2016\",\""+ $(this).attr('ID') + "\")'><i class='ms-Icon ms-Icon--download custom-table-tag' ></i><a class='ms-link'>Install</a></span>\
+                        </div>");
 
                     }
                     else
                     {
                         if (Array.isArray(filters)) {
-                            filters.forEach(function (element, index, array) {
+                            filters.forEach(function (element) {
                                 classString += element.toLocaleLowerCase() + "-filter ";
                                 textString += "<li class='ms-font-m " + classString + "'>" + element + "</li>";
                             });
@@ -239,7 +239,7 @@ function getBuild() {
                             }
                         }
 
-                        $("#buildsGrid").append("<div class='ms-Grid-col package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter "+ classString+"'>\
+                        $("#buildsGrid").append("<div class='ms-Grid-col package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
                                                 <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
                                                     <div class='ms-Callout-main'>\
                                                         <div class='ms-Callout-header custom-callout-header'>\
@@ -249,7 +249,7 @@ function getBuild() {
                                                         <div class='ms-Callout-inner custom-callout-inner'>\
                                                             <div class='ms-Callout-content'>\
                                                                 <ul id='tags-list' class='tags-list'>"
-                                                                +textString+"\
+                                                                + textString + "\
                                                                 </ul>\
                                                             </div>\
                                                         </div>\
@@ -261,15 +261,15 @@ function getBuild() {
                                                             <i class='ms-Icon ms-Icon--people package-people'></i>\
                                                             <i class='ms-Icon ms-Icon--tag package-tag' onclick='toggleCallout(event)'></i>\
                                                         </span>\
-                                                        <p class='ms-font-xl package-label filter-field'>"+ $(this).attr('Type')+"</b></p><br /><br />\
-                                                        <p class='ms-font-s-plus package-label package-label-two' >"+$(this).attr('Location')+ "</p>\
+                                                        <p class='ms-font-xl package-label filter-field'>"+ buildType + "</b></p><br /><br />\
+                                                        <p class='ms-font-s-plus package-label package-label-two' >"+ $(this).attr('Location') + "</p>\
                                                     </div>\
-                                                    <span class='package-bottom ms-font-m' onclick='setProduct(\"2016\",\""+ $(this).attr('ID')+"\")'>\
+                                                    <span class='package-bottom ms-font-m' onclick='setProduct(\"2016\",\""+ $(this).attr('ID') + "\")'>\
                                                         <i class=' ms-Icon ms-Icon--download package-download'></i>\
                                                         <a class='ms-link'>Install</a>\
                                                     </span>\
                                                 </div>\
-                                                </div>")
+                                                </div>");
                     }
                 });
             }
@@ -325,7 +325,7 @@ function getFilters() {
 
                     var filter = $(this).attr('Filters').split(',');
                     if (Array.isArray(filter)) {
-                        filter.forEach(function (element, index, array) {
+                        filter.forEach(function (element) {
                             if (availableFilters.indexOf(element.toLocaleLowerCase()) < 0) {
                                 availableFilters.push(element.toLocaleLowerCase());
                             }
@@ -438,9 +438,9 @@ function searchBoxFilter() {
 
 function setTaggleFilters() {
     taggles = searchBoxTaggle.getTagValues();
-    taggles.forEach(function (element, index, array) {
+    taggles.forEach(function (element) {
         addFilter(element);
-    })
+    });
     applyFilters();
 }
 
@@ -466,7 +466,7 @@ function applyFilters() {
     if (listView === 0)
     {
         var filterString = ".package-group";
-        appliedFilters.forEach(function (element, index, array) {
+        appliedFilters.forEach(function (element) {
             filterString += "." + element + "-filter";
         });
 
@@ -478,7 +478,7 @@ function applyFilters() {
     {
 
         var filterString = ".custom-table-row";
-        appliedFilters.forEach(function (element, index, array) {
+        appliedFilters.forEach(function (element) {
             filterString += "." + element + "-filter";
         });
 
@@ -559,7 +559,11 @@ function isTileView() {
 }
 
 function focusDialog() {
-    $('.custom-Dialog').trigger('focus');
+    $('html,body').animate({
+
+        scrollTop: $('.custom-mini-banner').offset().top + 500 
+    }, 500);
+    
 }
 
 function toggleBanner() {
