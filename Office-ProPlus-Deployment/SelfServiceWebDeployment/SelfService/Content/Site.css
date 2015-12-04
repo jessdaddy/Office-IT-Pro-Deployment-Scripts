@@ -15,10 +15,10 @@
  
 }
 
-.languageCheckBox {
+/*.languageCheckBox {
     margin-bottom: -2px !important;
     cursor:pointer;
-}
+}*/
 
 
 .custom-Dialog {
@@ -194,18 +194,18 @@ input[type=checkbox]
     background: #0078d7;
 }
 
-.languageli{
+/*.languageli{
     width:33%;
     margin-bottom:10px;
     float:left;
     text-align:left;
     display:inline-block;
-}
+}*/
 
-.languageul{
+/*.languageul{
     text-align:center;
     padding-left:0;
-}
+}*/
 
 .custom-banner{
    
@@ -324,6 +324,7 @@ span.ms-Button-label {
     margin:0 !important;
     padding:2%;
     padding-top:5%;
+    padding-right:3%;
     background-color:#f2f2f2;
 }
 
@@ -336,11 +337,15 @@ span.ms-Button-label {
 
 .package-tag{
     float:right;
-    padding-top:20%;
+    margin-top:-15%;
     padding-right:5%;
-    font-size:.8vw;
+    font-size:100%;
     color:#767676;
     cursor:pointer;
+}
+
+.callout-open{
+    color:#0078D7;
 }
 
 .type-label{
@@ -361,9 +366,9 @@ span.ms-Button-label {
     margin-top: -5% !important;
 }
 
-.package-label-two{
+/*.package-label-two{
    margin-top:-10px
-}
+}*/
 
 .package-bottom{
     float:right;
@@ -390,35 +395,45 @@ span.ms-Button-label {
 
 #custom-callout{
    float:right;
-   width:80%;
-   min-height:0 !important;
-   max-height:5% !important;
-   margin-top:-1%;
-   margin-right:-70% ; 
+   width:85%;
+   height:0;
+   margin-top:-5%;
+   margin-right:-75% ; 
    margin-left:-5%;
-   margin-bottom:0 ;
-   z-index:3;
 }
 
+
 .custom-callout-header{
-    font-size:.75vw;
+    height:50% !important;
     background-color: #0078D7;
     color:white;
-    height:5% !important%;
-    /*padding:10% 5% !important;*/
+    z-index:105;
 }
+
+.custom-callout-header,.custom-callout-inner{
+    box-shadow:1px 1px 5px #e5e5e5;
+
+}
+
+/*#custom-callout > ms-Callout--leftArrow{
+    top:-50% !important;
+}*/
 
 .custom-x{
     float:right;
-    margin-top:-55px;
-    margin-right:-8px;
-    cursor:pointer
+    margin-top:-5%;
+    margin-right:5%;
+    cursor:pointer;
+    z-index:150;
 }
 
 .custom-callout-inner{
-    max-height:50px;
+    background-color:white;
+    position:absolute;
+    height:50%;
+    width:100%;
+    z-index:105;
     overflow-y:scroll;
- 
 }
 
 .tags-list{
