@@ -91,6 +91,9 @@
 
 .confirmationField{
     padding-bottom:1%;
+    margin-left:3.5%;
+    margin-right:-4%;
+
 }
 
 .confirmationActions{
@@ -117,10 +120,6 @@
 }
 
 
-
-.confirmationField {
-    margin-left:3.5%;
-}
 .hidden{
     display:none;
 }
@@ -307,14 +306,14 @@ span.ms-Button-label {
 
 .package{
     width:100%;
-    margin-top:25px;
+    margin-top:5%;
+    margin-bottom:4%;
     display:inline-block;
 
 }
 .package-main{
-    width:80%;
+    width:90%;
     box-shadow:1px 1px 5px #e5e5e5;
-    margin:15px;
     z-index:1;
    
 }
@@ -337,9 +336,9 @@ span.ms-Button-label {
 
 .package-tag{
     float:right;
-    margin-top:20%;
+    padding-top:20%;
     padding-right:5%;
-    font-size:15px;
+    font-size:.8vw;
     color:#767676;
     cursor:pointer;
 }
@@ -349,15 +348,15 @@ span.ms-Button-label {
     font-size:1.2vw;
     font-family: 'Segoe UI Light WestEuropean','Segoe UI Light','Segoe WP Light','Segoe UI','Segoe WP',Tahoma,Arial,sans-serif;
     font-weight: 500;
-    color: #333;
-    margin-bottom:-30% !important;
-    
+    color: #333333;
+    margin-bottom:0;
 }
+
 .location-label{
     float:left;
     font-size:.75vw !important;
     font-family: 'Segoe UI Regular WestEuropean','Segoe UI','Segoe WP',Tahoma,Arial,sans-serif;
-    color: #333;
+    color:#767676 ;
     font-weight: 400;
     margin-top: -5% !important;
 }
@@ -373,8 +372,8 @@ span.ms-Button-label {
 }
 
 .package-download{
-    font-size:25px;
-    
+    color:#767676;
+    margin-left:-5%;
 }
 
 .package-main:hover > .package-inner,
@@ -392,15 +391,21 @@ span.ms-Button-label {
 #custom-callout{
    float:right;
    width:80%;
-   margin-top:-2%;
-   margin-right: -66% ; 
+   min-height:0 !important;
+   max-height:5% !important;
+   margin-top:-1%;
+   margin-right:-70% ; 
    margin-left:-5%;
    margin-bottom:0 ;
+   z-index:3;
 }
 
 .custom-callout-header{
+    font-size:.75vw;
     background-color: #0078D7;
-    color:white
+    color:white;
+    height:5% !important%;
+    /*padding:10% 5% !important;*/
 }
 
 .custom-x{
@@ -411,9 +416,9 @@ span.ms-Button-label {
 }
 
 .custom-callout-inner{
-    max-height:70px;
+    max-height:50px;
     overflow-y:scroll;
-    padding-bottom:10px;
+ 
 }
 
 .tags-list{
@@ -424,12 +429,14 @@ span.ms-Button-label {
 
 .display-controls{
     width:100%;
-    padding-left:86%;
+    float:right;
+    padding-left:93%;
+  
 }
 
 .display-control-outer{
     height:30px;
-    width:30px;
+    width:35px;
     padding:7.5px;
     background-color:#EFF6FC;
     color:#666666;
@@ -490,25 +497,35 @@ span.ms-Button-label {
 
 .confirmation-information{
 
-    width:825px;
-    margin-left:17%;
-    margin-right:2%;
+    width:57%;
+    margin-left:27%;
     padding-top:25px;
     padding-left:17px;
     background-color:#F4F4F4;
 }
 
-.confirmation-Dialog-inner > p
+.confirmation-Dialog-inner > div > div >  div > div > p
 {
-    width:800px;
+    width:55%;
     height:100%;
-    margin-left:20%;
-    margin-right:5%;
+    margin-left:30%;
+
 }
+
+#languageSpan{
+    padding-left:6%;
+}
+
 
 .custom-footer > div{
     color:#767676 ;
     float:right;
     margin-top:25px;
     margin-right:20px;
+}
+
+.package-bottom > a{
+ 
+    margin-right:5%;
+    color:#0078D7;
 }

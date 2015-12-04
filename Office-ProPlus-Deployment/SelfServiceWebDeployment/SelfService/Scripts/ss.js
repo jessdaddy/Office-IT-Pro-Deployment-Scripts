@@ -114,7 +114,7 @@ function setLanguage() {
     if (checkboxes.length > 1) {
         for (var i = 1; i < checkboxes.length; i++) {
             languages[i] = checkboxes[i].id;
-            $('#languageSpan')[0].innerText += ", "+languageDictionary[checkboxes[i].id];
+            $('#languageSpan').append(", "+languageDictionary[checkboxes[i].id]);
         }
     }
     showModal('confirmationModal');
@@ -162,14 +162,14 @@ function getLanguages() {
         datatype: "xml",
         success:
             function (xml) {
-                $('#languagesGrid li').remove();
+                $('#languagesGrid div').remove();
                 $xml = $(xml);
                 var languages = $xml.find("[ID='" + buildID + "']").attr('Languages').split(",");
                 $.each(languages, function (index, value) {
                     var label = value;
                     var id = value.split(" ").pop().replace(")",'').replace("(",'');
-                    $('#languagesGrid > ul').append("<li class='languageli'><label><input type='checkbox' id='" + id + "' class='languageCheckBox' onclick='verifyLanguageInput()'/> \
-                                     <span class='ms-font-m checkboxLabel'>" + label + "</span></label></li>");
+                    $('#languagesGrid ').append("<div class='ms-Grid-col ms-u-sm4 languageli'><label><input type='checkbox' id='" + id + "' class='languageCheckBox' onclick='verifyLanguageInput()'/> \
+                                     <span class='ms-font-m checkboxLabel'>" + label + "</span></label></div>");
                 });  
             }
     });
@@ -272,26 +272,22 @@ function getBuild() {
                         //                        </div>\
                         //                        </div>");
                         $("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm3 package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
-                                                <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
-                                                    <div class='ms-Grid'>\
-                                                        <div class='ms-Grid-row'>\
-                                                            <div class='ms-Callout-main'>\
-                                                                <div class='ms-Callout-header custom-callout-header'>\
-                                                                    <div class='ms-Callout-title ms-font-xxl ms-fontWeight-regular' >Tags</div>\
-                                                                    <i class='ms-Icon ms-Icon--x custom-x' onclick='closeCallout(event)'></i>\
-                                                                </div>\
-                                                                <div class='ms-Callout-inner custom-callout-inner'>\
-                                                                    <div class='ms-Callout-content'>\
-                                                                        <ul id='tags-list' class='tags-list'>"
-                                                                  + textString + "\
-                                                                        </ul>\
-                                                                    </div>\
+                                                    <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
+                                                        <div class='ms-Callout-main'>\
+                                                            <div class='ms-Callout-header custom-callout-header'>\
+                                                                <div class='ms-Callout-title ms-font-xl ms-fontWeight-regular' >Tags</div>\
+                                                                <i class='ms-Icon ms-Icon--x custom-x' onclick='closeCallout(event)'></i>\
+                                                            </div>\
+                                                            <div class='ms-Callout-inner custom-callout-inner'>\
+                                                                <div class='ms-Callout-content'>\
+                                                                    <ul id='tags-list' class='tags-list'>"
+                                                                + textString + "\
+                                                                    </ul>\
                                                                 </div>\
                                                             </div>\
                                                         </div>\
-                                                    </div>\
                                                 </div>\
-                                                <div class='ms-Grid package package-main'>\
+                                                <div class='package package-main'>\
                                                      <div class='ms-Grid-row package-inner'>\
                                                         <div class='ms-Grid-col ms-u-sm4'>\
                                                             <i class='ms-Icon ms-Icon--people package-people'></i>\
@@ -299,7 +295,7 @@ function getBuild() {
                                                         <div class='ms-Grid-col ms-u-sm6'>\
                                                             <div class='ms-Grid'>\
                                                                 <div class='ms-Grid-row'>\
-                                                                    <p class='type-label filter-field'>"+ buildType + "</b></p><br /><br />\
+                                                                    <p class='type-label filter-field'>"+ buildType + "</b></p><br />\
                                                                 </div>\
                                                                 <div class='ms-Grid-row'>\
                                                                     <p class='location-label ' >"+ $(this).attr('Location') + "</p>\
@@ -311,12 +307,13 @@ function getBuild() {
                                                         </div>\
                                                     </div>\
                                                     <div class='ms-Grid-row'>\
-                                                        <span class='package-bottom ms-font-m' onclick='setProduct(\"2016\",\""+ $(this).attr('ID') + "\")'>\
+                                                        <span class='package-bottom' onclick='setProduct(\"2016\",\""+ $(this).attr('ID') + "\")'>\
                                                             <i class=' ms-Icon ms-Icon--download package-download'></i>\
-                                                            <a class='ms-link'>Install</a>\
+                                                            <a class=' ms-font-m ms-link'>Install</a>\
                                                         </span>\
                                                     </div>\
                                                 </div>\
+</div>\
                                             </div>");
                     }
                 });
@@ -450,6 +447,13 @@ function searchBoxFilter() {
                 }
             });
 
+            $(".type-label").each(function () {
+                console.log($(this).text().toLocaleLowerCase());
+                console.log($(this).text().toLocaleLowerCase().indexOf(searchTerm));
+                if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
+                    $(this).parent().parent().parent().parent().parent().parent().addClass('search-filter');
+                }
+            });
 
             $(".tags-list li").each(function () {
 
