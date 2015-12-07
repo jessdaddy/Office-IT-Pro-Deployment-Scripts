@@ -240,7 +240,7 @@ function getBuild() {
                             }
                         }
 
-                        $("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm12 ms-u-md4 ms-u-lg3 ms-u-xl3 package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
+                        $("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm12 ms-u-md6 ms-u-lg4 ms-u-xl3  package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
                                                     <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
                                                         <div class='ms-Callout-main'>\
                                                             <div class='ms-Callout-header custom-callout-header'>\
@@ -258,10 +258,10 @@ function getBuild() {
                                                     </div>\
                                                     <div class='package package-main'>\
                                                          <div class='ms-Grid-row package-inner'>\
-                                                            <div class='ms-Grid-col ms-u-sm4'>\
+                                                            <div class='ms-Grid-col ms-u-sm2 ms-u-md4 ms-u-lg2 ms-u-xl1'>\
                                                                 <i class='ms-Icon ms-Icon--people package-people'></i>\
                                                             </div>\
-                                                            <div class='ms-Grid-col ms-u-sm6'>\
+                                                            <div class='ms-Grid-col ms-u-sm6 ms-u-smPush1 ms-u-md3 ms-u-mdPull2 ms-u-lg4 ms-u-lgPush3 ms-u-xl2 ms-u-xlPull2'>\
                                                                  <div class='ms-Grid'>\
                                                                     <div class='ms-Grid-row'>\
                                                                         <p class='type-label filter-field'>"+ buildType + "</b></p><br />\
@@ -271,7 +271,7 @@ function getBuild() {
                                                                     </div>\
                                                                 </div>\
                                                             </div>\
-                                                            <div class='ms-Grid-col ms-u-sm2'>\
+                                                            <div class='ms-Grid-col ms-u-sm2 ms-u-smPush2 ms-u-md5 ms-u-mdPush1 ms-u-lg6 ms-u-lgPush1 ms-u-xl8 ms-u-xlPush1'>\
                                                                 <i id='calloutTag' class='ms-Icon ms-Icon--tag package-tag' onclick='toggleCallout(event)'></i>\
                                                             </div>\
                                                         </div>\
