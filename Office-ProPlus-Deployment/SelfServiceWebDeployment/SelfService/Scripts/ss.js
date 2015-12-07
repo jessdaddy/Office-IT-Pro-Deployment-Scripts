@@ -219,7 +219,7 @@ function getBuild() {
 
                        
                         $("#buildsTable").append("<div class='ms-Table-row custom-table-row shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
-                            <span class='ms-Table-cell ms-font-l custom-first-cell custom-cell filter-field'><i class='ms-Icon ms-Icon--people package-people-table'></i>"+ buildType + "</span>\
+                            <span class='ms-Table-cell ms-font-l custom-first-cell custom-cell filter-field'><i class='ms-Icon ms-Icon--people package-people-table'></i>" + buildType + "</span>\
                             <span class='ms-Table-cell custom-cell'>"+ $(this).attr('Location') + "</span>\
                             <span class='ms-Table-cell custom-cell'><i class='ms-Icon ms-Icon--tag custom-table-tag'></i>"+ textString + "</span>\
                             <span class='ms-Table-cell custom-cell custom-last-cell' onclick='setProduct(\"2016\",\""+ $(this).attr('ID') + "\")'><i class='ms-Icon ms-Icon--download custom-table-tag' ></i><a class='ms-link'>Install</a></span>\
@@ -240,7 +240,7 @@ function getBuild() {
                             }
                         }
 
-                        $("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm3 package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
+                        $("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm12 ms-u-md4 ms-u-lg3 ms-u-xl3 package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
                                                     <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
                                                         <div class='ms-Callout-main'>\
                                                             <div class='ms-Callout-header custom-callout-header'>\
@@ -250,39 +250,39 @@ function getBuild() {
                                                             <div class='ms-Callout-inner custom-callout-inner'>\
                                                                 <div class='ms-Callout-content'>\
                                                                     <ul id='tags-list' class='tags-list'>"
-                                                                + textString + "\
+                                                                    + textString + "\
                                                                     </ul>\
                                                                 </div>\
                                                             </div>\
                                                         </div>\
-                                                </div>\
-                                                <div class='package package-main'>\
-                                                     <div class='ms-Grid-row package-inner'>\
-                                                        <div class='ms-Grid-col ms-u-sm4'>\
-                                                            <i class='ms-Icon ms-Icon--people package-people'></i>\
-                                                        </div>\
-                                                        <div class='ms-Grid-col ms-u-sm6'>\
-                                                             <div class='ms-Grid'>\
-                                                                <div class='ms-Grid-row'>\
-                                                                    <p class='type-label filter-field'>"+ buildType + "</b></p><br />\
-                                                                </div>\
-                                                                <div class='ms-Grid-row'>\
-                                                                    <p class='location-label ' >"+ $(this).attr('Location') + "</p>\
+                                                    </div>\
+                                                    <div class='package package-main'>\
+                                                         <div class='ms-Grid-row package-inner'>\
+                                                            <div class='ms-Grid-col ms-u-sm4'>\
+                                                                <i class='ms-Icon ms-Icon--people package-people'></i>\
+                                                            </div>\
+                                                            <div class='ms-Grid-col ms-u-sm6'>\
+                                                                 <div class='ms-Grid'>\
+                                                                    <div class='ms-Grid-row'>\
+                                                                        <p class='type-label filter-field'>"+ buildType + "</b></p><br />\
+                                                                    </div>\
+                                                                    <div class='ms-Grid-row'>\
+                                                                        <p class='location-label ' >"+ $(this).attr('Location') + "</p>\
+                                                                    </div>\
                                                                 </div>\
                                                             </div>\
+                                                            <div class='ms-Grid-col ms-u-sm2'>\
+                                                                <i id='calloutTag' class='ms-Icon ms-Icon--tag package-tag' onclick='toggleCallout(event)'></i>\
+                                                            </div>\
                                                         </div>\
-                                                        <div class='ms-Grid-col ms-u-sm2'>\
-                                                            <i id='calloutTag' class='ms-Icon ms-Icon--tag package-tag' onclick='toggleCallout(event)'></i>\
+                                                        <div class='ms-Grid-row'>\
+                                                            <span class='package-bottom' onclick='setProduct(\"2016\",\""+ $(this).attr('ID') + "\")'>\
+                                                                <i class=' ms-Icon ms-Icon--download package-download'></i>\
+                                                                <a class=' ms-font-m ms-link'>Install</a>\
+                                                            </span>\
                                                         </div>\
                                                     </div>\
-                                                    <div class='ms-Grid-row'>\
-                                                        <span class='package-bottom' onclick='setProduct(\"2016\",\""+ $(this).attr('ID') + "\")'>\
-                                                            <i class=' ms-Icon ms-Icon--download package-download'></i>\
-                                                            <a class=' ms-font-m ms-link'>Install</a>\
-                                                        </span>\
-                                                    </div>\
-                                                </div>\
-                                                </div>\
+                                                </div> \
                                             </div>");
                     }
                 });

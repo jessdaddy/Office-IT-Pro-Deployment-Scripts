@@ -17,9 +17,13 @@
 
 </head>
 <body>
+    @Html.Partial("~/Views/SHared/_banner.cshtml")
+
+
+
     <div id="banner" class="ms-Grid custom-banner">
         <div class="ms-Grid-row">
-            <div class="ms-Grid-col ms-u-sm6">
+            <div class="ms-Grid-col ms-u-sm4 ms-u-md4 ms-u-lg6">
                 <div class="banner-text">
                     <div class="ms-font-su">What's Office Self Service Deployment?</div>
                     <div class="ms-font-plus description">
@@ -30,10 +34,10 @@
                 </div>
                 <button class="ms-button" onclick="focusDialog()"><span class="ms-Button-label ms-font-md ms-fontWeight-semibold"><i class="ms-Icon ms-Icon--arrowDown2"></i>Begin Searching</span></button>
             </div>
-            <div class="ms-Grid-col ms-u-sm4">
+            <div class="ms-Grid-col ms-u-sm4 ms-u-md4 ms-u-lg4 ">
                 <img src="~/Content/imgs/illustration.png" />
             </div>
-            <div class="ms-Grid-col ms-u-sm2">
+            <div class="ms-Grid-col ms-u-sm4 ms-u-md4 ms-u-lg2">
                 <i class="ms-Icon ms-Icon--x" onclick="toggleBanner()"></i>
             </div>
         </div>
@@ -42,7 +46,7 @@
     <div id="mini-banner" class="custom-mini-banner hidden">
         <div class="ms-Grid">
             <div class="ms-Grid-row">
-                <div class="ms-Grid-col ms-u-sm12">
+                <div class="ms-Grid-col ms-u-sm6 ms-u-smPush3  ms-u-md4 ms-u-mdPush4  ms-u-lg4 ms-u-lgPush4">
                     <div class="mini-banner-label ms-fontWeight-semibold">
                         What is the Office Self Service Deployment?
                     </div>
@@ -54,21 +58,20 @@
     </div>
 
     <div id="productModal" class="custom-Dialog" tabindex="1">
-        @Html.Partial("~/Views/SHared/_banner.cshtml")
         <div class="ms-Grid custom-Dialog-main">
             <div class="ms-Grid-row">
                 <div class="ms-Grid-col ms-u-sm12">
                     <div class="ms-Grid -header custom-header">
                         <div class="ms-Grid-row">
-                            <div class="ms-Grid-col ms-u-sm2">
+                            <div class="ms-Grid-col ms-u-sm2  ms-u-md2  ms-u-sm2">
                                 <p class="ms-font-xl">Select a Package</p>
                             </div>
-                            <div class="ms-Grid-col ms-u-sm4">
+                            <div class="ms-Grid-col ms-u-sm6 ms-u-smPush2 ms-u-mdPush2 ms-u-lgPush0">
                                 <div id="outerSearchBox" class="ms-SearchBox ms-SearchBox-field custom-SearchBox">
                                 </div>
                             </div>
-                            <div class="ms-Grid-col ms-u-sm2">
-                                <div class="ms-Dropdown" style="width:150px">
+                            <div class="ms-Grid-col ms-u-sm4  ms-u-lg2 ms-u-smPush1 ms-u-md-Push3 ms-ul-lgPull1">
+                                <div class="ms-Dropdown" style="width:150px" >
                                     <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
                                     <select id="ddl-Location" class="ms-Dropdown-select"></select>
                                 </div>
@@ -105,7 +108,6 @@
 
 
     <div id="languageModal" class=" custom-Dialog hidden" tabindex="1">
-        @Html.Partial("~/Views/SHared/_banner.cshtml")
         <div class=" custom-Dialog-main">
             <button class="-button custom-back-button" onclick="showModal('productModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/Custom-Back-Arrow.png" />
@@ -133,7 +135,7 @@
     </div>
 
     <div id="confirmationModal" class=" custom-Dialog hidden" tabindex="1">
-        @Html.Partial("~/Views/SHared/_banner.cshtml")
+
         <div class=" custom-Dialog-main">
             <button class="-button custom-back-button" onclick="showModal('languageModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/Custom-Back-Arrow.png" />
@@ -197,7 +199,7 @@
     </div>
 
     <div id="downloadModal" class=" custom-Dialog hidden" tabindex="1">
-        @Html.Partial("~/Views/SHared/_banner.cshtml")
+
         <div class=" custom-Dialog-main">
             <button class="-button custom-back-button" onclick="showModal('confirmationModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/Custom-Back-Arrow.png" />
@@ -214,14 +216,14 @@
     </div>
 
     <div id="helpModal" class=" custom-Dialog hidden" tabindex="1">
-        @Html.Partial("~/Views/SHared/_banner.cshtml")
+
         @Html.Partial("~/Views/SHared/_help.cshtml")
     </div>
 
     <div id="pageFooter" class="custom-footer footer">
         <div class="ms-font-s" style="float:right">&copy; 2015 Microsoft</div>
-        <div class="ms-font-s" style="float:right">Terms of use</div>
-        <div class="ms-font-s" style="float:right">Privacy & cookies</div>
+        @*<div class="ms-font-s" style="float:right">Terms of use</div>
+        <div class="ms-font-s" style="float:right">Privacy & cookies</div>*@
     </div>
 </body>
 </html>

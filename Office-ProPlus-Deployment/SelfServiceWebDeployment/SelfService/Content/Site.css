@@ -64,7 +64,6 @@
 
 .custom-Dialog-inner{
     width:100%;
-    height:75%;
     padding-left:8px;
 }
 
@@ -194,13 +193,13 @@ input[type=checkbox]
     background: #0078d7;
 }
 
-/*.languageli{
+.languageli{
     width:33%;
     margin-bottom:10px;
     float:left;
     text-align:left;
     display:inline-block;
-}*/
+}
 
 /*.languageul{
     text-align:center;
@@ -208,15 +207,13 @@ input[type=checkbox]
 }*/
 
 .custom-banner{
-   
-    overflow-x:hidden;
+    padding-top:20px;
+    margin-top:50px;
     background-color:#00BCF2;
 }
 
 .custom-mini-banner{
-    height:50px;
     margin-top:50px;
-    padding-left:33.2%;
     background-color:#00BCF2;
     color:white;
 }
@@ -225,7 +222,7 @@ input[type=checkbox]
 .mini-banner-toggle{
     width:auto;
     color:white !important;
-    padding-top:5px;
+    padding-top:15px;
 }
 
 .mini-banner-label{
@@ -247,8 +244,7 @@ input[type=checkbox]
 }
 
 .custom-banner > .ms-Grid-row > .ms-Grid-col > img {
-    margin-top: 5%;
-    padding-left: 10%;
+    padding-top:10%;
 }
 
 .custom-banner > .ms-Grid-row > .ms-Grid-col > i{
@@ -288,7 +284,6 @@ span.ms-Button-label {
 
 
 .custom-header{
-    width:90%;
     margin-right:auto;
     padding-bottom:2%;
 }
@@ -303,6 +298,9 @@ span.ms-Button-label {
   
 }
 
+.package-group{
+    position:relative;
+}
 
 .package{
     width:100%;
@@ -313,6 +311,7 @@ span.ms-Button-label {
 }
 .package-main{
     width:90%;
+    padding:0 !important;
     box-shadow:1px 1px 5px #e5e5e5;
     z-index:1;
    
@@ -337,9 +336,9 @@ span.ms-Button-label {
 
 .package-tag{
     float:right;
-    margin-top:-15%;
+    margin-top:-5%;
     padding-right:5%;
-    font-size:100%;
+    /*font-size:100%;*/
     color:#767676;
     cursor:pointer;
 }
@@ -350,7 +349,7 @@ span.ms-Button-label {
 
 .type-label{
     float:left;
-    font-size:1.2vw;
+    font-size:1.1vw;
     font-family: 'Segoe UI Light WestEuropean','Segoe UI Light','Segoe WP Light','Segoe UI','Segoe WP',Tahoma,Arial,sans-serif;
     font-weight: 500;
     color: #333333;
@@ -364,11 +363,8 @@ span.ms-Button-label {
     color:#767676 ;
     font-weight: 400;
     margin-top: -5% !important;
-}
 
-/*.package-label-two{
-   margin-top:-10px
-}*/
+}
 
 .package-bottom{
     float:right;
@@ -393,13 +389,13 @@ span.ms-Button-label {
      box-shadow:1px 1px 5px #0078D7;
 }
 
-#custom-callout{
+#custom-callout{    
+   position:absolute;
    float:right;
    width:85%;
    height:0;
-   margin-top:-5%;
-   margin-right:-75% ; 
-   margin-left:-5%;
+   margin-top:-3%;
+   margin-left:85%;
 }
 
 
@@ -421,7 +417,7 @@ span.ms-Button-label {
 
 .custom-x{
     float:right;
-    margin-top:-5%;
+    margin-top:-1%;
     margin-right:5%;
     cursor:pointer;
     z-index:150;
@@ -529,7 +525,6 @@ span.ms-Button-label {
 #languageSpan{
     padding-left:6%;
 }
-
 
 .custom-footer > div{
     color:#767676 ;
