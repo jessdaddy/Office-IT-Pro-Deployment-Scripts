@@ -17,7 +17,22 @@
 
 </head>
 <body>
-    @Html.Partial("~/Views/SHared/_banner.cshtml")
+    <div class="ms-Grid ms-bgColor-themePrimary banner">
+        <div class="ms-Grid-row">
+            <div class="ms-Grid-col ms-u-sm4 ms-u-lg3 ms-u-xl1">
+                <img class="ms-fontColor-white companyLogo"  />
+                <span class="ms-font-xl ms-fontColor-white companyName">
+                    CompanyLogo/Name
+                </span>
+            </div>
+            <div class="ms-Grid-col ms-u-sm6 ms-u-lg3 ms-u-lgPush1 ms-u-xl2 ms-u-xlPull2  banner-label-outer">
+                <span class="ms-font-xl banner-label ms-fontColor-white" style="">Office Self Service Deployment</span>
+            </div>
+            <div class="ms-Grid-col ms-u-sm2 ms-u-smPush0 ms-u-lg2 ms-u-lgPush4 ms-u-xl1 ms-u-xlPush8" onclick="showModal('helpModal')">
+                <span id="btAbout" class="ms-fontColor-white ms-Icon ms-Icon--question helpButton"></span>
+            </div>
+        </div>
+    </div>
 
     <div id="banner" class="ms-Grid custom-banner">
         <div class="ms-Grid-row">
@@ -32,7 +47,7 @@
                 </div>
                 <button class="ms-button" onclick="focusDialog()"><span class="ms-Button-label ms-font-md ms-fontWeight-semibold"><i class="ms-Icon ms-Icon--arrowDown2"></i>Begin Searching</span></button>
             </div>
-            <div class="ms-Grid-col ms-u-sm4 ms-u-smPush0 ms-u-md2 ms-u-mdPush0 ms-u-lg2  ms-u-xl2 ms-u-xlPush2">
+            <div class="ms-Grid-col ms-u-sm4 ms-u-smPush0 ms-u-md2 ms-u-mdPush0 ms-u-lg2  ms-u-xl2 ms-u-xlPush1">
                 <img src="~/Content/imgs/illustration.png" />
             </div>
             <div class="ms-Grid-col ms-u-sm4 ms-u-smPush3 ms-u-md2 ms-u-mdPush2 ms-u-lg2 ms-u-lgPush2 ms-u-xl2 ms-u-xlPush2">
