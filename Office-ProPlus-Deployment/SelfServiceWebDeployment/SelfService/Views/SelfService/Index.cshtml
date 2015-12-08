@@ -19,8 +19,6 @@
 <body>
     @Html.Partial("~/Views/SHared/_banner.cshtml")
 
-
-
     <div id="banner" class="ms-Grid custom-banner">
         <div class="ms-Grid-row">
             <div class="ms-Grid-col ms-u-sm4 ms-u-md4 ms-u-lg6">
@@ -34,7 +32,7 @@
                 </div>
                 <button class="ms-button" onclick="focusDialog()"><span class="ms-Button-label ms-font-md ms-fontWeight-semibold"><i class="ms-Icon ms-Icon--arrowDown2"></i>Begin Searching</span></button>
             </div>
-            <div class="ms-Grid-col ms-u-sm4 ms-u-md4 ms-u-lg4 ">
+            <div class="ms-Grid-col ms-u-sm4 ms-u-md4 ms-u-mdPush1 ms-u-lg4 ">
                 <img src="~/Content/imgs/illustration.png" />
             </div>
             <div class="ms-Grid-col ms-u-sm4 ms-u-md4 ms-u-lg2">
@@ -66,12 +64,12 @@
                             <div class="ms-Grid-col ms-u-sm2  ms-u-md2  ms-u-sm2">
                                 <p class="ms-font-xl">Select a Package</p>
                             </div>
-                            <div class="ms-Grid-col ms-u-sm6 ms-u-smPush2 ms-u-mdPush2 ms-u-lgPush0">
+                            <div class="ms-Grid-col ms-u-sm6 ms-u-md6 ms-u-smPush2 ms-u-mdPush2 ms-u-lgPush0">
                                 <div id="outerSearchBox" class="ms-SearchBox ms-SearchBox-field custom-SearchBox">
                                 </div>
                             </div>
-                            <div class="ms-Grid-col ms-u-sm4  ms-u-lg2 ms-u-smPush1 ms-u-md-Push3 ms-ul-lgPull1">
-                                <div class="ms-Dropdown" style="width:150px" >
+                            <div class="ms-Grid-col ms-u-sm4 ms-u-smPush1 ms-u-md4 ms-u-lg2  ms-u-md-Push4 ms-ul-lgPull1">
+                                <div class="ms-Dropdown" style="width:150px">
                                     <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
                                     <select id="ddl-Location" class="ms-Dropdown-select"></select>
                                 </div>
@@ -149,34 +147,34 @@
                 <div class="ms-Grid-row">
                     <div class="ms-Grid">
                         <div class="ms-Grid-row">
-                            <div class="ms-Grid-col ms-u-sm12">
+                            <div class="ms-Grid-col ms-u-sm8 ms-u-smPush1 ms-u-md8 ms-u-mdPush3 ms-u-lg10  ms-u-lgPush2 ms-u-xl8 ms-u-xlPush4">
                                 <p class="ms-font-m-plus">Here's what you are about to download. If this is correct please click the  <b>Install</b> button to proceed downloading</p>
                             </div>
                         </div>
                         <div class="ms-Grid-row">
-                            <div class="ms-Grid-col ms-u-sm12">
+                            <div class="ms-Grid-col ms-u-sm12 ms-u-smPush0 ms-u-md12 ms-u-mdPush1 ms-u-lg12 ms-u-lgPush1 ms-u-xl10 ms-u-xlPush2">
                                 <div class="confirmation-information">
                                     <div class="ms-Grid-row">
-                                        <div class="ms-Grid-col ms-u-sm3 confirmationField">
+                                        <div class="ms-Grid-col ms-u-sm3 ms-u-smPush1 ms-u-md2 ms-u-mdPush1 ms-u-xl2confirmationField">
                                             <p class="ms-font-l">Office Version:</p>
                                         </div>
-                                        <div class="ms-Grid-col ms-u-sm4">
+                                        <div class="ms-Grid-col ms-u-sm4 ms-u-smPush1  ms-u-md3 ms-u-mdPush2 ms-u-xl2 ms-u-xlPush1 confirmationField">
                                             <p id="versionSpan" class="ms-font-l"></p>
                                         </div>
                                     </div>
                                     <div class="ms-Grid-row">
-                                        <div class="ms-Grid-col  ms-u-sm3 confirmationField">
+                                        <div class="ms-Grid-col  ms-u-sm3 ms-u-smPush1  ms-u-md2 ms-u-mdPush1 confirmationField">
                                             <p class="ms-font-l">Product Package:</p>
                                         </div>
-                                        <div class="ms-Grid-col sm4 confirmationField">
+                                        <div class="ms-Grid-col ms-u-sm4 ms-u-smPush2  ms-u-md3 ms-u-mdPush2 ms-u-xl2 ms-u-xlPush1 confirmationField">
                                             <p id="productSpan" class="ms-font-l"></p>
                                         </div>
                                     </div>
                                     <div class="ms-Grid-row">
-                                        <div class="ms-Grid-col  ms-u-sm3 confirmationField">
+                                        <div class="ms-Grid-col  ms-u-sm3 ms-u-smPush1 ms-u-md2 ms-u-mdPush1 confirmationField">
                                             <p class="ms-font-l">Languages:</p>
                                         </div>
-                                        <div class="ms-Grid-col  ms-u-sm9">
+                                        <div class="ms-Grid-col  ms-u-sm6 ms-u-smPush2 ms-u-md7 ms-u-mdPush2 ms-u-lg8 ms-u-lgPush1 ms-u-xl8 ms-u-xlPush1">
                                             <p id="languageSpan" class="ms-font-l">
 
                                             </p>
@@ -227,3 +225,6 @@
     </div>
 </body>
 </html>
+
+
+

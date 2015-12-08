@@ -168,7 +168,7 @@ function getLanguages() {
                 $.each(languages, function (index, value) {
                     var label = value;
                     var id = value.split(" ").pop().replace(")",'').replace("(",'');
-                    $('#languagesGrid ').append("<div class='ms-Grid-col ms-u-sm4 languageli'><label><input type='checkbox' id='" + id + "' class='languageCheckBox' onclick='verifyLanguageInput()'/> \
+                    $('#languagesGrid ').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg3 ms-u-xl2 languageli'><label><input type='checkbox' id='" + id + "' class='languageCheckBox' onclick='verifyLanguageInput()'/> \
                                      <span class='ms-font-m checkboxLabel'>" + label + "</span></label></div>");
                 });  
             }
@@ -241,37 +241,37 @@ function getBuild() {
                         }
 
                         $("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm12 ms-u-md6 ms-u-lg4 ms-u-xl3  package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
-                                                    <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
-                                                        <div class='ms-Callout-main'>\
-                                                            <div class='ms-Callout-header custom-callout-header'>\
-                                                                <i class='ms-Icon ms-Icon--x custom-x' onclick='closeCallout(event)'></i>\
-                                                                <div class='ms-Callout-title ms-font-xl ms-fontWeight-regular'>Tags</div>\
-                                                            </div>\
-                                                            <div class='ms-Callout-inner custom-callout-inner'>\
-                                                                <div class='ms-Callout-content'>\
-                                                                    <ul id='tags-list' class='tags-list'>"
-                                                                    + textString + "\
-                                                                    </ul>\
+                                                        <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
+                                                            <div class='ms-Callout-main'>\
+                                                                <div class='ms-Callout-header custom-callout-header'>\
+                                                                    <i class='ms-Icon ms-Icon--x custom-x' onclick='closeCallout(event)'></i>\
+                                                                    <div class='ms-Callout-title ms-font-xl ms-fontWeight-regular'>Tags</div>\
+                                                                </div>\
+                                                                <div class='ms-Callout-inner custom-callout-inner'>\
+                                                                    <div class='ms-Callout-content'>\
+                                                                        <ul id='tags-list' class='tags-list'>"
+                                                                        + textString + "\
+                                                                        </ul>\
+                                                                    </div>\
                                                                 </div>\
                                                             </div>\
                                                         </div>\
-                                                    </div>\
-                                                    <div class='package package-main'>\
+                                                         <div class='package package-main'>\
                                                          <div class='ms-Grid-row package-inner'>\
                                                             <div class='ms-Grid-col ms-u-sm2 ms-u-md4 ms-u-lg2 ms-u-xl1'>\
                                                                 <i class='ms-Icon ms-Icon--people package-people'></i>\
                                                             </div>\
-                                                            <div class='ms-Grid-col ms-u-sm6 ms-u-smPush1 ms-u-md3 ms-u-mdPull2 ms-u-lg4 ms-u-lgPush3 ms-u-xl2 ms-u-xlPull2'>\
+                                                            <div class='ms-Grid-col ms-u-sm6 ms-u-smPush3 ms-u-md4 ms-u-mdPush2 ms-u-lg4 ms-u-lgPush4 ms-u-xl3 ms-u-xlPush'>\
                                                                  <div class='ms-Grid'>\
                                                                     <div class='ms-Grid-row'>\
-                                                                        <p class='type-label filter-field'>"+ buildType + "</b></p><br />\
+                                                                        <p class='ms-font-l type-label filter-field'>" + buildType + "</b></p><br />\
                                                                     </div>\
                                                                     <div class='ms-Grid-row'>\
                                                                         <p class='location-label ' >"+ $(this).attr('Location') + "</p>\
                                                                     </div>\
                                                                 </div>\
                                                             </div>\
-                                                            <div class='ms-Grid-col ms-u-sm2 ms-u-smPush2 ms-u-md5 ms-u-mdPush1 ms-u-lg6 ms-u-lgPush1 ms-u-xl8 ms-u-xlPush1'>\
+                                                            <div style='display:relative;' class='ms-Grid-col ms-u-sm2 ms-u-smPush2 ms-u-md3 ms-u-mdPush1 ms-u-lg2 ms-u-lgPush4 ms-u-xl8 ms-u-xlPush0'>\
                                                                 <i id='calloutTag' class='ms-Icon ms-Icon--tag package-tag' onclick='toggleCallout(event)'></i>\
                                                             </div>\
                                                         </div>\
