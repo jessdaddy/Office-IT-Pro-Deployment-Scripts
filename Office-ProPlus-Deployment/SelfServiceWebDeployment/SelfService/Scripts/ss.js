@@ -311,7 +311,7 @@ function getLocations(callback) {
         datatype: "xml",
         success:
             function (xml) {
-                $("#ddl-Location").siblings('span.ms-Dropdown-title').text("Location Filter");
+                $("#ddl-Location").siblings('span.ms-Dropdown-title').text("Location");
                 $("#ddl-Location").siblings('ul').append("<li class='ms-Dropdown-item'>Location Filter</li>");
 
                 $(xml).find('Build').each(function () {

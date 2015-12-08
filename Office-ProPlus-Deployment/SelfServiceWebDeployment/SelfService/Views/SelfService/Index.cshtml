@@ -61,17 +61,27 @@
                 <div class="ms-Grid-col ms-u-sm12">
                     <div class="ms-Grid -header custom-header">
                         <div class="ms-Grid-row">
-                            <div class="ms-Grid-col ms-u-sm2  ms-u-md2  ms-u-sm2">
+                            <div class="ms-Grid-col ms-u-sm6 ms-u-md12 ms-u-lg3 ms-u-xl2">
                                 <p class="ms-font-xl">Select a Package</p>
                             </div>
-                            <div class="ms-Grid-col ms-u-sm6 ms-u-md6 ms-u-smPush2 ms-u-mdPush2 ms-u-lgPush0">
+                            <div class="ms-Grid-col ms-u-sm6 ms-u-smPull1 ms-u-md4 ms-u-mdPush0 ms-u-lg3 ms-u-lgPush0 ms-u-xl4">
                                 <div id="outerSearchBox" class="ms-SearchBox ms-SearchBox-field custom-SearchBox">
                                 </div>
                             </div>
-                            <div class="ms-Grid-col ms-u-sm4 ms-u-smPush1 ms-u-md4 ms-u-lg2  ms-u-md-Push4 ms-ul-lgPull1">
-                                <div class="ms-Dropdown" style="width:150px">
+                            <div class="ms-Grid-col ms-u-sm6 ms-u-smPull1 ms-u-md4 ms-u-mdPush0 ms-u-lg3 ms-u-lgPush0 ms-u-xl3">
+                                <div class="ms-Dropdown">
                                     <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
                                     <select id="ddl-Location" class="ms-Dropdown-select"></select>
+                                </div>
+                            </div>
+                            <div class="ms-Grid-col ms-u-sm6 ms-u-smPush5 ms-u-md4 ms-u-mdPush0 ms-u-lg3 ms-u-lgPush0 ms-u-xl2">
+                                <div class="display-controls">
+                                    <div id="listViewToggle" class="display-control-outer" onclick="isListView()">
+                                        <i class="ms-Icon ms-Icon--listBullets  display-control-icon"></i>
+                                    </div>
+                                    <div id="tileViewToggle" class="display-control-outer" onclick="isTileView()">
+                                        <i class="ms-Icon ms-Icon--tile display-control-icon"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -82,14 +92,7 @@
             <div class="ms-Grid -inner custom-Dialog-inner">
                 <div class="ms-Grid-row"> 
                     <div class="ms-Grid-col ms-u-sm12">
-                        <div class="display-controls">
-                            <div id="listViewToggle" class="display-control-outer" onclick="isListView()">
-                                <i class="ms-Icon ms-Icon--listBullets  display-control-icon"></i>
-                            </div>
-                            <div id="tileViewToggle" class="display-control-outer" onclick="isTileView()">
-                                <i class="ms-Icon ms-Icon--tile display-control-icon"></i>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
 
