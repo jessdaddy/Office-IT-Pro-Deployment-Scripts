@@ -168,7 +168,7 @@ function getLanguages() {
                 $.each(languages, function (index, value) {
                     var label = value;
                     var id = value.split(" ").pop().replace(")",'').replace("(",'');
-                    $('#languagesGrid ').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg3 ms-u-xl2 languageli'><label><input type='checkbox' id='" + id + "' class='languageCheckBox' onclick='verifyLanguageInput()'/> \
+                    $('#languagesGrid ').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg3 ms-u-xl2 languageli'><label><input type='checkbox' id='" + id + "' class='languageCheckBox' onclick='verifyLanguageInput()'/>\
                                      <span class='ms-font-m checkboxLabel'>" + label + "</span></label></div>");
                 });  
             }
@@ -480,7 +480,7 @@ function locationFilter(location) {
 }
 
 function addFilter(filter) {
-    if (appliedFilters.indexOf(filter) == -1) {
+    if (appliedFilters.indexOf(filter) === -1) {
         appliedFilters.push(filter);
     }
 }
