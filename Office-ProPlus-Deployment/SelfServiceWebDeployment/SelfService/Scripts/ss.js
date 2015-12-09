@@ -124,6 +124,28 @@ function startInstall() {
 
 }
 
+function generateXML() {
+
+    console.log(languages);
+    $.ajax(
+        {
+            type: "POST",
+            url: ServerSide.GenerateXML,
+            data: { buildName: buildID, languageList: languages },
+            traditional:true,
+            success: 
+                function () {
+                    console.log("Great Success!");
+                    //showModal('downloadModal');
+                },
+            error: 
+                function (xhr) {
+                    console.log("meh");
+                }
+
+    })
+}
+
 function showModal(modalId) {
     $(".custom-Dialog").removeClass("hidden").addClass("hidden");
     $("#" + modalId).removeClass("hidden");

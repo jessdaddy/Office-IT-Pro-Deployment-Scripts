@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml.Linq;
 
 namespace SelfService.Controllers
 {
@@ -123,6 +124,33 @@ namespace SelfService.Controllers
             {
                 return View();
             }
+        }
+
+
+        private void addLanguages(XDocument doc, List<string> languageList){
+
+            foreach (string language in languageList)
+            {
+                doc.Root.Element("Add").Element("Product").Add(
+                    new XElement("Language",
+                        new XAttribute("ID", language)));
+            } 
+        }
+
+        public ActionResult generateXML(string buildName, List<string> languageList)
+        {
+            string currentDirectory = AppDomain.CurrentDomain.BaseDirectory; 
+            var oldXML = XDocument.Load(currentDirectory+"Content\\XML Build Files\\Base Files\\"+buildName+".xml");
+            XDocument newXML = new XDocument(oldXML);
+
+            addLanguages(newXML, languageList);
+
+            string fileName = Guid.NewGuid().ToString() + ".xml";
+            string savePath = currentDirectory + "Content\\XML Build Files\\Generated Files\\"+fileName;
+            newXML.Save(savePath);
+            
+
+            return View();
         }
     }
 }
