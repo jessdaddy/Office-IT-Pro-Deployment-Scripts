@@ -13,8 +13,6 @@
     cursor: pointer;
 }
 
-
-
 .custom-Dialog {
     height: 100%;
     width: 100%;
@@ -160,6 +158,7 @@ input[type=checkbox] {
     border-left: 1px solid white;
     border-right: 1px solid white;
     padding-bottom: 10px;
+    padding-right:-10px;
 }
 
 .banner-label {
@@ -171,9 +170,13 @@ input[type=checkbox] {
 .companyName {
     font-size: 22px;
     vertical-align: bottom;
-    display: inline-block;
+    display: block;
+    margin-right:-50%;
 }
 
+.companyOuter{
+    margin-right:-50%;
+}
 .custom-SearchBox {
     width: 100% !important;
     padding-top: 0;

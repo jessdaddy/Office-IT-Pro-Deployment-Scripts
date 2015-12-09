@@ -217,6 +217,9 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\ss.js" />
+    <Content Include="Scripts\ss.min.js">
+      <DependentUpon>ss.js</DependentUpon>
+    </Content>
     <Content Include="Scripts\taggle-ie8.js" />
     <Content Include="Scripts\taggle-ie9.js" />
     <Content Include="Scripts\taggle.js" />
@@ -241,6 +244,9 @@
     <Content Include="Views\SelfService\Index.cshtml" />
     <Content Include="Views\Shared\_banner.cshtml" />
     <Content Include="Views\Shared\_help.cshtml" />
+    <Content Include="Scripts\ss.min.js.map">
+      <DependentUpon>ss.min.js</DependentUpon>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
