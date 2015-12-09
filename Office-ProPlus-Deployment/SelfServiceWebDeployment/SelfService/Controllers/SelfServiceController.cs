@@ -148,7 +148,6 @@ namespace SelfService.Controllers
             string savePath = currentDirectory + "Content\\XML_Build_Files\\Generated_Files\\"+fileName;
             newXML.Save(savePath);
 
-
             return View();
         }
     }
