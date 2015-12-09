@@ -140,15 +140,14 @@ namespace SelfService.Controllers
         public ActionResult generateXML(string buildName, List<string> languageList)
         {
             string currentDirectory = AppDomain.CurrentDomain.BaseDirectory; 
-            var oldXML = XDocument.Load(currentDirectory+"Content\\XML Build Files\\Base Files\\"+buildName+".xml");
+            var oldXML = XDocument.Load(currentDirectory+"Content\\XML_Build_Files\\Base_Files\\"+buildName+".xml");
             XDocument newXML = new XDocument(oldXML);
-
             addLanguages(newXML, languageList);
 
             string fileName = Guid.NewGuid().ToString() + ".xml";
-            string savePath = currentDirectory + "Content\\XML Build Files\\Generated Files\\"+fileName;
+            string savePath = currentDirectory + "Content\\XML_Build_Files\\Generated_Files\\"+fileName;
             newXML.Save(savePath);
-            
+
 
             return View();
         }

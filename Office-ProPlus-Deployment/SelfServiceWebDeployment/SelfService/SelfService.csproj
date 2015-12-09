@@ -196,7 +196,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.slider.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
-    <Content Include="Content\XML Build Files\Base Files\build0.xml" />
+    <Content Include="Content\XML_Build_Files\Base_Files\build0.xml" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -251,7 +251,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\XML Build Files\Generated Files\" />
+    <Folder Include="Content\XML_Build_Files\Generated_Files\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>

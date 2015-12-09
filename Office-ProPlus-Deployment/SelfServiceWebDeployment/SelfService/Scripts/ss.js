@@ -135,14 +135,8 @@ function generateXML() {
             traditional:true,
             success: 
                 function () {
-                    console.log("Great Success!");
-                    //showModal('downloadModal');
-                },
-            error: 
-                function (xhr) {
-                    console.log("meh");
+                    showModal('downloadModal');
                 }
-
     })
 }
 
