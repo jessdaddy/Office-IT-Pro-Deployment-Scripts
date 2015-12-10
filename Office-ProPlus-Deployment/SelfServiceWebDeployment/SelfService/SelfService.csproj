@@ -138,9 +138,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="bin\ODT_Launcher.exe" />
+    <Content Include="bin\SelfService.dll" />
+    <Content Include="bin\SelfService.pdb" />
     <Content Include="Content\imgs\Custom-Back-Arrow.png" />
     <Content Include="Content\imgs\illustration%402x.png" />
     <Content Include="Content\imgs\illustration.png" />
+    <Content Include="Content\ODT_Launcher.exe" />
     <Content Include="Content\taggle.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />

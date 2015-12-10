@@ -88,7 +88,7 @@ var searchBoxTaggle;
 var currentLocation;
 var currentFilter;
 var listView = 0;
-var xmlConfigPath; 
+var xmlConfigPath,exePath; 
 var appliedFilters = [];
 var previousSearch = "";
 
@@ -134,14 +134,15 @@ function generateXML() {
             traditional:true,
             success: 
                 function (xhr) {
-
-                    xmlConfigPath = xhr.message;
-                    console.log(xhr.message);
+                    xmlConfigPath = xhr.xml;
+                    exePath = xhr.exe;
+                    window.location = exePath;
+                    $('#directDL').attr({ target: "_blank", href: exePath });
                     showModal('downloadModal');
+                    
                 },
             error:
                 function(xhr) {
-                    console.log(xhr.responseText);
                     $('#errorMessage').removeClass('hidden');
                     $('#errorText').text(xhr.responseText);
                 }
@@ -445,8 +446,6 @@ function searchBoxFilter() {
             });
 
             $(".type-label").each(function () {
-                console.log($(this).text().toLocaleLowerCase());
-                console.log($(this).text().toLocaleLowerCase().indexOf(searchTerm));
                 if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
                     $(this).parent().parent().parent().parent().parent().parent().addClass('search-filter');
                 }
@@ -471,7 +470,6 @@ function searchBoxFilter() {
 
             $(".custom-table-row span").each(function () {
                 if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
-                    console.log($(this).text().toLocaleLowerCase());
                     $(this).parent().addClass('search-filter');
                 }
             });
@@ -621,8 +619,11 @@ function toggleBanner() {
 }
 
 function closeDialog() {
-    console.log("ASDf");
     $('#errorMessage').addClass('hidden');
+}
+
+function directDL() {
+    window.location.href = xmlConfigPath;
 }
 
 $(document).ready(function () {

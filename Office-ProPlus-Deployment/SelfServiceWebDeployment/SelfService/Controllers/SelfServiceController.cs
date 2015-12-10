@@ -166,10 +166,10 @@ namespace SelfService.Controllers
                 string savePath = currentDirectory + "Content\\XML_Build_Files\\Generated_Files\\" + fileName;
                 newXML.Save(savePath);
 
-                string serverPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/XML_Build_Files/Generated_Files/" + fileName ;
-                result = serverPath;
+                string xmlPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/XML_Build_Files/Generated_Files/" + fileName ;
+                string exePath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/ODT_Launcher.exe";
 
-                return Json(new { message = result });
+                return Json(new { xml = xmlPath, exe = exePath });
             }
             catch(Exception e)
             {
