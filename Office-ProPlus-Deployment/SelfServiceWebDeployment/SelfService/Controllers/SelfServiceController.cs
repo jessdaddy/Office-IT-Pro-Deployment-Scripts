@@ -168,6 +168,8 @@ namespace SelfService.Controllers
 
                 string xmlPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/XML_Build_Files/Generated_Files/" + fileName ;
                 string exePath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/ODT_Launcher.exe";
+                string setupPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/Office2016Setup.exe";
+
 
                 return Json(new { xml = xmlPath, exe = exePath });
             }
