@@ -5,6 +5,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml.Linq;
+using ODT_Launcher;
+using System.Net;
+using System.IO;
 
 namespace SelfService.Controllers
 {
@@ -137,6 +140,17 @@ namespace SelfService.Controllers
             } 
         }
 
+        private void fileDownloader(string filePath, string fileName)
+        {
+            string userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string downloadPath = Path.Combine(userPath, "Downloads\\" + fileName);
+
+            using (var client = new WebClient())
+            {
+                client.DownloadFile(filePath, downloadPath);
+            }
+        }
+
         public ActionResult generateXML(string buildName, List<string> languageList)
         {
             string currentDirectory = AppDomain.CurrentDomain.BaseDirectory; 
@@ -147,6 +161,8 @@ namespace SelfService.Controllers
             string fileName = Guid.NewGuid().ToString() + ".xml";
             string savePath = currentDirectory + "Content\\XML_Build_Files\\Generated_Files\\"+fileName;
             newXML.Save(savePath);
+
+            fileDownloader(savePath, "configuration.xml");
 
             return View();
         }

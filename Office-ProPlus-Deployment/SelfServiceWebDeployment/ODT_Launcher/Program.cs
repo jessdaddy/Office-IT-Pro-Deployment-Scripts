@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 
 namespace ODT_Launcher
 {
-    class Program
+    class InstallOffice
     {
+      
+
         static void Main(string[] args)
         {
+
         }
     }
 }
