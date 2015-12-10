@@ -153,18 +153,39 @@ namespace SelfService.Controllers
 
         public ActionResult generateXML(string buildName, List<string> languageList)
         {
-            string currentDirectory = AppDomain.CurrentDomain.BaseDirectory; 
-            var oldXML = XDocument.Load(currentDirectory+"Content\\XML_Build_Files\\Base_Files\\"+buildName+".xml");
-            XDocument newXML = new XDocument(oldXML);
-            addLanguages(newXML, languageList);
+            string result;
 
-            string fileName = Guid.NewGuid().ToString() + ".xml";
-            string savePath = currentDirectory + "Content\\XML_Build_Files\\Generated_Files\\"+fileName;
-            newXML.Save(savePath);
+            try
+            {            
+                string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                var oldXML = XDocument.Load(currentDirectory + "Content\\XML_Build_Files\\Base_Files\\" + buildName + ".xml");
+                XDocument newXML = new XDocument(oldXML);
+                addLanguages(newXML, languageList);
 
-            fileDownloader(savePath, "configuration.xml");
+                string fileName = Guid.NewGuid().ToString() + ".xml";
+                string savePath = currentDirectory + "Content\\XML_Build_Files\\Generated_Files\\" + fileName;
+                newXML.Save(savePath);
 
-            return View();
+                string serverPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/XML_Build_Files/Generated_Files/" + fileName ;
+                result = serverPath;
+
+                return Json(new { message = result });
+            }
+            catch(Exception e)
+            {
+                Response.StatusCode = 500;
+                if (e.Message.Contains("Could not find file"))
+                {
+                    result = "Base configuration file does not exist for " + buildName;
+                }
+                else
+                {
+                    result = e.Message;
+                }
+
+                return Json(new { message = result });
+            }
+
         }
     }
 }

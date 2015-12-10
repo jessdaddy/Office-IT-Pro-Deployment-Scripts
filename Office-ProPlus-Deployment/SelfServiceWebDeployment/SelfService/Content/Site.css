@@ -518,3 +518,8 @@ span.ms-Button-label {
 #tileViewToggle {
     float: right;
 }
+
+.close-dialog{
+    float:right;
+    cursor:pointer;
+}

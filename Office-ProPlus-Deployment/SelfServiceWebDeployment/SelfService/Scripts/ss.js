@@ -88,7 +88,7 @@ var searchBoxTaggle;
 var currentLocation;
 var currentFilter;
 var listView = 0;
-
+var xmlConfigPath; 
 var appliedFilters = [];
 var previousSearch = "";
 
@@ -126,7 +126,6 @@ function startInstall() {
 
 function generateXML() {
 
-    console.log(languages);
     $.ajax(
         {
             type: "POST",
@@ -134,8 +133,17 @@ function generateXML() {
             data: { buildName: buildID, languageList: languages },
             traditional:true,
             success: 
-                function () {
+                function (xhr) {
+
+                    xmlConfigPath = xhr.message;
+                    console.log(xhr.message);
                     showModal('downloadModal');
+                },
+            error:
+                function(xhr) {
+                    console.log(xhr.responseText);
+                    $('#errorMessage').removeClass('hidden');
+                    $('#errorText').text(xhr.responseText);
                 }
     })
 }
@@ -610,6 +618,11 @@ function focusDialog() {
 function toggleBanner() {
     $('#banner').toggleClass('hidden');
     $('#mini-banner').toggleClass('hidden');
+}
+
+function closeDialog() {
+    console.log("ASDf");
+    $('#errorMessage').addClass('hidden');
 }
 
 $(document).ready(function () {

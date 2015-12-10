@@ -157,8 +157,21 @@
                 <hr />
             </div>
             <div class="ms-Grid -inner confirmation-Dialog-inner">
-                <div class="ms-Grid-row">
-                    <div class="ms-Grid">
+                <div id="errorMessage" class="ms-Dialog ms-Dialog--lgHeader hidden">
+                    <div class="ms-Overlay"></div>
+                    <div class="ms-Dialog-main">
+                        <div class="ms-Dialog-header">
+                            <div class="ms-Dialog-title ms-font-xl-plus">
+                                <i class="ms-Icon ms-Icon--x close-dialog" onclick="closeDialog()"></i>
+                                Something went wrong...
+                            </div>
+                        </div>
+                        <div class="ms-Dialog-inner">
+                            <div id="errorText" class="ms-Dialog-content ms-font-l">
+                            </div>
+                        </div>
+                    </div>
+                </div>
                         <div class="ms-Grid-row">
                             <div class="ms-Grid-col ms-u-sm8 ms-u-smPush1 ms-u-md8 ms-u-mdPush3 ms-u-lg10  ms-u-lgPush2 ms-u-xl8 ms-u-xlPush4">
                                 <p class="ms-font-m-plus">Here's what you are about to download. If this is correct please click the  <b>Install</b> button to proceed downloading</p>
