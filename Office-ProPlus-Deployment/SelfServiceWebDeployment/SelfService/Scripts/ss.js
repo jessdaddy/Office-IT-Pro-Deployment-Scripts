@@ -147,9 +147,7 @@ function generateXML() {
                     xmlConfigPath = xhr.xml;
                     exePath = xhr.exe;
                     setupPath = xhr.setup;
-                    console.log(xmlConfigPath);
-                    console.log(exePath);
-                    console.log(setupPath);
+
                     window.location = exePath;
                     $('#directDL').attr({ target: "_blank", href: exePath });
                     buildQueryString();
@@ -230,7 +228,7 @@ function getBuild() {
 
                 if (listView === 1)
                 {
-
+                    $("#buildsTable").empty();
                     $("#buildsTable").append("<div class='ms-Table-row'>\
                             <span class='ms-Table-cell custom-cell' style='padding-left:4%'>Name</span>\
                             <span class='ms-Table-cell custom-cell' style=''>Location</span>\
@@ -262,7 +260,7 @@ function getBuild() {
                         }
 
                        
-                        $("#buildsTable").append("<div class='ms-Table-row custom-table-row shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
+                        $("#buildsTable").append("<div class='ms-Table-row custom-table-row shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "location-filter'>\
                             <span class='ms-Table-cell ms-font-l custom-first-cell custom-cell filter-field'><i class='ms-Icon ms-Icon--people package-people-table'></i>" + buildType + "</span>\
                             <span class='ms-Table-cell custom-cell'>"+ $(this).attr('Location') + "</span>\
                             <span class='ms-Table-cell custom-cell'><i class='ms-Icon ms-Icon--tag custom-table-tag'></i>"+ textString + "</span>\
@@ -284,7 +282,7 @@ function getBuild() {
                             }
                         }
 
-                        $("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm12 ms-u-md6 ms-u-lg4 ms-u-xl3  package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "'>\
+                        $("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm12 ms-u-md6 ms-u-lg4 ms-u-xl3  package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + " location-filter'>\
                                                         <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
                                                             <div class='ms-Callout-main'>\
                                                                 <div class='ms-Callout-header custom-callout-header'>\
