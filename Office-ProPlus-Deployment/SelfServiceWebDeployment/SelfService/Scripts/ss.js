@@ -168,7 +168,7 @@ function showModal(modalId) {
     $(".custom-Dialog").removeClass("hidden").addClass("hidden");
     $("#" + modalId).removeClass("hidden");
     if (modalId === "downloadModal") {
-        $('#directDL').text(versionToInstall);
+        $('#directDL').text(versionToInstall + " click here");
     }
 
     if (modalId === 'productModal')
