@@ -184,6 +184,7 @@ function resetFilters() {
     $(searchBoxTaggle.getInput()).val('');
     searchBoxFilter();
     $('#ul-Location li:first').click();
+    getBuild();
 }
 
 function verifyLanguageInput() {
@@ -513,6 +514,10 @@ function locationFilter(location) {
             addFilter(location);
         }
         applyFilters();
+
+        if (location.toLocaleLowerCase().indexOf('location') >= 0) {
+            getBuild();
+        }
     }
     currentLocation = location;
 }

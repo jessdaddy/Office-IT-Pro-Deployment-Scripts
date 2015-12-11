@@ -214,7 +214,6 @@ input[type=checkbox] {
 }
 
 .custom-mini-banner {
-    margin-top: 50px;
     background-color: #00BCF2;
     color: white;
 }
@@ -293,7 +292,7 @@ span.ms-Button-label {
 .custom-footer {
     position: relative;
     height: 100px;
-    margin-top: 20%;
+    margin-top: 35%;
     bottom: 100%;
     background-color: #F2F2F2;
     text-align: right;
