@@ -139,9 +139,9 @@ input[type=checkbox] {
     padding-bottom:5px;
 }
 
-    .helpButton:hover {
-        background-color: #005a9e;
-    }
+.helpButton:hover {
+    background-color: #005a9e;
+}
 
 .banner {
     width: 100%;

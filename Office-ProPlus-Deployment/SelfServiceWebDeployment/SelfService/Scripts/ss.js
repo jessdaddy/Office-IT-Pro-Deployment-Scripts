@@ -173,8 +173,9 @@ function showModal(modalId) {
 
     if (modalId === 'productModal')
     {
-        getBuild();
         resetFilters();
+        $('#buildsTable').empty();
+        $('#buildsGrid').empty();
         $('#languageButton').prop('disabled','true');
     }
 
@@ -612,7 +613,6 @@ function isListView() {
     resetFilters();
     $('#tileViewToggle').attr('background-color', '#EFF6FC');
     $('#listViewToggle').attr('background-color', '#C7E0F4');
-    getBuild(); 
 
 }
 
@@ -623,7 +623,6 @@ function isTileView() {
     $('#tileViewToggle').attr('background-color', '#C7E0F4');
     $('#listViewToggle').attr('background-color', '#EFF6FC');
     resetFilters();
-    getBuild();
 }
 
 function focusDialog() {
