@@ -175,7 +175,10 @@ function showModal(modalId) {
     {
         getBuild();
         resetFilters();
+        console.log("ASDf");
+        $('#languageButton').prop('disabled','true');
     }
+
 }
 
 function resetFilters() {
