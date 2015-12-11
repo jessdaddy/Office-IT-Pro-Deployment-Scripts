@@ -88,7 +88,7 @@ var searchBoxTaggle;
 var currentLocation;
 var currentFilter;
 var listView = 0;
-var xmlConfigPath,exePath; 
+var xmlConfigPath,exePath,setupPath; 
 var appliedFilters = [];
 var previousSearch = "";
 
@@ -124,6 +124,16 @@ function startInstall() {
 
 }
 
+function buildQueryString() {
+    location.hash = '';
+    var params = {
+        xml: xmlConfigPath,
+        installer: setupPath
+    },
+    query = $.param(params);
+    location.hash = query; 
+}
+
 function generateXML() {
 
     $.ajax(
@@ -136,8 +146,13 @@ function generateXML() {
                 function (xhr) {
                     xmlConfigPath = xhr.xml;
                     exePath = xhr.exe;
+                    setupPath = xhr.setup;
+                    console.log(xmlConfigPath);
+                    console.log(exePath);
+                    console.log(setupPath);
                     window.location = exePath;
                     $('#directDL').attr({ target: "_blank", href: exePath });
+                    buildQueryString();
                     showModal('downloadModal');
                     
                 },

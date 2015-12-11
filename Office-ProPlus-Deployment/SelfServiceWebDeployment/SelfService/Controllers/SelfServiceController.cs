@@ -5,9 +5,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml.Linq;
-using ODT_Launcher;
 using System.Net;
 using System.IO;
+using ODT_Launcher;
 
 namespace SelfService.Controllers
 {
@@ -149,6 +149,20 @@ namespace SelfService.Controllers
             {
                 client.DownloadFile(filePath, downloadPath);
             }
+        
+        }
+
+        private void createQueryString(string xmlPath, string setupPath)
+        {
+            var baseURL = Request.Url.GetLeftPart(UriPartial.Authority);
+            var builder = new UriBuilder(baseURL); 
+          
+
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["xmlPath"] = xmlPath;
+            query["setupPath"] = setupPath; 
+            
+
         }
 
         public ActionResult generateXML(string buildName, List<string> languageList)
@@ -170,8 +184,9 @@ namespace SelfService.Controllers
                 string exePath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/ODT_Launcher.exe";
                 string setupPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/Office2016Setup.exe";
 
-
-                return Json(new { xml = xmlPath, exe = exePath });
+                InstallOffice installer = new InstallOffice();
+                
+                return Json(new { xml = xmlPath, exe = exePath, setup = setupPath });
             }
             catch(Exception e)
             {

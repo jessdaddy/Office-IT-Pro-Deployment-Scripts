@@ -15,13 +15,13 @@ using System.Net;
 
 namespace ODT_Launcher
 {
-    class InstallOffice
+    public class InstallOffice
     { 
         
         private XmlDocument _xmlDoc = null;
 
-        public string xmlPath;
-        public string exePath;
+        public string xmlServerPath { get; set; }
+        public string setupServerPath { get; set; }
 
 
         public static void Main(string[] args)
@@ -56,6 +56,10 @@ namespace ODT_Launcher
 
         public void RunProgram()
         {
+            Console.WriteLine("Enter URI For The XML Configuration File: ");
+            xmlServerPath = Console.ReadLine().Replace("%2F","/").Replace("%3A",":");
+            Console.WriteLine("Enter URI For The Office Setup File: ");
+            setupServerPath = Console.ReadLine().Replace("%2F", "/").Replace("%3A", ":");
             var fileNames = new List<string>();
             var installDir = "";
             try
@@ -66,7 +70,6 @@ namespace ODT_Launcher
                 installDir = currentDirectory + @"\OfficeProPlus";
 
                 Directory.CreateDirectory(installDir);
-                //Directory.CreateDirectory(Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\LogFiles"));
 
                 var args = GetArguments();
                 if (args.Any())
@@ -86,9 +89,8 @@ namespace ODT_Launcher
                 }
 
                 Console.Write("Downloading Install Files...");
-                //fileNames = GetEmbeddedItems(installDir);
-                string xmlPath = @"http://localhost:46451/Content/XML_Build_Files/Generated_Files/54faafb4-7044-43dc-9a0f-d3d22635a67f.xml";
-                string setupPath = @"http://localhost:46451/Content/Office2016Setup.exe";
+                string xmlPath = xmlServerPath;
+                string setupPath = setupServerPath;
 
                 string xmlInstall = installDir + @"\"+"configuration.xml";
                 string setupInstall = installDir + @"\"+"officeSetup.exe";
