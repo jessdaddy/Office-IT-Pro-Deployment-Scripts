@@ -219,13 +219,13 @@ function getLanguages() {
 
 function getBuild() {
 
+    
     $.ajax({
         type: "GET",
         url: "SelfServiceConfig.xml",
         datatype: "xml",
         success:
             function (xml) {
-
                 if (listView === 1)
                 {
                     $("#buildsTable").empty();
@@ -236,17 +236,30 @@ function getBuild() {
                             <span class='ms-Table-cell custom-cell'></span>\
                             </div>");
                 }
-
+                count = 0;
+                total = $(xml).find('Build').length/2;
                 $(xml).find('Build').each(function () {
+
+                    if (count === total) {
+                        return false; 
+                    }
+                    else
+                    {
+                        count += 1;
+                    }
+
+                    console.log(count);
                     var buildType = $(this).attr('Type');
                     var filters = $(this).attr('Filters').split(',');
                     var classString = "";
                     var textString = "";
 
+                    console.log(buildType);
+
+
                     if (listView === 1)
                     {
                        
-
                         if (Array.isArray(filters)) {
                             filters.forEach(function (element) {
                                 classString += element.toLocaleLowerCase() + "-filter ";
