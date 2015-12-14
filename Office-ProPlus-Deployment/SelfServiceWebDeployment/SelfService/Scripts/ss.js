@@ -174,7 +174,8 @@ function showModal(modalId) {
         resetFilters();
         $('#buildsTable').empty();
         $('#buildsGrid').empty();
-        $('#languageButton').prop('disabled','true');
+        $('#languageButton').prop('disabled', 'true');
+        getBuild();
     }
 
 }
@@ -303,7 +304,7 @@ function getBuild() {
                                                             <div class='ms-Grid-col ms-u-sm2 ms-u-md4 ms-u-lg2 ms-u-xl1'>\
                                                                 <i class='ms-Icon ms-Icon--people package-people'></i>\
                                                             </div>\
-                                                            <div class='ms-Grid-col ms-u-sm6 ms-u-smPush3 ms-u-md4 ms-u-mdPush2 ms-u-lg4 ms-u-lgPush4 ms-u-xl3 ms-u-xlPush4'>\
+                                                            <div class='ms-Grid-col ms-u-sm6 ms-u-smPush2 ms-u-md4 ms-u-mdPush2 ms-u-lg4 ms-u-lgPush4 ms-u-xl3 ms-u-xlPush4'>\
                                                                  <div class='ms-Grid'>\
                                                                     <div class='ms-Grid-row'>\
                                                                         <p class='ms-font-l type-label filter-field'>" + buildType + "</b></p><br />\
@@ -515,9 +516,6 @@ function locationFilter(location) {
         }
         applyFilters();
 
-        if (location.toLocaleLowerCase().indexOf('location') >= 0) {
-            getBuild();
-        }
     }
     currentLocation = location;
 }
@@ -611,6 +609,8 @@ function isListView() {
     resetFilters();
     $('#tileViewToggle').attr('background-color', '#EFF6FC');
     $('#listViewToggle').attr('background-color', '#C7E0F4');
+    getBuild();
+
 
 }
 
@@ -621,6 +621,8 @@ function isTileView() {
     $('#tileViewToggle').attr('background-color', '#C7E0F4');
     $('#listViewToggle').attr('background-color', '#EFF6FC');
     resetFilters();
+    getBuild();
+
 }
 
 function focusDialog() {
