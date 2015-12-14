@@ -314,7 +314,7 @@ function getBuild() {
                                                                     </div>\
                                                                 </div>\
                                                             </div>\
-                                                            <div style='display:relative;' class='ms-Grid-col ms-u-sm2 ms-u-smPush2 ms-u-md3 ms-u-mdPush1 ms-u-lg2 ms-u-lgPush4 ms-u-xl1 ms-u-xlPush7'>\
+                                                            <div style='display:relative;' class='ms-Grid-col ms-u-sm1 ms-u-smPush3 ms-u-md1 ms-u-mdPush3 ms-u-lg1 ms-u-lgPush5 ms-u-xl1 ms-u-xlPush7'>\
                                                                 <i id='calloutTag' class='ms-Icon ms-Icon--tag package-tag' onclick='toggleCallout(event)'></i>\
                                                             </div>\
                                                         </div>\

@@ -323,8 +323,10 @@ span.ms-Button-label {
 }
 
 .package-tag {
-    float: right;
     position: relative;
+    /*top: 300%;*/
+    float: right;
+    /*left: 5%;*/
     margin-top: -50% !important;
     color: #767676;
     cursor: pointer;
@@ -381,7 +383,7 @@ span.ms-Button-label {
     position: absolute;
     height: 0;
     width: 50%;
-    top: -15%;
+    top: -20%;
     float: right;
     left: 95%;
     margin-left: -10%;
