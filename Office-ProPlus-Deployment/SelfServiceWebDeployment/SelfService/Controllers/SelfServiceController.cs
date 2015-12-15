@@ -7,7 +7,7 @@ using System.Web.Mvc;
 using System.Xml.Linq;
 using System.Net;
 using System.IO;
-using ODT_Launcher;
+using Microsoft.Web; 
 
 namespace SelfService.Controllers
 {
@@ -165,6 +165,11 @@ namespace SelfService.Controllers
 
         }
 
+        //private void allowBinAccess()
+        //{
+        //   using(ServerManager )
+        //}
+
         public ActionResult generateXML(string buildName, List<string> languageList)
         {
             string result;
@@ -181,12 +186,11 @@ namespace SelfService.Controllers
                 newXML.Save(savePath);
 
                 string xmlPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/XML_Build_Files/Generated_Files/" + fileName ;
-                string exePath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/ODT_Launcher.application";
+                string exePath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath +  "Content/ODT_Launcher.application";
                 string setupPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/Office2016Setup.exe";
-
-                InstallOffice installer = new InstallOffice();
+                string manifestPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/ODT_Launcher.exe.manifest";
                 
-                return Json(new { xml = xmlPath, exe = exePath, setup = setupPath });
+                return Json(new { xml = xmlPath, exe = exePath, setup = setupPath, manifest = manifestPath });
             }
             catch(Exception e)
             {

@@ -12,6 +12,9 @@ using System.Threading;
 using System.Xml;
 using Microsoft.Win32;
 using System.Net;
+using System.Collections.Specialized;
+using System.Deployment.Application;
+using System.Web;
 
 namespace ODT_Launcher
 {
@@ -54,12 +57,31 @@ namespace ODT_Launcher
             }
         }
 
+
+        private NameValueCollection getQueryStringParams()
+        {
+            NameValueCollection table = new NameValueCollection(); 
+
+            if(ApplicationDeployment.IsNetworkDeployed)
+            {
+                string queryString = ApplicationDeployment.CurrentDeployment.ActivationUri.Query;
+                table = HttpUtility.ParseQueryString(queryString);
+            }
+
+            return table;
+        }
+
         public void RunProgram()
         {
-            Console.WriteLine("Enter URI For The XML Configuration File: ");
-            xmlServerPath = Console.ReadLine().Replace("%2F","/").Replace("%3A",":");
-            Console.WriteLine("Enter URI For The Office Setup File: ");
-            setupServerPath = Console.ReadLine().Replace("%2F", "/").Replace("%3A", ":");
+            //Console.WriteLine("Enter URI For The XML Configuration File: ");
+            //xmlServerPath = Console.ReadLine().Replace("%2F","/").Replace("%3A",":");
+            //Console.WriteLine("Enter URI For The Office Setup File: ");
+            //setupServerPath = Console.ReadLine().Replace("%2F", "/").Replace("%3A", ":");
+
+            //var queryString = getQueryStringParams();
+            //xmlServerPath = queryString["xml"];
+            //setupServerPath = queryString["installer"];
+
             var fileNames = new List<string>();
             var installDir = "";
             try

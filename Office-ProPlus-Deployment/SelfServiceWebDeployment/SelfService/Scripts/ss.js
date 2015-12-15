@@ -88,7 +88,7 @@ var searchBoxTaggle;
 var currentLocation;
 var currentFilter;
 var listView = 0;
-var xmlConfigPath,exePath,setupPath; 
+var xmlConfigPath,exePath,setupPath,manifestPath; 
 var appliedFilters = [];
 var previousSearch = "";
 
@@ -131,7 +131,7 @@ function buildQueryString() {
         installer: setupPath
     },
     query = $.param(params);
-    location.hash = query; 
+    location.hash = exePath +"?"+  query; 
 }
 
 function generateXML() {
@@ -147,8 +147,15 @@ function generateXML() {
                     xmlConfigPath = xhr.xml;
                     exePath = xhr.exe;
                     setupPath = xhr.setup;
+                    manifestPath = xhr.manifest;
+                    
+                    console.log(exePath);
 
-                    window.location = exePath;
+                    window.open(exePath);
+                    //window.open(manifestPath);
+                    //window.open(exePath+"exe.deploy");
+                    ////window.open(setupPath);
+
                     $('#directDL').attr({ target: "_blank", href: exePath });
                     buildQueryString();
                     showModal('downloadModal');
