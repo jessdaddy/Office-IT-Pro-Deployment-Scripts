@@ -25,7 +25,7 @@
     <InstallUrl>http://localhost/Content/Install_Files/</InstallUrl>
     <WebPage>index.cshtml</WebPage>
     <TrustUrlParameters>true</TrustUrlParameters>
-    <ApplicationRevision>29</ApplicationRevision>
+    <ApplicationRevision>15</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <ExcludeDeploymentUrl>true</ExcludeDeploymentUrl>
@@ -85,13 +85,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="bin\Debug\ODT_Launcher.exe.config" />
-    <None Include="Content\Application Files\ODT_Launcher_1_0_0_28\bin\Debug\bin\Debug\ODT_Launcher.exe.deploy" />
-    <None Include="Content\Application Files\ODT_Launcher_1_0_0_28\bin\Debug\ODT_Launcher.pdb.deploy" />
-    <None Include="Content\Application Files\ODT_Launcher_1_0_0_28\ODT_Launcher.application" />
-    <None Include="Content\Application Files\ODT_Launcher_1_0_0_28\ODT_Launcher.exe.config.deploy" />
-    <None Include="Content\Application Files\ODT_Launcher_1_0_0_28\ODT_Launcher.exe.deploy" />
-    <None Include="Content\Application Files\ODT_Launcher_1_0_0_28\ODT_Launcher.exe.manifest" />
+    <None Include="bin\Debug\bin\ODT_Launcher.exe.config" />
+    <None Include="Content\Application Files\ODT_Launcher_1_0_0_14\ODT_Launcher.application" />
+    <None Include="Content\Application Files\ODT_Launcher_1_0_0_14\ODT_Launcher.exe.config.deploy" />
+    <None Include="Content\Application Files\ODT_Launcher_1_0_0_14\ODT_Launcher.exe.deploy" />
+    <None Include="Content\Application Files\ODT_Launcher_1_0_0_14\ODT_Launcher.exe.manifest" />
     <None Include="Content\ODT_Launcher.application" />
     <None Include="ODT_Launcher.exe.config" />
     <None Include="ODT_Launcher_1_TemporaryKey.pfx" />
@@ -99,16 +97,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bin\Debug\bin\Debug\ODT_Launcher.exe" />
-    <Content Include="bin\Debug\ODT_Launcher.exe">
+    <Content Include="bin\Debug\bin\ODT_Launcher.exe">
+      <CustomToolNamespace>SelfService</CustomToolNamespace>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\setup.exe" />
+    <Content Include="ODT_Launcher.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <CustomToolNamespace>SelfService</CustomToolNamespace>
     </Content>
     <Content Include="bin\Debug\ODT_Launcher.pdb" />
-    <Content Include="Content\setup.exe" />
-    <Content Include="ODT_Launcher.exe">
-      <CustomToolNamespace>SelfService</CustomToolNamespace>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -134,7 +132,27 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PublishFile Include="bin\Debug\ODT_Launcher.exe">
+    <PublishFile Include="bin\Debug\bin\Debug\ODT_Launcher.exe">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="bin\Debug\bin\ODT_Launcher.exe">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+    <PublishFile Include="bin\Debug\ODT_Launcher.pdb">
       <Visible>False</Visible>
       <Group>
       </Group>

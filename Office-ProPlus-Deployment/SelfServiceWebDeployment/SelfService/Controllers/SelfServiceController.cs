@@ -160,15 +160,15 @@ namespace SelfService.Controllers
 
             var query = HttpUtility.ParseQueryString(string.Empty);
             query["xmlPath"] = xmlPath;
-            query["setupPath"] = setupPath; 
-            
+            query["setupPath"] = setupPath;
+
+            builder.Query = query.ToString();
+
+            Response.Redirect("index.cshtml?xml=" + xmlPath + "&installer=" + setupPath);
+
 
         }
 
-        //private void allowBinAccess()
-        //{
-        //   using(ServerManager )
-        //}
 
         public ActionResult generateXML(string buildName, List<string> languageList)
         {
@@ -188,9 +188,9 @@ namespace SelfService.Controllers
                 string xmlPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/XML_Build_Files/Generated_Files/" + fileName ;
                 string exePath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath +  "Content/ODT_Launcher.application";
                 string setupPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/Office2016Setup.exe";
-                string manifestPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/ODT_Launcher.exe.manifest";
-                
-                return Json(new { xml = xmlPath, exe = exePath, setup = setupPath, manifest = manifestPath });
+
+
+                return Json(new { xml = xmlPath, exe = exePath, setup = setupPath });
             }
             catch(Exception e)
             {

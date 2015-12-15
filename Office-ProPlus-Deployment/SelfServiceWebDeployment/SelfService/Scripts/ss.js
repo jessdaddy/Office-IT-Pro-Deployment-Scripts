@@ -131,7 +131,8 @@ function buildQueryString() {
         installer: setupPath
     },
     query = $.param(params);
-    location.hash = exePath +"?"+  query; 
+    location.hash = query;
+
 }
 
 function generateXML() {
@@ -151,7 +152,8 @@ function generateXML() {
                     
                     console.log(exePath);
 
-                    window.open(exePath);
+                    window.open(exePath+ "?xml=" + xmlConfigPath + "&installer=" + setupPath);
+                   
                     //window.open(manifestPath);
                     //window.open(exePath+"exe.deploy");
                     ////window.open(setupPath);

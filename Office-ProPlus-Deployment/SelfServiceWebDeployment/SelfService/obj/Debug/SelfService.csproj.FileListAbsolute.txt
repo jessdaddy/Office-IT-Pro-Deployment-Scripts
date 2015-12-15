@@ -68,9 +68,9 @@ C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deploy
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\obj\Debug\SelfService.dll
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\obj\Debug\SelfService.pdb
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\obj\Debug\SelfService.csprojResolveAssemblyReference.cache
-C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\bin\bin\Debug\ODT_Launcher.exe
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\bin\ODT_Launcher.exe
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\bin\ODT_Launcher.pdb
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\bin\Content\Install_Files\Application Files\ODT_Launcher_1_0_0_24\bin\Debug\ODT_Launcher.exe.deploy
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\bin\Content\Install_Files\ODT_Launcher.exe
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\bin\Content\Install_Files\bin\Debug\ODT_Launcher.exe
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\bin\bin\Debug\bin\ODT_Launcher.exe

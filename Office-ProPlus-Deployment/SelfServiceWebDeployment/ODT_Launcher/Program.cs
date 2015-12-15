@@ -58,29 +58,41 @@ namespace ODT_Launcher
         }
 
 
-        private NameValueCollection getQueryStringParams()
+        private List<string> getQueryStringParams()
         {
-            NameValueCollection table = new NameValueCollection(); 
+            var queryString = new List<string>();
 
-            if(ApplicationDeployment.IsNetworkDeployed)
+            if (ApplicationDeployment.IsNetworkDeployed)
             {
-                string queryString = ApplicationDeployment.CurrentDeployment.ActivationUri.Query;
-                table = HttpUtility.ParseQueryString(queryString);
+               queryString = ApplicationDeployment.CurrentDeployment.ActivationUri.ToString().Split('=').ToList();
+                Console.WriteLine(queryString[1]);
             }
 
-            return table;
+            return (queryString);
         }
+
 
         public void RunProgram()
         {
-            //Console.WriteLine("Enter URI For The XML Configuration File: ");
-            //xmlServerPath = Console.ReadLine().Replace("%2F","/").Replace("%3A",":");
-            //Console.WriteLine("Enter URI For The Office Setup File: ");
-            //setupServerPath = Console.ReadLine().Replace("%2F", "/").Replace("%3A", ":");
 
-            //var queryString = getQueryStringParams();
-            //xmlServerPath = queryString["xml"];
-            //setupServerPath = queryString["installer"];
+            var queryString = getQueryStringParams();
+
+            try
+            {
+                xmlServerPath = queryString[1].Replace("%2F", "/").Replace("%3A", ":").Split('&')[0];
+                setupServerPath = queryString[2].ToString().Replace("%2F", "/").Replace("%3A", ":");
+                Console.WriteLine(xmlServerPath);
+                Console.WriteLine(setupServerPath);
+                Console.WriteLine(queryString);
+            }
+            catch (Exception e)
+            {
+                var st = new StackTrace(e, true);
+                var frame = st.GetFrame(0);
+
+                var line = frame.GetFileLineNumber();
+                Console.WriteLine(e.Message + e.StackTrace + " "+line);
+            }
 
             var fileNames = new List<string>();
             var installDir = "";

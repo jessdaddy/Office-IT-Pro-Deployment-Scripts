@@ -1,5 +1,5 @@
 ﻿<Configuration>
-  <Add OfficeClientEdition="32" Branch="Business">
+  <Add OfficeClientEdition="64" Branch="Business">
     <Product ID="O365ProPlusRetail">
     </Product>
   </Add>
