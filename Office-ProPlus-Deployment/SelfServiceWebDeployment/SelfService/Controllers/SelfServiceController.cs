@@ -140,18 +140,6 @@ namespace SelfService.Controllers
             } 
         }
 
-        private void fileDownloader(string filePath, string fileName)
-        {
-            string userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            string downloadPath = Path.Combine(userPath, "Downloads\\" + fileName);
-
-            using (var client = new WebClient())
-            {
-                client.DownloadFile(filePath, downloadPath);
-            }
-        
-        }
-
         private void createQueryString(string xmlPath, string setupPath)
         {
             var baseURL = Request.Url.GetLeftPart(UriPartial.Authority);
@@ -170,7 +158,7 @@ namespace SelfService.Controllers
         }
 
 
-        public ActionResult generateXML(string buildName, List<string> languageList)
+        public ActionResult generateXML(string buildName, List<string> languageList, string uiLanguage)
         {
             string result;
 
@@ -179,6 +167,11 @@ namespace SelfService.Controllers
                 string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
                 var oldXML = XDocument.Load(currentDirectory + "Content\\XML_Build_Files\\Base_Files\\" + buildName + ".xml");
                 XDocument newXML = new XDocument(oldXML);
+
+                newXML.Root.Element("Add").Element("Product").Add(
+                  new XElement("Language",
+                      new XAttribute("ID", uiLanguage)));
+
                 addLanguages(newXML, languageList);
 
                 string fileName = Guid.NewGuid().ToString() + ".xml";

@@ -116,10 +116,11 @@ function setLanguage() {
     var checkboxes = null;
     languages = null;
     checkboxes = $(".languageCheckBox:checked");
-    $('#languageSpan').text(languageDictionary[checkboxes[0].id]);
-    languages = [checkboxes[0].id];
-    if (checkboxes.length > 1) {
-        for (var i = 1; i < checkboxes.length; i++) {
+    $('#languageSpan').text('');
+    $('#languageSpan').text(languageDictionary[primaryLanguage]);
+    if (checkboxes.length >= 1) {
+        languages = [checkboxes[0].id];
+        for (var i = 0; i < checkboxes.length; i++) {
             languages[i] = checkboxes[i].id;
             $('#languageSpan').append(", " + languageDictionary[checkboxes[i].id]);
         }
@@ -145,7 +146,7 @@ function generateXML() {
         {
             type: "POST",
             url: ServerSide.GenerateXML,
-            data: { buildName: buildID, languageList: languages },
+            data: { buildName: buildID, languageList: languages, uiLanguage: primaryLanguage},
             traditional:true,
             success: 
                 function (xhr) {
@@ -242,7 +243,7 @@ function getPrimaryLanguages() {
                 $.each(languages, function (index, value) {
                     var label = value;
                     var id = value.split(" ").pop().replace(")", '').replace("(", '');
-                    $('#primaryLanguagesGrid').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg3 ms-u-xl2 ms-ChoiceField'>\
+                    $('#primaryLanguagesGrid').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md6 ms-u-lg3 ms-u-xl3 ms-ChoiceField'>\
                         <input id='" + id + "' class='ms-ChoiceField-input' type='radio' name='radio1' value='" + id + "'onclick='verifyLanguageInput()'>\
                         <label for='" + id + "' class='ms-ChoiceField-field'><span class='ms-Label' >" + label + "</span></label>\
                         </div>")
@@ -337,7 +338,7 @@ function getBuild() {
                                                             <div class='ms-Grid-col ms-u-sm2 ms-u-md4 ms-u-lg2 ms-u-xl1'>\
                                                                 <i class='ms-Icon ms-Icon--people package-people'></i>\
                                                             </div>\
-                                                            <div class='ms-Grid-col ms-u-sm6 ms-u-smPush2 ms-u-md4 ms-u-mdPush2 ms-u-lg4 ms-u-lgPush4 ms-u-xl3 ms-u-xlPush4'>\
+                                                            <div class='ms-Grid-col ms-u-sm6 ms-u-smPush3 ms-u-md4 ms-u-mdPush2 ms-u-lg4 ms-u-lgPush4 ms-u-xl3 ms-u-xlPush4'>\
                                                                  <div class='ms-Grid'>\
                                                                     <div class='ms-Grid-row'>\
                                                                         <p class='ms-font-l type-label filter-field'>" + buildType + "</b></p><br />\
