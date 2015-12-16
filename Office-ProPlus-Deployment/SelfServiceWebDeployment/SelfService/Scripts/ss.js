@@ -94,10 +94,10 @@ var previousSearch = "";
 
 function setProduct(product, build) {
     buildID = build;
-    getLanguages();
+    getPrimaryLanguages();
     productToInstall = product;
     $('#productSpan').text(product);
-    showModal('languageModal');
+    showModal('primaryLanguageModal');
 }
 
 function setVersion(version) {
@@ -153,10 +153,6 @@ function generateXML() {
                     console.log(exePath);
 
                     window.open(exePath+ "?xml=" + xmlConfigPath + "&installer=" + setupPath);
-                   
-                    //window.open(manifestPath);
-                    //window.open(exePath+"exe.deploy");
-                    ////window.open(setupPath);
 
                     $('#directDL').attr({ target: "_blank", href: exePath });
                     buildQueryString();
@@ -223,6 +219,29 @@ function getLanguages() {
                     $('#languagesGrid ').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg3 ms-u-xl2 languageli'><label><input type='checkbox' id='" + id + "' class='languageCheckBox' onclick='verifyLanguageInput()'/>\
                                      <span class='ms-font-m checkboxLabel'>" + label + "</span></label></div>");
                 });  
+            }
+    });
+}
+
+function getPrimaryLanguages() {
+    console.log("Asdf");
+    $.ajax({
+        type: "GET",
+        url: "SelfServiceConfig.xml",
+        datatype: "xml",
+        success:
+            function (xml) {
+                $('#primaryLanguagesGrid div').remove();
+                $xml = $(xml);
+                var languages = $xml.find("[ID='" + buildID + "']").attr('Languages').split(",");
+                $.each(languages, function (index, value) {
+                    var label = value;
+                    var id = value.split(" ").pop().replace(")", '').replace("(", '');
+                    $('#primaryLanguagesGrid').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg3 ms-u-xl2 ms-ChoiceField'>\
+                        <input id='"+id+"' class='ms-ChoiceField-input' type='radio' name='radio1'>\
+                        <label for='"+id+"' class='ms-ChoiceField-field'><span class='ms-Label'>"+label+"</span></label>\
+                        </div>")
+                });
             }
     });
 }
