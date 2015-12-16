@@ -109,7 +109,7 @@
     display: none;
 }
 
-input[type=checkbox] {
+input[type=checkbox],input[type=radio] {
     -ms-transform: scale(2);
     -moz-transform: scale(2);
     -webkit-transform: scale(2);
@@ -520,4 +520,11 @@ span.ms-Button-label {
 .close-dialog{
     float:right;
     cursor:pointer;
+}
+
+
+
+.ms-ChoiceField .ms-ChoiceField-input:checked+.ms-ChoiceField-field:before{
+    top:3px !important;
+    left:3px !important;
 }

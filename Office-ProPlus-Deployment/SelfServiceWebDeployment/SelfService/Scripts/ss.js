@@ -222,7 +222,7 @@ function getLanguages() {
                     var label = value;
                     var id = value.split(" ").pop().replace(")", '').replace("(", '');
                     if (id !== primaryLanguage) {
-                        $('#languagesGrid ').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg3 ms-u-xl2 languageli'><label><input type='checkbox' id='" + id + "' class='languageCheckBox' />\
+                        $('#languagesGrid ').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md6 ms-u-lg3 ms-u-xl3 languageli'><label><input type='checkbox' id='" + id + "' class='languageCheckBox' />\
                                      <span class='ms-font-m checkboxLabel'>" + label + "</span></label></div>");
                     }
                 });  
@@ -243,7 +243,7 @@ function getPrimaryLanguages() {
                 $.each(languages, function (index, value) {
                     var label = value;
                     var id = value.split(" ").pop().replace(")", '').replace("(", '');
-                    $('#primaryLanguagesGrid').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md6 ms-u-lg3 ms-u-xl3 ms-ChoiceField'>\
+                    $('#primaryLanguagesGrid').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md6 ms-u-lg3 ms-u-xl3 ms-ChoiceField '>\
                         <input id='" + id + "' class='ms-ChoiceField-input' type='radio' name='radio1' value='" + id + "'onclick='verifyLanguageInput()'>\
                         <label for='" + id + "' class='ms-ChoiceField-field'><span class='ms-Label' >" + label + "</span></label>\
                         </div>")
