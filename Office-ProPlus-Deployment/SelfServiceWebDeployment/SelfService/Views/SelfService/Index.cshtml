@@ -128,14 +128,12 @@
                 <hr />
             </div>
             <div class="-inner custom-Dialog-inner">
-                @*<div class="ms-Grid">*@
                 <div id="primaryLanguagesGrid" class="ms-Grid ms-ChoiceFieldGroup">
 
                 </div>
-                @*</div>*@
                 <div class="-actions custom-Dialog-actions">
                     <div class="languagesContinue">
-                        <button id="languageButton" class="-action ms-Button ms-Button--primary languages-button" onclick="setLanguage()" disabled>
+                        <button id="languageButton" class="-action ms-Button ms-Button--primary languages-button" onclick="setPrimaryLanguage()" disabled>
                             <span class="ms-Button-label">Continue</span>
                         </button>
                     </div>
@@ -146,12 +144,12 @@
 
     <div id="languageModal" class=" custom-Dialog hidden" tabindex="1">
         <div class=" custom-Dialog-main">
-            <button class="-button custom-back-button" onclick="showModal('productModal')">
+            <button class="-button custom-back-button" onclick="showModal('primaryLanguageModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/Custom-Back-Arrow.png" />
                 <span class="ms-font-l ms-fontWeight-regular">Back</span>
             </button>
             <div class="-header">
-                <p class="-title ms-font-xl">Select Languages</p>
+                <p class="-title ms-font-xl">Select Additional Languages</p>
                 <hr />
             </div>
             <div class="-inner custom-Dialog-inner">
@@ -162,7 +160,7 @@
                 @*</div>*@
                 <div class="-actions custom-Dialog-actions">
                     <div class="languagesContinue">
-                        <button id="languageButton" class="-action ms-Button ms-Button--primary languages-button" onclick="setLanguage()" disabled>
+                        <button id="languageButton" class="-action ms-Button ms-Button--primary languages-button" onclick="setLanguage()">
                             <span class="ms-Button-label">Continue</span>
                         </button>
                     </div>

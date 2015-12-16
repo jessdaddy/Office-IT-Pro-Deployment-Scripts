@@ -85,6 +85,7 @@ var languageDictionary = {
 
 var availableFilters = [];
 var searchBoxTaggle;
+var primaryLanguage; 
 var currentLocation;
 var currentFilter;
 var listView = 0;
@@ -105,6 +106,12 @@ function setVersion(version) {
     $('#versionSpan').text(version);
 }
 
+function setPrimaryLanguage() {
+    primaryLanguage = $("input[name=radio1]:checked").attr('id');
+    getLanguages();
+    showModal('languageModal');
+}
+
 function setLanguage() {
     var checkboxes = null;
     languages = null;
@@ -114,15 +121,12 @@ function setLanguage() {
     if (checkboxes.length > 1) {
         for (var i = 1; i < checkboxes.length; i++) {
             languages[i] = checkboxes[i].id;
-            $('#languageSpan').append(", "+languageDictionary[checkboxes[i].id]);
+            $('#languageSpan').append(", " + languageDictionary[checkboxes[i].id]);
         }
     }
     showModal('confirmationModal');
 }
 
-function startInstall() {
-
-}
 
 function buildQueryString() {
     location.hash = '';
@@ -194,7 +198,7 @@ function resetFilters() {
 }
 
 function verifyLanguageInput() {
-    sl = $('.languageCheckBox:checked');
+    sl = $('input[name=radio1]:checked');
     if (sl.length > 0) {
         $('#languageButton').prop('disabled', false);
     } else {
@@ -215,16 +219,17 @@ function getLanguages() {
                 var languages = $xml.find("[ID='" + buildID + "']").attr('Languages').split(",");
                 $.each(languages, function (index, value) {
                     var label = value;
-                    var id = value.split(" ").pop().replace(")",'').replace("(",'');
-                    $('#languagesGrid ').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg3 ms-u-xl2 languageli'><label><input type='checkbox' id='" + id + "' class='languageCheckBox' onclick='verifyLanguageInput()'/>\
+                    var id = value.split(" ").pop().replace(")", '').replace("(", '');
+                    if (id !== primaryLanguage) {
+                        $('#languagesGrid ').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg3 ms-u-xl2 languageli'><label><input type='checkbox' id='" + id + "' class='languageCheckBox' />\
                                      <span class='ms-font-m checkboxLabel'>" + label + "</span></label></div>");
+                    }
                 });  
             }
     });
 }
 
 function getPrimaryLanguages() {
-    console.log("Asdf");
     $.ajax({
         type: "GET",
         url: "SelfServiceConfig.xml",
@@ -238,8 +243,8 @@ function getPrimaryLanguages() {
                     var label = value;
                     var id = value.split(" ").pop().replace(")", '').replace("(", '');
                     $('#primaryLanguagesGrid').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg3 ms-u-xl2 ms-ChoiceField'>\
-                        <input id='"+id+"' class='ms-ChoiceField-input' type='radio' name='radio1'>\
-                        <label for='"+id+"' class='ms-ChoiceField-field'><span class='ms-Label'>"+label+"</span></label>\
+                        <input id='" + id + "' class='ms-ChoiceField-input' type='radio' name='radio1' value='" + id + "'onclick='verifyLanguageInput()'>\
+                        <label for='" + id + "' class='ms-ChoiceField-field'><span class='ms-Label' >" + label + "</span></label>\
                         </div>")
                 });
             }
