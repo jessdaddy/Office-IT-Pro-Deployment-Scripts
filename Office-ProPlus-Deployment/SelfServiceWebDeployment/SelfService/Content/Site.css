@@ -454,7 +454,9 @@ span.ms-Button-label {
 }
 
 .custom-first-cell {
-    width: 20%;
+    /*display: !important;*/
+    min-width:200px !important;
+    width:250px !important;
 }
 
 .custom-cell {
@@ -497,9 +499,6 @@ span.ms-Button-label {
     background-color: #F4F4F4;
 }
 
-/*#languageSpan {
-    padding-left: 6%;
-}*/
 
 .custom-footer > div {
     color: #767676;

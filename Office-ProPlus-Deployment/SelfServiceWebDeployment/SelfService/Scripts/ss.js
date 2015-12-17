@@ -252,7 +252,7 @@ function getPrimaryLanguages() {
     });
 }
 
-function getBuild() {
+function getBuild( ){
 
     
     $.ajax({
