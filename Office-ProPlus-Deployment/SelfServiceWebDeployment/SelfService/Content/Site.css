@@ -137,6 +137,7 @@ input[type=checkbox],input[type=radio] {
     border-right: 1px solid white;
     padding: 15px 10px 15px 10px;
     margin-right:-10px;
+    cursor:pointer;
 
 
 }
