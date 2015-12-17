@@ -172,7 +172,11 @@ namespace SelfService.Controllers
                   new XElement("Language",
                       new XAttribute("ID", uiLanguage)));
 
-                addLanguages(newXML, languageList);
+
+                if(languageList.Count > 1)
+                {
+                    addLanguages(newXML, languageList);
+                }
 
                 string fileName = Guid.NewGuid().ToString() + ".xml";
                 string savePath = currentDirectory + "Content\\XML_Build_Files\\Generated_Files\\" + fileName;

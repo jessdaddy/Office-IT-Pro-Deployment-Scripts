@@ -155,7 +155,7 @@ function generateXML() {
                     setupPath = xhr.setup;
                     manifestPath = xhr.manifest;
                     
-                    console.log(exePath);
+                    //console.log(exePath);
 
                     window.open(exePath+ "?xml=" + xmlConfigPath + "&installer=" + setupPath);
 
