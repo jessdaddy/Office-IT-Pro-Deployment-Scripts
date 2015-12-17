@@ -338,7 +338,7 @@ function getBuild( ){
                                                             <div class='ms-Grid-col ms-u-sm2 ms-u-md4 ms-u-lg2 ms-u-xl1'>\
                                                                 <i class='ms-Icon ms-Icon--people package-people'></i>\
                                                             </div>\
-                                                            <div class='ms-Grid-col ms-u-sm6 ms-u-smPush3 ms-u-md4 ms-u-mdPush2 ms-u-lg4 ms-u-lgPush4 ms-u-xl3 ms-u-xlPush4'>\
+                                                            <div class='ms-Grid-col ms-u-sm6 ms-u-smPush4 ms-u-md4 ms-u-mdPush2 ms-u-lg4 ms-u-lgPush4 ms-u-xl3 ms-u-xlPush4'>\
                                                                  <div class='ms-Grid'>\
                                                                     <div class='ms-Grid-row'>\
                                                                         <p class='ms-font-l type-label filter-field'>" + buildType + "</b></p><br />\

@@ -301,7 +301,7 @@ span.ms-Button-label {
 
 
 .package {
-    width: 85%;
+    width: 93%;
     margin-top: 5%;
     margin-bottom: 4%;
 }
@@ -316,7 +316,7 @@ span.ms-Button-label {
 .package-inner {
     position: relative;
     margin: 0 !important;
-    padding-top: 20px;
+    padding-top: 30px;
     background-color: #f2f2f2;
 }
 
@@ -328,9 +328,9 @@ span.ms-Button-label {
 
 .package-tag {
     position: relative;
-    /*top: 300%;*/
+    top: 300%;
     float: right;
-    /*left: 5%;*/
+    left: -35%;
     margin-top: -50% !important;
     color: #767676;
     cursor: pointer;
@@ -387,10 +387,10 @@ span.ms-Button-label {
     position: absolute;
     height: 0;
     width: 50%;
-    top: -20%;
+    top: -12%;
     float: right;
     left: 95%;
-    margin-left: -10%;
+    margin-left: -2%;
 }
 
 
