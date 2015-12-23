@@ -1165,7 +1165,20 @@ namespace MetroDemo.ExampleViews
 
         private void InfoPath_OnClick(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                var dlg = new Microsoft.Win32.OpenFileDialog();
+                
+                Nullable<bool> result = dlg.ShowDialog();
+                if (result == true)
+                {
+                    InfoPathSource.Text = dlg.FileName;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
         }
 
         private void InfoPathDownloadButton_OnClick(object sender, RoutedEventArgs e)
@@ -1176,6 +1189,24 @@ namespace MetroDemo.ExampleViews
         private void DesignerDownloadButton_OnClick(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start("https://www.microsoft.com/download/details.aspx?id=35491");
+        }
+
+        private void Designer_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dlg = new Microsoft.Win32.OpenFileDialog();
+
+                Nullable<bool> result = dlg.ShowDialog();
+                if (result == true)
+                {
+                    DesignerSource.Text = dlg.FileName;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
         }
 
      
