@@ -413,31 +413,31 @@
                                         </StackPanel>
                                     </Button>
 
-                                    <CheckBox x:Name="InfoPathInstall" Checked="Install_InfoPath" Unchecked="Install_InfoPath"  Margin="0,60,0,-60"></CheckBox>
+                                    <CheckBox x:Name="InfoPathInstall" Checked="Install_InfoPath" Unchecked="Install_InfoPath"  Margin="0,60,0,-60"/>
                                     <Label Content="InfoPath" Style="{StaticResource MetroLabelHeader}" Margin="28,60,12,-60" Grid.ColumnSpan="2" ></Label>
                                     <TextBox x:Name="InfoPathSource" Background="white" FontSize="20" Grid.Column="2"
                                              Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="35"
                                              Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
-                                             Text="" Margin="93,55,-93,-40" Grid.ColumnSpan="2"/>
+                                             Text="" Margin="93,55,-93,-40" Grid.ColumnSpan="2" IsEnabled="False"/>
 
                                     <Button Width="55" 
                             			Height="40"
-                            			Content="Browse" x:Name="InfoPath" Click="InfoPath_OnClick" Margin="293.164,50,-161,-40" Grid.Column="3" />
+                            			Content="Browse" x:Name="InfoPath" Click="InfoPath_OnClick" Margin="293.164,50,-161,-40" Grid.Column="3" IsEnabled="False"/>
                                     <Button Width="70" Height="40" Grid.Column="3"
-                                            Content="Download" x:Name="DownloadInfoPath" Click="InfoPathDownloadButton_OnClick" Margin="353.164,50,-236,-40"   />
+                                            Content="Download" x:Name="DownloadInfoPath" Click="InfoPathDownloadButton_OnClick" Margin="353.164,50,-236,-40" IsEnabled="False"   />
 
                                     <CheckBox x:Name="DesignerInstall" Checked="Install_Designer" Unchecked="Install_Designer"  Margin="0,110,0,-110"></CheckBox>
                                     <Label Content="SharePoint Designer" Style="{StaticResource MetroLabelHeader}" Margin="28,115,140.836,-115" Grid.ColumnSpan="3" ></Label>
-                                    <TextBox x:Name="SharePointSource" Background="White" FontSize="20" Grid.Column="2"
+                                    <TextBox x:Name="DesignerSource" Background="White" FontSize="20" Grid.Column="2"
                                              Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="35"
                                              Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
-                                             Text="" Margin="93,115,-93,-100" Grid.ColumnSpan="2">
+                                             Text="" Margin="93,115,-93,-100" Grid.ColumnSpan="2" IsEnabled="False">
                                     </TextBox>
                                     <Button Width="55" 
                             			Height="40"
-                            			Content="Browse" x:Name="DesignerPath" Click="InfoPath_OnClick" Margin="293.164,110,-161,-100" Grid.Column="3" />
+                            			Content="Browse" x:Name="DesignerPath" Click="InfoPath_OnClick" Margin="293.164,110,-161,-100" Grid.Column="3" IsEnabled="False" />
                                     <Button Width="70" Height="40" Grid.Column="3"
-                                            Content="Download" x:Name="DownloadDesigner" Click="DesignerDownloadButton_OnClick" Margin="353.164,110,-236,-100"   />
+                                            Content="Download" x:Name="DownloadDesigner" Click="DesignerDownloadButton_OnClick" Margin="353.164,110,-236,-100" IsEnabled="False"  />
 
                                 </Grid>
                             </StackPanel>

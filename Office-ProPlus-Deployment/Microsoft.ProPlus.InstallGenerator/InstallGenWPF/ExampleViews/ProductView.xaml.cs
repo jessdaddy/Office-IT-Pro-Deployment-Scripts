@@ -1146,18 +1146,20 @@ namespace MetroDemo.ExampleViews
 
         #endregion
 
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-
-        }
-
         private void Install_InfoPath(object sender, RoutedEventArgs e)
         {
+            InfoPathSource.IsEnabled = !InfoPathSource.IsEnabled;
+            InfoPath.IsEnabled = !InfoPath.IsEnabled;
+            DownloadInfoPath.IsEnabled = !DownloadInfoPath.IsEnabled;
 
         }
 
         private void Install_Designer(object sender, RoutedEventArgs e)
         {
+            DesignerSource.IsEnabled = !DesignerSource.IsEnabled;
+            DesignerPath.IsEnabled = !DesignerPath.IsEnabled;
+            DownloadDesigner.IsEnabled = !DownloadDesigner.IsEnabled;
+
 
         }
 
