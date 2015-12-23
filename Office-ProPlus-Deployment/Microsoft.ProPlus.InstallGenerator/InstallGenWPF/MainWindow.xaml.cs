@@ -290,6 +290,11 @@ namespace MetroDemo
             catch { }
         }
         #endregion
+
+        private void ProductView_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
         
     }
 }

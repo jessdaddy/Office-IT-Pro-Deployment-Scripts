@@ -62,7 +62,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>YZYnbo2G0itZ7eHxx5YSNmP03/sa0XvGT8VWPO4uLs8=</dsig:DigestValue>
+        <dsig:DigestValue>mqsWV2V/KX9L8bNwyjSdrI0lvSXj+aVK5NBI+qYdU6s=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -110,7 +110,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>Rocf8BAmb/6Q3Ns7npqOAVsWUSJq3lvdvOZpmTC3Srs=</dsig:DigestValue>
+        <dsig:DigestValue>XUgrduEGzDw5xpRyWBTai3z2xLkPmS7QlRyJDMeBIoM=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -122,7 +122,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>AgEFAHXU4PjKA8wbHZzpbm6m0F1lW2n8L3MueuYWANY=</dsig:DigestValue>
+        <dsig:DigestValue>DXB2wxNXWcQsmNKhGJLFiG9EulldPXzcfnjEaHGSYS8=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -134,19 +134,19 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>su1bG8tneL3v9lyWycGwC1VSQA/zxnJ+gzNpmGSBBpw=</dsig:DigestValue>
+        <dsig:DigestValue>BQJ63ualllynKqNmVGzVBicaPanz7i1ePKMVaduXWNY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="638528">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="636416">
       <assemblyIdentity name="OfficeProPlusInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>JnKt+5ce/nYcB0Aip5a+/8yJT4AmF5RXt4xuQV9nHnc=</dsig:DigestValue>
+        <dsig:DigestValue>/5CbbOoYN3PwhKvS8l9ZcHnNE89Bt5sua4W0g57Ymzc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -369,6 +369,15 @@
       <dsig:DigestValue>YR8WJeAP+aLmh3DURuNwW3BVb6+gVZRosMXvlMS5xN8=</dsig:DigestValue>
     </hash>
   </file>
+  <file name="HelpFiles\EmbedInfo.html" size="1134">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>ADoAA8mGhbAUxS/kvagLfHIEU9x/OjxCIXQQMEL3mhc=</dsig:DigestValue>
+    </hash>
+  </file>
   <file name="HelpFiles\EmbedOfficeInstall.html" size="1930">
     <hash>
       <dsig:Transforms>
@@ -385,6 +394,15 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
       <dsig:DigestValue>j2uM5bKgQgVLlMfcqlV3vN8mUgTH4gDvYL6U8Eyu/7c=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="HelpFiles\ExternalInfo.html" size="1134">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>ADoAA8mGhbAUxS/kvagLfHIEU9x/OjxCIXQQMEL3mhc=</dsig:DigestValue>
     </hash>
   </file>
   <file name="HelpFiles\ForceAppShutdownInfo.html" size="1873">

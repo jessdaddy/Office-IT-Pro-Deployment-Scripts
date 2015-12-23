@@ -980,6 +980,9 @@ namespace MetroDemo.ExampleViews
             });
         }
 
+
+
+
         private void NextButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -1142,6 +1145,38 @@ namespace MetroDemo.ExampleViews
 
 
         #endregion
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+
+        }
+
+        private void Install_InfoPath(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Install_Designer(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void InfoPath_OnClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void InfoPathDownloadButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://www.microsoft.com/download/details.aspx?id=48734");
+        }
+
+        private void DesignerDownloadButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://www.microsoft.com/download/details.aspx?id=35491");
+        }
+
+     
 
 
     }

@@ -9,6 +9,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using MahApps.Metro.Controls;
 using System;
 using System.Diagnostics;
 using System.Windows;
