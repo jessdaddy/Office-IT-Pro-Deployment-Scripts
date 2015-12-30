@@ -396,13 +396,13 @@
       <dsig:DigestValue>j2uM5bKgQgVLlMfcqlV3vN8mUgTH4gDvYL6U8Eyu/7c=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="HelpFiles\ExternalInfo.html" size="1134">
+  <file name="HelpFiles\ExternalInfo.html" size="1371">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>ADoAA8mGhbAUxS/kvagLfHIEU9x/OjxCIXQQMEL3mhc=</dsig:DigestValue>
+      <dsig:DigestValue>rZsrXq8Y1PeE0eZ67O8qwAXmPV+4JMETOS9PL8HiWig=</dsig:DigestValue>
     </hash>
   </file>
   <file name="HelpFiles\ForceAppShutdownInfo.html" size="1873">
