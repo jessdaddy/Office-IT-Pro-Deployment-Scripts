@@ -399,7 +399,7 @@
                                         <ColumnDefinition Width="187.164"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <RadioButton Grid.Row="0" x:Name="Embed" Content="Embed Source In Installer" GroupName="1" FontSize="20" Margin="0,-33,170,33" Grid.ColumnSpan="4"/>
+                                    <RadioButton Grid.Row="0" x:Name="Embed" Content="Embed Source In Installer" GroupName="1" FontSize="20" Margin="0,-33,170,33" Grid.ColumnSpan="4" Click="Embed_Click"></RadioButton>
                                     <Button Grid.Column="2" x:Name="EmbedInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="93,-33,0,51" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" RenderTransformOrigin="1.861,-0.782" >
                                         <StackPanel Orientation="Horizontal">
@@ -407,7 +407,7 @@
                                         </StackPanel>
                                     </Button>
 
-                                    <RadioButton Grid.Column="2" Grid.Row="0" x:Name="External" Content="Use External Source" GroupName="1" FontSize="20" Margin="161,-33,-161,33" Grid.ColumnSpan="2"></RadioButton>
+                                    <RadioButton Grid.Column="2" Grid.Row="0" x:Name="External" Content="Use External Source" GroupName="1" FontSize="20" Margin="161,-33,-161,33" Grid.ColumnSpan="2" Click="External_Click"></RadioButton>
                                     <Button Grid.Column="3" x:Name="ExternalInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="169.164,-33,-12,51" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" RenderTransformOrigin="-4.161,9.813" >
                                         <StackPanel Orientation="Horizontal">

@@ -1213,12 +1213,23 @@ namespace MetroDemo.ExampleViews
 
         private void InfoPathInstaller_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            Console.WriteLine(InfoPathSource.Text);
+            GlobalObjects.InfoPathSource = InfoPathSource.Text;
         }
 
         private void DesignerInstaller_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            Console.WriteLine(DesignerSource.Text);
+            GlobalObjects.SPDesingerSource = DesignerSource.Text;
+
+        }
+
+        private void Embed_Click(object sender, RoutedEventArgs e)
+        {
+            GlobalObjects.UseExternalSource = false;
+        }
+
+        private void External_Click(object sender, RoutedEventArgs e)
+        {
+            GlobalObjects.UseExternalSource = true;
 
         }
 

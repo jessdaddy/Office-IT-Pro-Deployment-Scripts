@@ -50,6 +50,12 @@ namespace MetroDemo
             var task = Task.Run(() => Directory.Exists(path));
             return await Task.WhenAny(task, Task.Delay(1000)) == task && task.Result;
         }
+
+        public static bool UseExternalSource { get; set; }
+
+        public static string InfoPathSource { get; set; }
+
+        public static string SPDesingerSource { get; set; }
     }
 
     public class MainWindowViewModel : INotifyPropertyChanged
