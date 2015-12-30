@@ -416,10 +416,10 @@
                                     </Button>
 
                                     <CheckBox x:Name="InfoPathInstall" Checked="Install_InfoPath" Unchecked="Install_InfoPath"  Margin="0,60,0,-60"/>
-                                    <Label Content="InfoPath" Style="{StaticResource MetroLabelHeader}" Margin="28,60,12,-60" Grid.ColumnSpan="2" ></Label>
+                                    <Label Content="InfoPath" Style="{StaticResource MetroLabelHeader}" Margin="0,60,12,-60" Grid.ColumnSpan="2" HorizontalAlignment="Right" Width="130" ></Label>
                                     <TextBox x:Name="InfoPathSource" Background="white" FontSize="20" Grid.Column="2"
                                              Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="35"
-                                             Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
+                                             Controls:TextBoxHelper.ClearTextButton="True" TextChanged="InfoPathInstaller_OnTextChanged"
                                              Text="" Margin="93,55,-93,-40" Grid.ColumnSpan="2" IsEnabled="False"/>
 
                                     <Button Width="55" 
@@ -432,7 +432,7 @@
                                     <Label Content="SharePoint Designer" Style="{StaticResource MetroLabelHeader}" Margin="28,115,140.836,-115" Grid.ColumnSpan="3" ></Label>
                                     <TextBox x:Name="DesignerSource" Background="White" FontSize="20" Grid.Column="2"
                                              Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="35"
-                                             Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
+                                             Controls:TextBoxHelper.ClearTextButton="True" TextChanged="DesignerInstaller_OnTextChanged"
                                              Text="" Margin="93,115,-93,-100" Grid.ColumnSpan="2" IsEnabled="False">
                                     </TextBox>
                                     <Button Width="55" 

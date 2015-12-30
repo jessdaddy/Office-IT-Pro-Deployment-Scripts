@@ -1149,6 +1149,7 @@ namespace MetroDemo.ExampleViews
         private void Install_InfoPath(object sender, RoutedEventArgs e)
         {
             InfoPathSource.IsEnabled = !InfoPathSource.IsEnabled;
+            InfoPathSource.Text = ""; 
             InfoPath.IsEnabled = !InfoPath.IsEnabled;
             DownloadInfoPath.IsEnabled = !DownloadInfoPath.IsEnabled;
 
@@ -1157,6 +1158,7 @@ namespace MetroDemo.ExampleViews
         private void Install_Designer(object sender, RoutedEventArgs e)
         {
             DesignerSource.IsEnabled = !DesignerSource.IsEnabled;
+            DesignerSource.Text = "";
             DesignerPath.IsEnabled = !DesignerPath.IsEnabled;
             DownloadDesigner.IsEnabled = !DownloadDesigner.IsEnabled;
 
@@ -1207,6 +1209,17 @@ namespace MetroDemo.ExampleViews
             {
                 LogErrorMessage(ex);
             }
+        }
+
+        private void InfoPathInstaller_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            Console.WriteLine(InfoPathSource.Text);
+        }
+
+        private void DesignerInstaller_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            Console.WriteLine(DesignerSource.Text);
+
         }
 
      
