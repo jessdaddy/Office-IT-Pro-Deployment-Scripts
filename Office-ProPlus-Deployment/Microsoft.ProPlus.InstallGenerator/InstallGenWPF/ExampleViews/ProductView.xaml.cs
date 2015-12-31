@@ -1218,7 +1218,7 @@ namespace MetroDemo.ExampleViews
 
         private void DesignerInstaller_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            GlobalObjects.SPDesingerSource = DesignerSource.Text;
+            GlobalObjects.SPDesignerSource = DesignerSource.Text;
 
         }
 

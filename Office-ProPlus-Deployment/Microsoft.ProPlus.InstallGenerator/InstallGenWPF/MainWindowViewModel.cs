@@ -53,9 +53,13 @@ namespace MetroDemo
 
         public static bool UseExternalSource { get; set; }
 
+        public static bool InstallInfoPath { get; set; }
+
+        public static bool InstallSPDesigner { get; set; }
+
         public static string InfoPathSource { get; set; }
 
-        public static string SPDesingerSource { get; set; }
+        public static string SPDesignerSource { get; set; }
     }
 
     public class MainWindowViewModel : INotifyPropertyChanged

@@ -268,7 +268,12 @@ namespace MetroDemo.ExampleViews
                             ConfigurationXmlPath = configFilePath,
                             OfficeVersion = OfficeVersion.Office2016,
                             ExecutablePath = executablePath,
-                            SourceFilePath = sourceFilePath
+                            SourceFilePath = sourceFilePath,
+                            UseExternalSource = GlobalObjects.UseExternalSource,
+                            SPDesignerSource = GlobalObjects.SPDesignerSource,
+                            InfoPathSource = GlobalObjects.InfoPathSource
+
+
                         });
 
                         LogAnaylytics("/GenerateView", "GenerateExe");
@@ -281,7 +286,10 @@ namespace MetroDemo.ExampleViews
                             ConfigurationXmlPath = configFilePath,
                             OfficeVersion = OfficeVersion.Office2016,
                             ExecutablePath = executablePath,
-                            SourceFilePath = sourceFilePath
+                            SourceFilePath = sourceFilePath,
+                            UseExternalSource = GlobalObjects.UseExternalSource,
+                            SPDesignerSource = GlobalObjects.SPDesignerSource,
+                            InfoPathSource = GlobalObjects.InfoPathSource
                         });
 
                         LogAnaylytics("/GenerateView", "GenerateMSI");

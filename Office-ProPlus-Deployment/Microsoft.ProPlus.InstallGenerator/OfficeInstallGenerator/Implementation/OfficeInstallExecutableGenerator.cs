@@ -61,6 +61,27 @@ namespace OfficeInstallGenerator
                     ? @".\Office2013Setup.exe"
                     : @".\Office2016Setup.exe");
 
+                if (!installProperties.UseExternalSource)
+                {
+                    if (!String.IsNullOrEmpty(installProperties.InfoPathSource))
+                    {
+                        parameters.EmbeddedResources.Add(installProperties.InfoPathSource);
+                    }
+                    else
+                    {
+                        parameters.EmbeddedResources.Add("");
+                    }
+
+                    if (!String.IsNullOrEmpty(installProperties.SPDesignerSource))
+                    {
+                        parameters.EmbeddedResources.Add(installProperties.SPDesignerSource);
+
+                    }
+                    else
+                    {
+                        parameters.EmbeddedResources.Add("");
+                    }
+                }
 
 
                 var fileContents = File.ReadAllText("InstallOffice.cs");

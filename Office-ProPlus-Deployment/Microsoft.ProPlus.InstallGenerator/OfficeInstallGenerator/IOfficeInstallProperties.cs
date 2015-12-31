@@ -15,6 +15,13 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
 
         string SourceFilePath { get; set; }
 
+        bool UseExternalSource { get; set; }
+
+        string SPDesignerSource { get; set; }
+
+        string InfoPathSource { get; set; }
+
         string ExecutablePath { get; set; }
+
     }
 }

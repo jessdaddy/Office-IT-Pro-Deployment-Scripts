@@ -74,7 +74,16 @@ public class InstallOffice
             fileNames = GetEmbeddedItems(installDir);
             Console.WriteLine("Done");
 
-            var odtFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".exe"));
+
+            var odtFilePath = installDir + @"\" + fileNames[1];
+            var ipPath = installDir + @"\" + fileNames[2];
+            var SPDesignerPath = installDir + @"\" + fileNames[3];
+
+            Console.WriteLine("Derp");
+            Console.WriteLine(odtFilePath);
+            Console.WriteLine(ipPath);
+            Console.WriteLine(SPDesignerPath);
+
             var xmlFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
 
             SetLoggingPath(xmlFilePath);
@@ -82,6 +91,9 @@ public class InstallOffice
             SetSourcePath(xmlFilePath);
 
             if (!File.Exists(odtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
+            if (!File.Exists(ipPath)) { throw (new Exception("Cannot find InfoPath Executable")); }
+            if (!File.Exists(SPDesignerPath)) { throw (new Exception("Cannot find SharePoint Designer Executable")); }
+
             if (!File.Exists(xmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
 
             var runInstall = false;
@@ -125,6 +137,47 @@ public class InstallOffice
                 p.WaitForExit();
 
                 WaitForOfficeCtrUpadate();
+
+                if (!String.IsNullOrEmpty(ipPath))
+                {
+                    Console.WriteLine("Installing InfoPath 2013...");
+
+                    var p1 = new Process
+                    {
+                        StartInfo = new ProcessStartInfo()
+                        {
+                            FileName = ipPath,
+                            Arguments = "/quiet",
+                            CreateNoWindow = false,
+                            UseShellExecute = false
+                        },
+                    };
+
+                    p1.Start();
+                    p1.WaitForExit();
+                }
+
+
+
+
+                if (!String.IsNullOrEmpty(SPDesignerPath))
+                {
+                    Console.WriteLine("Installing SharePoint Designer 2013...");
+
+                    var p2 = new Process
+                    {
+                        StartInfo = new ProcessStartInfo()
+                        {
+                            FileName = SPDesignerPath,
+                            Arguments = "/quiet",
+                            CreateNoWindow = true,
+                            UseShellExecute = false
+                        },
+                    };
+
+                    p2.Start();
+                    p2.WaitForExit();
+                }
 
                 var errorMessage = GetOdtErrorMessage();
                 if (!string.IsNullOrEmpty(errorMessage))
@@ -227,7 +280,7 @@ public class InstallOffice
             {
                 var fileName = Regex.Replace(resourceStreamName, "^" + assemblyName + ".", "", RegexOptions.IgnoreCase);
                 fileName = Regex.Replace(fileName, "^Resources.", "", RegexOptions.IgnoreCase);
-
+                Console.WriteLine(fileName);
                 returnFiles.Add(fileName);
 
                 var filePath = Path.Combine(targetDirectory, fileName);
