@@ -76,8 +76,18 @@ public class InstallOffice
 
 
             var odtFilePath = installDir + @"\" + fileNames[1];
-            var ipPath = installDir + @"\" + fileNames[2];
-            var SPDesignerPath = installDir + @"\" + fileNames[3];
+            var ipPath = "";
+            var SPDesignerPath = "";
+
+            try
+            {
+                ipPath = installDir + @"\" + fileNames[2];
+                SPDesignerPath = installDir + @"\" + fileNames[3];
+            }
+            catch(Exception)
+            {
+                
+            }
 
             Console.WriteLine("Derp");
             Console.WriteLine(odtFilePath);
@@ -91,8 +101,6 @@ public class InstallOffice
             SetSourcePath(xmlFilePath);
 
             if (!File.Exists(odtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
-            if (!File.Exists(ipPath)) { throw (new Exception("Cannot find InfoPath Executable")); }
-            if (!File.Exists(SPDesignerPath)) { throw (new Exception("Cannot find SharePoint Designer Executable")); }
 
             if (!File.Exists(xmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
 

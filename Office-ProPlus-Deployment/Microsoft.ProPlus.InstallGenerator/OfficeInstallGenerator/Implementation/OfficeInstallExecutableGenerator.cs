@@ -67,20 +67,14 @@ namespace OfficeInstallGenerator
                     {
                         parameters.EmbeddedResources.Add(installProperties.InfoPathSource);
                     }
-                    else
-                    {
-                        parameters.EmbeddedResources.Add("");
-                    }
+                 
 
                     if (!String.IsNullOrEmpty(installProperties.SPDesignerSource))
                     {
                         parameters.EmbeddedResources.Add(installProperties.SPDesignerSource);
 
                     }
-                    else
-                    {
-                        parameters.EmbeddedResources.Add("");
-                    }
+                  
                 }
 
 

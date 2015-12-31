@@ -134,7 +134,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>Z5hso4BuDIIFrVrRClesYsdsPIfrWDuEllKIaVbxPm4=</dsig:DigestValue>
+        <dsig:DigestValue>DT7h9EwQ/FKqEUQbTqHUJqKrXM2jLettU7EHjkg64lM=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -146,7 +146,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>p593FmDqjNWH+CJIvS2QdO6WRuxeLwbagN07EYy0fu8=</dsig:DigestValue>
+        <dsig:DigestValue>crXMRq+E5kG0uHjvykscSVPP2Cc/fG+M9vwjlzFidpc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -513,13 +513,13 @@
       <dsig:DigestValue>EXKGnzKmMaZCl530E2BDVX2aQ2/xteCUstHlNsZXHQg=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="InstallOffice.cs" size="24729">
+  <file name="InstallOffice.cs" size="24703">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>b8abX0b7c8r434pb2DThcxXOIY0MSkJYS/Xvcf1kri0=</dsig:DigestValue>
+      <dsig:DigestValue>5QZj514VOWJxIaCQv6v8oFGlSY2XHK5Yy+ohB3xDF2g=</dsig:DigestValue>
     </hash>
   </file>
   <file name="OfficeProPlusInstallGenerator.exe.config" size="756">
