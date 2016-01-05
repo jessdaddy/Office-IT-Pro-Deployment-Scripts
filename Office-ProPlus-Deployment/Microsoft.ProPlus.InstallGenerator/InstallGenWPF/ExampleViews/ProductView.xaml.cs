@@ -44,7 +44,7 @@ namespace MetroDemo.ExampleViews
         private LanguagesDialog languagesDialog = null;
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
-        public event TransitionTabEventHandler TransitionTab;
+        public event TransitionTabEventHandler TransitionTab; 
         public event MessageEventHandler InfoMessage;
         public event MessageEventHandler ErrorMessage;
 

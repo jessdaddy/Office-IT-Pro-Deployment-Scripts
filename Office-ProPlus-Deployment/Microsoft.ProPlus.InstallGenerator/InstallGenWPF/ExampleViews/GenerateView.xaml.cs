@@ -290,6 +290,7 @@ namespace MetroDemo.ExampleViews
                             UseExternalSource = GlobalObjects.UseExternalSource,
                             SPDesignerSource = GlobalObjects.SPDesignerSource,
                             InfoPathSource = GlobalObjects.InfoPathSource
+
                         });
 
                         LogAnaylytics("/GenerateView", "GenerateMSI");
@@ -436,6 +437,8 @@ namespace MetroDemo.ExampleViews
                         FileSavePath.Text = Regex.Replace(currentPath, @"\.\w{3}$", ".exe");
                     }
 
+                    GlobalObjects.IsMSIinstaller = false;
+
                     FileSavePath.SetValue(TextBoxHelper.WatermarkProperty, "Office365ProPlus.exe");
                 }
                 else
@@ -445,6 +448,8 @@ namespace MetroDemo.ExampleViews
                     {
                         FileSavePath.Text = Regex.Replace(currentPath, @"\.\w{3}$", ".msi");
                     }
+
+                    GlobalObjects.IsMSIinstaller = true; 
 
                     FileSavePath.SetValue(TextBoxHelper.WatermarkProperty, "Office365ProPlus.msi");
                 }

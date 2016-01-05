@@ -295,6 +295,7 @@ public class CustomActions
                 p.StartInfo.Arguments = "/silent";
             }
 
+            p.StartInfo.Arguments = "/msi";
             p.Start();
             p.WaitForExit();
 

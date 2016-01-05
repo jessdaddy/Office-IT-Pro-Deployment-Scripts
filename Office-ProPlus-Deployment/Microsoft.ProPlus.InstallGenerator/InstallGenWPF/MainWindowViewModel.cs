@@ -11,7 +11,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using MahApps.Metro;
-using MetroDemo;
 using MetroDemo.Models;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
@@ -56,6 +55,8 @@ namespace MetroDemo
         public static bool InstallInfoPath { get; set; }
 
         public static bool InstallSPDesigner { get; set; }
+
+        public static bool IsMSIinstaller { get; set;  }
 
         public static string InfoPathSource { get; set; }
 
