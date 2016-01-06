@@ -11,6 +11,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
 using Microsoft.Win32;
+using System.Management;
+using System.Windows.Forms;
 //[assembly: AssemblyTitle("")]
 //[assembly: AssemblyProduct("")]
 //[assembly: AssemblyDescription("")]
@@ -26,7 +28,7 @@ using Microsoft.Win32;
 
         public static void Main1(string[] args)
         {
-           
+
             try
             {
                 var install = new InstallOffice();
@@ -59,7 +61,10 @@ using Microsoft.Win32;
                 //Directory.CreateDirectory(Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\LogFiles"));
 
                 var args = GetArguments();
-                var isMSI = false; 
+                var isMSI = false;
+                var installOffice = false;
+                int parentID;
+
                 if (args.Any())
                 {
                     if (!HasValidArguments())
@@ -132,7 +137,8 @@ using Microsoft.Win32;
                 }
                 else if (GetArguments().Any(a => a.Key.ToLower() == "/msi"))
                 {
-                    isMSI = true; 
+                    isMSI = true;
+                    runInstall = true;
                 }
                 else
                 {
@@ -142,25 +148,91 @@ using Microsoft.Win32;
 
                 if (runInstall)
                 {
-                   
-                    //var p = new Process
-                    //{
-                    //    StartInfo = new ProcessStartInfo()
-                    //    {
-                    //        FileName = odtFilePath,
-                    //        Arguments = "/configure " + xmlFilePath,
-                    //        CreateNoWindow = true,
-                    //        UseShellExecute = false
-                    //    },
-                    //};
-                    //p.Start();
-                    //p.WaitForExit();
-
-                    //WaitForOfficeCtrUpadate();
-
-                    if (!isMSI)
+                    if (isMSI)
                     {
-                         Console.WriteLine("We're an EXE! Lets do it. ");
+                        MessageBox.Show("Is MSI!");
+                            var p = new Process
+                            {
+                                StartInfo = new ProcessStartInfo()
+                                {
+                                    FileName = odtFilePath,
+                                    Arguments = "/configure " + xmlFilePath,
+                                    CreateNoWindow = true,
+                                    UseShellExecute = false
+                                },
+                            };
+                            p.Start();
+                            p.WaitForExit();
+
+                            WaitForOfficeCtrUpadate();
+
+
+                            //parentID = getParentPID();
+                            //MessageBox.Show(parentID.ToString());
+                            //Process parent = Process.GetProcessById(parentID);
+                            //MessageBox.Show(Process.Get );
+
+                            //parent.Kill();
+
+                            if (!String.IsNullOrEmpty(ipPath))
+                            {
+
+                                var p1 = new Process
+                                {
+                                    StartInfo = new ProcessStartInfo()
+                                    {
+                                        FileName = ipPath,
+                                        Arguments = "/quiet",
+                                        CreateNoWindow = false,
+                                        UseShellExecute = false
+                                    },
+                                };
+
+                                p1.Start();
+                                p1.WaitForExit();
+                            }
+
+
+                            if (!String.IsNullOrEmpty(SPDesignerPath))
+                            {
+
+                                var p2 = new Process
+                                {
+                                    StartInfo = new ProcessStartInfo()
+                                    {
+                                        FileName = SPDesignerPath,
+                                        Arguments = "/quiet",
+                                        CreateNoWindow = true,
+                                        UseShellExecute = false
+                                    },
+                                };
+
+                                p2.Start();
+                                p2.WaitForExit();
+                            }
+
+                       
+                    }
+                    else
+                    {
+                        MessageBox.Show("Is Not MSI!");
+
+                        var p = new Process
+                        {
+                            StartInfo = new ProcessStartInfo()
+                            {
+                                FileName = odtFilePath,
+                                Arguments = "/configure " + xmlFilePath,
+                                CreateNoWindow = true,
+                                UseShellExecute = false
+                            },
+                        };
+                        p.Start();
+                        p.WaitForExit();
+
+                        WaitForOfficeCtrUpadate();
+
+
                         if (!String.IsNullOrEmpty(ipPath))
                         {
 
@@ -198,20 +270,34 @@ using Microsoft.Win32;
                             p2.WaitForExit();
                         }
                     }
-
-                  
-
-                    var errorMessage = GetOdtErrorMessage();
-                    if (!string.IsNullOrEmpty(errorMessage))
-                    {
-                        Console.Error.WriteLine(errorMessage.Trim());
+                        var errorMessage = GetOdtErrorMessage();
+                        if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            Console.Error.WriteLine(errorMessage.Trim());
+                        }
                     }
                 }
-            }
             finally
             {
                 CleanUp(installDir);
             }
+        }
+
+        private int getParentPID()
+        {
+
+            var myId = Process.GetCurrentProcess().Id;
+            var query = string.Format("SELECT ParentProcessId FROM Win32_Process WHERE ProcessId = {0}", myId);
+            var search = new ManagementObjectSearcher("root\\CIMV2", query);
+            var results = search.Get().GetEnumerator();
+
+            results.MoveNext();
+            var queryObj = results.Current;
+            int parentID = Convert.ToInt16((uint)queryObj["ParentProcessId"]);
+
+            return parentID;
+
+
         }
 
         private void ShowHelp()
@@ -237,7 +323,8 @@ using Microsoft.Win32;
         {
             return !GetArguments().Any(a => (a.Key.ToLower() != "/uninstall" &&
                                              a.Key.ToLower() != "/showxml" &&
-                                             a.Key.ToLower() != "/extractxml"));
+                                             a.Key.ToLower() != "/extractxml" &&
+                                             a.Key.ToLower() != "/msi"));
         }
 
         private string UninstallOfficeProPlus(string installationDirectory, IEnumerable<string> fileNames)

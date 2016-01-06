@@ -13,6 +13,8 @@ using Microsoft.Win32;
 using RegistryReader;
 using WixSharp;
 using System;
+using System.Threading;
+using System.Management;
 using File = WixSharp.File;
 
 public class MsiGenerator 
@@ -297,15 +299,19 @@ public class CustomActions
 
             p.StartInfo.Arguments = "/msi";
             p.Start();
-            p.WaitForExit();
-
+            Process thisProcess = Process.GetCurrentProcess();
+            thisProcess.Kill();
+          
+         
             return ActionResult.Success;
         }
         catch (Exception ex)
         {
+            MessageBox.Show(ex.Message);
             return ActionResult.Failure;
         }
     }
+
 
     [CustomAction]
     public static ActionResult UninstallOffice(Session session)

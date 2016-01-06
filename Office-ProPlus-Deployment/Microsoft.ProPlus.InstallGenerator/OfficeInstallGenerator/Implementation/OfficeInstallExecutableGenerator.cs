@@ -48,6 +48,10 @@ namespace OfficeInstallGenerator
                 parameters.ReferencedAssemblies.Add("System.Xml.dll");
                 parameters.ReferencedAssemblies.Add("System.Core.dll");
                 parameters.ReferencedAssemblies.Add("Microsoft.CSharp.dll");
+                parameters.ReferencedAssemblies.Add("System.Management.dll");
+                parameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
+
+
 
                 embededExeFiles = EmbeddedResources.GetEmbeddedItems(currentDirectory, @"\.exe$");
 

@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
 using Microsoft.Win32;
+using System.Management;
 //[assembly: AssemblyTitle("")]
 //[assembly: AssemblyProduct("")]
 //[assembly: AssemblyDescription("")]
