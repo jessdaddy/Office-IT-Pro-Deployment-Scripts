@@ -21,10 +21,10 @@ namespace Microsoft.OfficeProPlus.Downloader
             var fSplit = filePath.Split('\\');
             var fileName = fSplit[fSplit.Length - 1];
 
-            int numAttempts = 0;
-            bool downloadSuccessful = false; //variables for redownload attempts to retry, or kick out of loop if necessary
+            var numAttempts = 0;
+            var downloadSuccessful = false; //variables for redownload attempts to retry, or kick out of loop if necessary
 
-            int numAllowedRetries = Convert.ToInt32(ConfigurationSettings.AppSettings["NumDownloadRetries"]);
+            var numAllowedRetries = Convert.ToInt32(ConfigurationSettings.AppSettings["NumDownloadRetries"]);
             while (numAttempts <= numAllowedRetries && !downloadSuccessful)//loop for checking number of attempts and if attempt was a success
             {
                 try
@@ -38,7 +38,7 @@ namespace Microsoft.OfficeProPlus.Downloader
                             client.DownloadProgressChanged +=
                                 new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
                             client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
-
+                            
                             if (!token.IsCancellationRequested)
                             {
                                 // Register the callback to a method that can unblock.                        
@@ -52,6 +52,7 @@ namespace Microsoft.OfficeProPlus.Downloader
                             }
                         }
                     }, token);
+                    return;
                 }
                 catch (Exception ex)
                 {
@@ -62,9 +63,11 @@ namespace Microsoft.OfficeProPlus.Downloader
                     }
                     else if (numAttempts >= numAllowedRetries)
                     {
+                        
                         throw ex;// on final attempt, throw an error.
                     }
                 }
+                await Task.Delay(new TimeSpan(0, 0, 3), token);
             }
         }
 
