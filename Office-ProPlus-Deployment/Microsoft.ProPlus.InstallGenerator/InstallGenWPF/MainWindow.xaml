@@ -129,6 +129,9 @@
                 </TabItem>
                 <TabItem Header="Generate" IsEnabled="False">
                     <exampleViews:GenerateView x:Name="GenerateView" DataContext="{Binding}" Tag="4"  />
+                </TabItem>       
+                <TabItem Header="About" IsEnabled="True">
+                    <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="5" />
                 </TabItem>
             </Controls:MetroAnimatedSingleRowTabControl>
 

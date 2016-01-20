@@ -134,6 +134,9 @@
     </ApplicationDefinition>
     <Compile Include="Engine\OfficeInstaller.cs" />
     <Compile Include="Events\Events.cs" />
+    <Compile Include="ExampleViews\AboutView.xaml.cs">
+      <DependentUpon>AboutView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ExampleViews\GenerateView.xaml.cs">
       <DependentUpon>GenerateView.xaml</DependentUpon>
     </Compile>
@@ -192,6 +195,10 @@
       <DependentUpon>XmlBrowserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="XmlBrowser\XmlValidator.cs" />
+    <Page Include="ExampleViews\AboutView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ExampleViews\GenerateView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
