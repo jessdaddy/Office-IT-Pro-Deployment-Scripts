@@ -103,7 +103,7 @@
                                         https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/Development/Office-ProPlus-Deployment/Microsoft.ProPlus.InstallGenerator
                                         </Hyperlink>
                                     </TextBlock>
-                                    
+
                                 </Grid>
                             </Grid>
                         </Border>
@@ -183,7 +183,7 @@
 
                         </Grid>
 
-                        <Border Grid.Column="0" Grid.Row="3" BorderBrush="Gainsboro" BorderThickness="1" Width="870" HorizontalAlignment="Left">
+                        <Border Grid.Column="0" Grid.Row="3" BorderBrush="Gainsboro" BorderThickness="1" Width="870" HorizontalAlignment="Left" Margin="0,0,-20,25" Grid.RowSpan="3">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
@@ -206,7 +206,7 @@
 
 
                                 </Grid>
-                                <Grid  Grid.Row="1" Grid.Column="0">
+                                <Grid  Grid.Row="1" Grid.Column="0" Margin="0,79,0,-79">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
                                     </Grid.RowDefinitions>
@@ -218,7 +218,7 @@
                                         <ColumnDefinition Width="60" />
                                         <ColumnDefinition Width="90" />
                                         <ColumnDefinition Width="80" />
-                                    </Grid.ColumnDefinitions>                                    
+                                    </Grid.ColumnDefinitions>
                                 </Grid>
                             </Grid>
                         </Border>
@@ -263,7 +263,11 @@
 
 
                         </Grid>
-                        <TextBlock HorizontalAlignment="Left" Height="68" Margin="26,10.4,0,0" Style="{StaticResource MetroTextBlock}" Grid.Row="3" TextWrapping="Wrap" Text="	Office 365 ProPlus Install Generator is a project that allows the ability to install Microsoft Office using different methods, along with selecting different options.  Options include languages, excluding certain products, choosing the download source path, and specifying 32-bit versus 64-bit.  Install options include creating an MSI or EXE file, or installing directly from the generator application itself." VerticalAlignment="Top" Width="770"/>
+                        <TextBlock HorizontalAlignment="Left" Height="135" Margin="26,10,0,0" Style="{StaticResource MetroTextBlock}" Grid.Row="3" TextWrapping="Wrap" VerticalAlignment="Top" Width="770" Grid.RowSpan="3">
+                            The Install Generator is an application that will package an Office 365 ProPlus installation into a single Executable or Windows Installer Package (MSI) file. The XML configuration file is embedded in the file which allows you to easily distribute Office 365 ProPlus with a custom configuration.<LineBreak/><LineBreak/>
+                            The Install Generator allows you to select installation options. If you would like to use an existing configuration xml, you can export it as an xml file and import it into the application.<LineBreak/><LineBreak/>
+                            The Install Generator is a desktop application that is installed via Microsoft ClickOnce.
+                        </TextBlock>
 
                     </Grid>
                 </TabItem>

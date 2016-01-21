@@ -8,7 +8,7 @@
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
                       Title=""
-                      Width="960"
+                      Width="1050"
                       Height="600"
                       Icon="1447297750_gear_settings_cog_preferences.ico"
                       ShowIconOnTitleBar="false"
@@ -114,23 +114,23 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged" Grid.ColumnSpan="2" Margin="0,0,-0.4,0.44" >
-                <TabItem Header="Start">
+            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged" Grid.ColumnSpan="2" Margin="0,0,-0.4,0.44" TabStripPlacement="Left" >
+                <TabItem Header="Start" Height="50">
                     <exampleViews:StartView x:Name="StartView" DataContext="{Binding}"  Tag="0" />
                 </TabItem>
-                <TabItem Header="Products" IsEnabled="False">
+                <TabItem Header="Products" IsEnabled="False" Height="50">
                     <exampleViews:ProductView x:Name="ProductView"  DataContext="{Binding}" Tag="1" />
                 </TabItem>
-                <TabItem Header="Updates" IsEnabled="False">
+                <TabItem Header="Updates" IsEnabled="False" Height="50">
                     <exampleViews:UpdateView x:Name="UpdateView" DataContext="{Binding}" Tag="2" />
                 </TabItem>
-                <TabItem Header="Options" IsEnabled="False">
+                <TabItem Header="Options" IsEnabled="False" Height="50">
                     <exampleViews:DisplayView x:Name="DisplayView" DataContext="{Binding}" Tag="3"  />
                 </TabItem>
-                <TabItem Header="Generate" IsEnabled="False">
-                    <exampleViews:GenerateView x:Name="GenerateView" DataContext="{Binding}" Tag="4"  />
+                <TabItem Header="Generate" IsEnabled="False" Height="50">
+                    <exampleViews:GenerateView x:Name="GenerateView" DataContext="{Binding}" Tag="4" Margin="0,4,-0.11,-4.04"  />
                 </TabItem>       
-                <TabItem Header="About" IsEnabled="True">
+                <TabItem Header="About" IsEnabled="True" Height="50">
                     <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="5" />
                 </TabItem>
             </Controls:MetroAnimatedSingleRowTabControl>
