@@ -23,6 +23,7 @@
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.RadioButton.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Slider.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.TabControl.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.ModernUITabControl.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.TextBlock.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.TextBox.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Label.xaml" />
@@ -47,6 +48,7 @@
     <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}" />
     <Style TargetType="TabItem" BasedOn="{StaticResource MetroTabItem}" />
     <Style TargetType="TabControl" BasedOn="{StaticResource MetroTabControl}" />
+    <Style TargetType="Controls:ModernUITabControl" BasedOn="{StaticResource ModernUITabControl}" />
     <Style TargetType="ScrollBar" BasedOn="{StaticResource MetroScrollBar}" />
     <Style TargetType="RadioButton" BasedOn="{StaticResource MetroRadioButton}" />
     <Style TargetType="ProgressBar" BasedOn="{StaticResource MetroProgressBar}" />

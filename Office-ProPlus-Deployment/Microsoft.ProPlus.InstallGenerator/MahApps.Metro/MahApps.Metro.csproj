@@ -141,10 +141,12 @@
     <Compile Include="Controls\Helper\TextBoxHelper.cs" />
     <Compile Include="Controls\Helper\ToggleButtonHelper.cs" />
     <Compile Include="Controls\LayoutInvalidationCatcher.cs" />
+    <Compile Include="Controls\ModernUIAnimatedSingleRowTabControl.cs" />
     <Compile Include="Controls\MetroAnimatedSingleRowTabControl.cs" />
     <Compile Include="Controls\MetroAnimatedTabControl.cs" />
     <Compile Include="Controls\MetroNavigationWindow.cs" />
     <Compile Include="Controls\MetroProgressBar.cs" />
+    <Compile Include="Controls\ModernUITabControl.cs" />
     <Compile Include="Controls\MetroTabControl.cs" />
     <Compile Include="Controls\MetroTabItem.cs" />
     <Compile Include="Controls\MetroWindowHelpers.cs" />
@@ -398,6 +400,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <DependentUpon>Controls.xaml</DependentUpon>
+    </Page>
+    <Page Include="Styles\Controls.ModernUITabControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Styles\Controls.Page.xaml">
       <Generator>MSBuild:Compile</Generator>

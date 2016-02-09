@@ -1038,7 +1038,7 @@
             LeftToRight means content left and button right and RightToLeft vise versa
             </summary>
         </member>
-        <member name="T:MahApps.Metro.Controls.MetroAnimatedSingleRowTabControl">
+        <member name="T:MahApps.Metro.Controls.ModernUIAnimatedSingleRowTabControl">
             <summary>
             A MetroTabControl (Pivot) that wraps TabItem/MetroTabItem headers on a single row.
             </summary>
@@ -1066,6 +1066,16 @@
         <member name="P:MahApps.Metro.Controls.BaseMetroTabControl.TabItemClosingEventArgs.ClosingTabItem">
             <summary>
             Gets the MetroTabItem that will be closed.
+            </summary>
+        </member>
+        <member name="M:MahApps.Metro.Controls.ModernUIAnimatedSingleRowTabControl.#ctor">
+            <summary>
+            Initializes a new instance of the MahApps.Metro.Controls.MetroAnimatedSingleRowTabControl class.
+            </summary>
+        </member>
+        <member name="T:MahApps.Metro.Controls.MetroAnimatedSingleRowTabControl">
+            <summary>
+            A MetroTabControl (Pivot) that wraps TabItem/MetroTabItem headers on a single row.
             </summary>
         </member>
         <member name="M:MahApps.Metro.Controls.MetroAnimatedSingleRowTabControl.#ctor">
@@ -1456,6 +1466,16 @@
         <member name="P:MahApps.Metro.Controls.MetroProgressBar.EllipseOffset">
             <summary>
             Gets/sets the offset of the ellipses used in the indeterminate animation.
+            </summary>
+        </member>
+        <member name="T:MahApps.Metro.Controls.ModernUITabControl">
+            <summary>
+            A standard MetroTabControl (Pivot).
+            </summary>
+        </member>
+        <member name="M:MahApps.Metro.Controls.ModernUITabControl.#ctor">
+            <summary>
+            Initializes a new instance of the MahApps.Metro.Controls.MetroTabControl class.
             </summary>
         </member>
         <member name="T:MahApps.Metro.Controls.MetroTabControl">
@@ -6129,6 +6149,36 @@
             <summary>
             This event fires if accent color and theme was changed
             this should be using the weak event pattern, but for now it's enough
+            </summary>
+        </member>
+        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
+            <summary>
+            GeneratedInternalTypeHelper
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            CreateInstance
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            GetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            SetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
+            <summary>
+            CreateDelegate
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
+            <summary>
+            AddEventHandler
             </summary>
         </member>
     </members>

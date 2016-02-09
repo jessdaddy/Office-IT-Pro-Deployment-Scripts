@@ -65,6 +65,11 @@
                         Value="{Binding Name, Mode=OneWay}" />
             </Style>
 
+            <Style TargetType="TabItem" x:Key="MetroTabItem">
+                <Setter Property="Controls:ControlsHelper.HeaderFontSize"
+                Value="8" />
+            </Style>
+
             <Dialog:CustomDialog x:Key="MessageDialog"
                                  Title="Message"
                                  x:Name="MessageDialog">
@@ -114,7 +119,10 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged" Grid.ColumnSpan="2" Margin="0,0,-0.4,0.44" TabStripPlacement="Left" >
+            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged"
+                                                       Grid.ColumnSpan="2" Margin="0,0,-0.4,0.44" TabStripPlacement="Left">
+ 
+                
                 <TabItem Header="Start" Height="50">
                     <exampleViews:StartView x:Name="StartView" DataContext="{Binding}"  Tag="0" />
                 </TabItem>

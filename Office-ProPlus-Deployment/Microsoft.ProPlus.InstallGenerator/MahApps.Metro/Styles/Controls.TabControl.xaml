@@ -30,7 +30,8 @@
                                   IsItemsHost="true"
                                   Grid.Row="0"
                                   KeyboardNavigation.TabIndex="1"
-                                  Panel.ZIndex="1" />
+                                  Panel.ZIndex="1"
+                                  />
                         <Border x:Name="ContentPanel"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
@@ -161,6 +162,9 @@
         <!-- special property for header font size -->
         <Setter Property="Controls:ControlsHelper.HeaderFontSize"
                 Value="{DynamicResource TabItemFontSize}" />
+
+
+
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabItem">

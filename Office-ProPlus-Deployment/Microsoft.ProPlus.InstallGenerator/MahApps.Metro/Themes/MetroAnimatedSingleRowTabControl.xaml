@@ -10,7 +10,7 @@
 
     <Style TargetType="{x:Type Controls:MetroAnimatedSingleRowTabControl}">
         <Setter Property="Controls:TabControlHelper.Transition"
-                Value="Left" />
+                Value="Up" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Controls:MetroAnimatedSingleRowTabControl}">
@@ -36,6 +36,7 @@
                                       Panel.ZIndex="1"
                                       Grid.Column="0"
                                       Grid.Row="0"
+                                      Margin="10 0 80 0"
                                       KeyboardNavigation.TabIndex="1" />
                         </ScrollViewer>
                         <Controls:TransitioningContentControl x:Name="ContentPanel"
@@ -103,6 +104,12 @@
                             <Setter Property="HorizontalScrollBarVisibility"
                                     TargetName="HeaderPanelScroll"
                                     Value="Disabled" />
+
+                            <Setter Property="Background"
+                                    TargetName="HeaderPanel"
+                                    Value="White" />
+
+  
                         </Trigger>
                         <Trigger Property="TabStripPlacement"
                                  Value="Right">

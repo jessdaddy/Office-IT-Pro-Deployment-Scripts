@@ -69,4 +69,8 @@
                 Value="Top" />
     </Style>
 
+
+
+    <system:Double x:Key="TabItemFontSize">20</system:Double>
+
 </ResourceDictionary>
