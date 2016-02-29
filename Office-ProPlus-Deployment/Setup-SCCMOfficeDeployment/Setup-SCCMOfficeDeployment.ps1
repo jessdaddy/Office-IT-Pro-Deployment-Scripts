@@ -43,15 +43,7 @@ If you do not want to host the update files on the local server you can specify 
         }
 
         [String]$UpdateSourceConfigFileName = 'Configuration_UpdateSource.xml'
-
-        
-        
-
-        
-        
-        
         $c2rFileName = "Office2016Setup.exe"
-
 
         Set-Location $PSScriptRoot
 
@@ -68,19 +60,15 @@ If you do not want to host the update files on the local server you can specify 
         Write-Host "Staging the Office ProPlus Deployment to: $path"
         Write-Host
          
-	    
-	        $app = "$path\$c2rFileName" 
-	        $arguments = "/download", "$UpdateSourceConfigFileName"
+	    $app = "$path\$c2rFileName" 
+	    $arguments = "/download", "$UpdateSourceConfigFileName"
  
-            Write-Host "`tStarting Download of Office Files..." -NoNewline
+        Write-Host "`tStarting Download of Office Files..." -NoNewline
 
-	        #run the executable, this will trigger the download of bits to \\ShareName\Office\Data\
-	        & $app @arguments
+	    #run the executable, this will trigger the download of bits to \\ShareName\Office\Data\
+	    & $app @arguments
 
-            Write-Host "`tComplete"
-        
-
-	    
+        Write-Host "`tComplete"
 
         Write-Host
         Write-Host "The Office Update download has finished"
