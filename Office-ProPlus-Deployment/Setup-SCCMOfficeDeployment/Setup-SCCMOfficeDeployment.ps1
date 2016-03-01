@@ -1,3 +1,15 @@
+$enum = "
+using System;
+ 
+    [FlagsAttribute]
+    public enum InstallType
+    {
+        ScriptInstall = 0,
+        ConfigurationFileInstall = 1
+    }
+"
+Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
+
 function Setup-SCCMOfficeProPlusPackage {
 <#
 .SYNOPSIS
@@ -25,10 +37,13 @@ Setup-SCCMOfficeUpdates -Path \\SCCM-CM\OfficeDeployment -PackageName "Office Pr
 Param
 (
 	[Parameter()]
-	[String]$Path = $null,
+	[InstallType]$InstallType,
 
 	[Parameter()]
-	[String]$Version,
+	[String]$ScriptName = "SCCM-OfficeDeploymentScript.ps1",
+
+	[Parameter()]
+	[String]$Path = $null,
 
 	[Parameter()]
 	[String]$SiteCode = $null,
@@ -89,6 +104,12 @@ Process
            $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
         }
 
+        $SourceDirectory = "$PSScriptRoot\DeploymentFiles"
+
+        if (Test-Path -Path $SourceDirectory) {
+           Copy-Item "$SourceDirectory\*.*" $Path
+        }
+        
 	    Set-Location "$SiteCode`:"	
 
         $package = CreateSCCMPackage -Name $PackageName -Path $path -UpdateOnlyChangedBits $UpdateOnlyChangedBits
