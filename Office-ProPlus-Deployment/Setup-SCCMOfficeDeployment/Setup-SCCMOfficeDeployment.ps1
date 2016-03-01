@@ -1,81 +1,3 @@
-function Download-OfficeFiles {
-<#
-.SYNOPSIS
-This method will download office based on config file
-
-.DESCRIPTION
-This method is used to download Office ProPlus files for distribution via SCCM
-
-.PARAMETER Path
-The path to the UNC share to download the Office files to.
-
-.Example
-Download-OfficeFiles 
-Default without parameters specified this will create a local folder named 'OfficeUpdates' on the system drive and then create a hidden share named 'OfficeUpdates$'. It will then download the latest Office files to that folder.
-
-.Example
-Download-OfficeFiles -Path "\\Server\OfficeShare"
-
-If you do not want to host the update files on the local server you can specify a UNC share path. The script must be run with a user account that has Read/Write permissions to the share.
-
-#>
-    [CmdletBinding(SupportsShouldProcess=$true)]
-    Param
-    (
-
-	    [Parameter()]
-	    [String]$Path = $NULL,
-
-	    [Parameter()]
-	    [String]$Version = $NULL,
-
-	    [Parameter()]
-	    [String]$Bitness = 'All'
-    )
-    Begin
-    {
-        $startLocation = Get-Location
-    }
-    Process
-    {
-        if (!$Path) {
-           $Path = CreateOfficeUpdateShare
-        }
-
-        [String]$UpdateSourceConfigFileName = 'Configuration_UpdateSource.xml'
-        $c2rFileName = "Office2016Setup.exe"
-
-        Set-Location $PSScriptRoot
-
-        if (!(Test-Path -Path "$Path\$c2rFileName")) {
-              Copy-Item -Path ".\$c2rFileName" -Destination $Path
-        }
-        if (!(Test-Path -Path "$Path\Configuration_UpdateSource.xml")) {
-              Copy-Item -Path ".\Configuration_UpdateSource.xml" -Destination $Path
-        }
-
-	    #Connect PowerShell to Share location	
-	    Set-Location $path
-
-        Write-Host "Staging the Office ProPlus Deployment to: $path"
-        Write-Host
-         
-	    $app = "$path\$c2rFileName" 
-	    $arguments = "/download", "$UpdateSourceConfigFileName"
- 
-        Write-Host "`tStarting Download of Office Files..." -NoNewline
-
-	    #run the executable, this will trigger the download of bits to \\ShareName\Office\Data\
-	    & $app @arguments
-
-        Write-Host "`tComplete"
-
-        Write-Host
-        Write-Host "The Office Update download has finished"
-    }
-
-}
-
 function Setup-SCCMOfficeProPlusPackage {
 <#
 .SYNOPSIS
@@ -150,9 +72,6 @@ Process
     }
 
     Set-Location $PSScriptRoot
-
-    
-
 	Set-Location $startLocation
     Set-Location $PSScriptRoot
 
