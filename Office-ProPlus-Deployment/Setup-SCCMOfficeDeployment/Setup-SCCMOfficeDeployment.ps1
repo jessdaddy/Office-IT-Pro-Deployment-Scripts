@@ -37,7 +37,7 @@ Setup-SCCMOfficeUpdates -Path \\SCCM-CM\OfficeDeployment -PackageName "Office Pr
 Param
 (
 	[Parameter()]
-	[InstallType]$InstallType,
+	[InstallType]$InstallType = "ScriptInstall",
 
 	[Parameter()]
 	[String]$ScriptName = "SCCM-OfficeDeploymentScript.ps1",
@@ -114,7 +114,15 @@ Process
 
         $package = CreateSCCMPackage -Name $PackageName -Path $path -UpdateOnlyChangedBits $UpdateOnlyChangedBits
 
-        CreateSCCMProgram -Name $programName -PackageName $PackageName -Path $path -RequiredPlatformNames $requiredPlatformNames
+        if ($InstallType -eq "ScriptInstall") {
+            $CommandLine = "powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1"
+
+            CreateSCCMProgram -Name $programName -PackageName $PackageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+        } else {
+            $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
+
+            CreateSCCMProgram -Name $programName -PackageName $PackageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+        }
 
         Write-Host "Starting Content Distribution"	
 
@@ -267,7 +275,7 @@ function CreateSCCMProgram() {
 		[String]$PackageName = "Office ProPlus Deployment",
 		
 		[Parameter(Mandatory=$True)]
-		[String]$Path, 
+		[String]$CommandLine, 
 
 		[Parameter()]
 		[String]$Name = "Office2016Setup.exe",
@@ -279,14 +287,12 @@ function CreateSCCMProgram() {
 
     $program = Get-CMProgram -PackageName $PackageName -ProgramName $Name
 
-    $commandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
-
     Write-Host "`tProgram: $Name"
 
     if($program -eq $null -or !$program)
     {
         Write-Host "`t`tCreating Program..."	        
-	    $program = New-CMProgram -PackageName $PackageName -StandardProgramName $Name -DriveMode RenameWithUnc -CommandLine $commandLine -ProgramRunType OnlyWhenUserIsLoggedOn -RunMode RunWithUserRights -UserInteraction $false -RunType Normal
+	    $program = New-CMProgram -PackageName $PackageName -StandardProgramName $Name -DriveMode RenameWithUnc -CommandLine $CommandLine -ProgramRunType OnlyWhenUserIsLoggedOn -RunMode RunWithAdministrativeRights -UserInteraction $false -RunType Normal
     } else {
         Write-Host "`t`tAlready Exists"
     }

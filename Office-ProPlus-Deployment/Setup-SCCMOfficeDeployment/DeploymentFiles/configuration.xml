@@ -2,9 +2,7 @@
   <Add OfficeClientEdition="64">
     <Product ID="O365ProPlusRetail">
       <Language ID="en-us" />
-      <Language ID="es-es" />
-      <ExcludeApp ID="Access" />
     </Product>
   </Add>
-  <Display Level="Full" AcceptEULA="True" />
+  <Display Level="None" AcceptEULA="True" />
 </Configuration>
