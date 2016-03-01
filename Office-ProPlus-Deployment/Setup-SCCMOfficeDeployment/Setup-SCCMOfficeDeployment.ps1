@@ -269,8 +269,6 @@ function CreateSCCMProgram() {
     } else {
         Write-Host "`t`tAlready Exists"
     }
-	
-    
 
     Write-Host ""
 }
