@@ -10,6 +10,9 @@ using System;
 "
 Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
 
+[string]$SavedPackageName = "Office ProPlus Deployment"
+[string]$SavedProgramName = "ScriptInstall"
+
 function Setup-SCCMOfficeProPlusPackage {
 <#
 .SYNOPSIS
@@ -49,10 +52,7 @@ Param
 	[String]$SiteCode = $null,
 	
 	[Parameter()]
-	[String]$PackageName = "Office ProPlus Deployment",
-		
-	[Parameter()]
-	[String]$ProgramName = "Office2016Setup.exe",
+	[String]$PackageName = $null,
 
 	[Parameter()]	
 	[Bool]$UpdateOnlyChangedBits = $false,
@@ -81,6 +81,14 @@ Process
     Write-Host
     Write-Host 'Configuring System Center Configuration Manager to Deploy Office ProPlus' -BackgroundColor DarkBlue
     Write-Host
+
+    if ($PackageName) {
+       $SavedPackageName = $PackageName
+    }
+
+    if ($ProgramName) {
+       $SavedProgramName = $ProgramName
+    }
 
     if (!$Path) {
          $Path = CreateOfficeUpdateShare
@@ -112,22 +120,23 @@ Process
         
 	    Set-Location "$SiteCode`:"	
 
-        $package = CreateSCCMPackage -Name $PackageName -Path $path -UpdateOnlyChangedBits $UpdateOnlyChangedBits
+        $package = CreateSCCMPackage -Name $SavedPackageName -Path $path -UpdateOnlyChangedBits $UpdateOnlyChangedBits
+        [string]$CommandLine = ""
 
         if ($InstallType -eq "ScriptInstall") {
+            $SavedProgramName = "ScriptInstall"
             $CommandLine = "powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1"
-
-            CreateSCCMProgram -Name $programName -PackageName $PackageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
         } else {
+            $SavedProgramName = "SetupInstall"
             $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
-
-            CreateSCCMProgram -Name $programName -PackageName $PackageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
         }
+
+        CreateSCCMProgram -Name $SavedProgramName -PackageName $SavedPackageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
 
         Write-Host "Starting Content Distribution"	
 
         if ($distributionPoint) {
-	        Start-CMContentDistribution -PackageName $PackageName -DistributionPointName $distributionPoint
+	        Start-CMContentDistribution -PackageName $SavedPackageName -DistributionPointName $distributionPoint
         }
 
         Write-Host 
@@ -180,10 +189,10 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
 		[String]$Collection = "",
 
 		[Parameter()]
-		[String]$PackageName = "Office ProPlus Deployment",
+		[String]$PackageName = $null,
 
 		[Parameter()]
-		[String]$ProgramName = "Office2016Setup.exe",
+		[String]$ProgramName = $null,
 
 		[Parameter()]	
 		[Bool]$UpdateOnlyChangedBits = $true,
@@ -197,6 +206,14 @@ Begin
 }
 Process
 {
+    if ($PackageName) {
+       $SavedPackageName = $PackageName
+    }
+
+    if ($ProgramName) {
+       $SavedProgramName = $ProgramName
+    }
+
     $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
     
     if ($sccmModulePath) {
@@ -208,11 +225,11 @@ Process
 
 	    Set-Location "$SiteCode`:"	
 
-        $package = Get-CMPackage -Name $packageName
+        $package = Get-CMPackage -Name $SavedPackageName
 
         $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
         if ($packageDeploy.Count -eq 0) {
-            Write-Host "Creating Package Deployment for: $packageName"
+            Write-Host "Creating Package Deployment for: $SavedPackageName"
 
             $dtNow = [datetime]::Now
             $dtNow = $dtNow.AddDays(-1)
@@ -220,12 +237,20 @@ Process
 
             $schedule = New-CMSchedule -Start $start -RecurInterval Days -RecurCount 7
 
-     	    Start-CMPackageDeployment -CollectionName $Collection -PackageName $PackageName -ProgramName $ProgramName -StandardProgram  -DeployPurpose Required `
-                                      -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible `
-                                      -Schedule $schedule
+     	    #Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$SavedPackageName" -ProgramName "$SavedProgramName" -StandardProgram  -DeployPurpose Required `
+            #                          -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible -Schedule $schedule 
+
+ #Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$SavedPackageName" -StandardProgramName "$SavedProgramName" -DeployPurpose Required
+
+
+ Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$SavedPackageName" -ProgramName "$SavedProgramName" -StandardProgram  `
+  -AllowSharedContent $True -DeployPurpose Required -DeploymentAvailableDay 2014/11/30 -DeploymentAvailableTime 22:05 -ScheduleEvent AsSoonAsPossible -RerunBehavior RerunIfFailedPreviousAttempt
+
+     	    #Start-CMPackageDeployment -CollectionName $Collection -PackageName $SavedPackageName -ProgramName $SavedProgramName -StandardProgram  -DeployPurpose Required `
+            #                          -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible -Schedule $schedule 
 
         } else {
-            Write-Host "Package Deployment Already Exists for: $packageName"
+            Write-Host "Package Deployment Already Exists for: $SavedPackageName"
         }
     }
 }
@@ -259,7 +284,7 @@ function CreateSCCMPackage() {
 		
     Write-Host "`t`tSetting Package Properties"
 
-	Set-CMPackage -Name $packageName -Priority Normal -EnableBinaryDeltaReplication $UpdateOnlyChangedBits -CopyToPackageShareOnDistributionPoint $True
+	Set-CMPackage -Name $Name -Priority Normal -EnableBinaryDeltaReplication $UpdateOnlyChangedBits -CopyToPackageShareOnDistributionPoint $True
 
     Write-Host ""
 
