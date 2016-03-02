@@ -39,6 +39,9 @@ Setup-SCCMOfficeUpdates -Path \\SCCM-CM\OfficeDeployment -PackageName "Office Pr
 [CmdletBinding(SupportsShouldProcess=$true)]
 Param
 (
+	[Parameter(Mandatory=$True)]
+	[String]$Collection,
+
 	[Parameter()]
 	[InstallType]$InstallType = "ScriptInstall",
 
@@ -62,6 +65,9 @@ Param
 	
 	[Parameter()]
 	[string]$distributionPoint,
+
+	[Parameter()]
+	[string]$DistributionPointGroupName,
 
 	[Parameter()]
 	[uint16]$DeploymentExpiryDurationInDays = 15,
@@ -136,7 +142,7 @@ Process
         Write-Host "Starting Content Distribution"	
 
         if ($distributionPoint) {
-	        Start-CMContentDistribution -PackageName $SavedPackageName -DistributionPointName $distributionPoint
+	        Start-CMContentDistribution -PackageName $SavedPackageName -CollectionName $Collection -DistributionPointGroupName $DistributionPointGroupName
         }
 
         Write-Host 
@@ -237,17 +243,10 @@ Process
 
             $schedule = New-CMSchedule -Start $start -RecurInterval Days -RecurCount 7
 
-     	    #Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$SavedPackageName" -ProgramName "$SavedProgramName" -StandardProgram  -DeployPurpose Required `
-            #                          -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible -Schedule $schedule 
-
- #Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$SavedPackageName" -StandardProgramName "$SavedProgramName" -DeployPurpose Required
-
-
- Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$SavedPackageName" -ProgramName "$SavedProgramName" -StandardProgram  `
-  -AllowSharedContent $True -DeployPurpose Required -DeploymentAvailableDay 2014/11/30 -DeploymentAvailableTime 22:05 -ScheduleEvent AsSoonAsPossible -RerunBehavior RerunIfFailedPreviousAttempt
-
-     	    #Start-CMPackageDeployment -CollectionName $Collection -PackageName $SavedPackageName -ProgramName $SavedProgramName -StandardProgram  -DeployPurpose Required `
-            #                          -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible -Schedule $schedule 
+     	    Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$SavedPackageName" -ProgramName "$SavedProgramName" -StandardProgram  -DeployPurpose Required `
+                                      -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint -SlowNetworkOption RunProgramFromDistributionPoint
+                                       #-Schedule $schedule 
+                      
 
         } else {
             Write-Host "Package Deployment Already Exists for: $SavedPackageName"
