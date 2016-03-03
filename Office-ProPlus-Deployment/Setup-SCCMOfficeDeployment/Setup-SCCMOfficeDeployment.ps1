@@ -64,7 +64,7 @@ Param
 	[String[]] $RequiredPlatformNames = @("All x86 Windows 7 Client", "All x86 Windows 8 Client", "All x86 Windows 8.1 Client", "All Windows 10 Professional/Enterprise and higher (32-bit) Client","All x64 Windows 7 Client", "All x64 Windows 8 Client", "All x64 Windows 8.1 Client", "All Windows 10 Professional/Enterprise and higher (64-bit) Client"),
 	
 	[Parameter()]
-	[string]$distributionPoint,
+	[string]$DistributionPoint,
 
 	[Parameter()]
 	[string]$DistributionPointGroupName,
@@ -141,8 +141,12 @@ Process
 
         Write-Host "Starting Content Distribution"	
 
-        if ($distributionPoint) {
-	        Start-CMContentDistribution -PackageName $SavedPackageName -CollectionName $Collection -DistributionPointGroupName $DistributionPointGroupName
+        if ($DistributionPointGroupName) {
+	        Start-CMContentDistribution -PackageName $SavedPackageName -DistributionPointGroupName $DistributionPointGroupName
+        }
+
+        if ($DistributionPoint) {
+            Start-CMContentDistribution -PackageName $SavedPackageName -DistributionPointName $DistributionPoint
         }
 
         Write-Host 
@@ -243,10 +247,22 @@ Process
 
             $schedule = New-CMSchedule -Start $start -RecurInterval Days -RecurCount 7
 
-     	    Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$SavedPackageName" -ProgramName "$SavedProgramName" -StandardProgram  -DeployPurpose Required `
-                                      -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint -SlowNetworkOption RunProgramFromDistributionPoint
-                                       #-Schedule $schedule 
-                      
+            try {
+     	            Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$SavedPackageName" -ProgramName "$SavedProgramName" -StandardProgram  -DeployPurpose Required `
+                                        -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint -SlowNetworkOption RunProgramFromDistributionPoint
+                                        #-Schedule $schedule 
+            } catch {
+                [string]$ErrorMessage = $_.ErrorDetails 
+
+                if ($ErrorMessage.ToLower().Contains("Could not find property PackageID".ToLower())) {
+                Write-Host 
+                Write-Host "The package has not finished deploying to the distribution points." -BackgroundColor Red
+                Write-Host "Please try this command against once the distribution points have been updated" -BackgroundColor Red
+                } else {
+                throw
+                }
+            }  
+      
 
         } else {
             Write-Host "Package Deployment Already Exists for: $SavedPackageName"

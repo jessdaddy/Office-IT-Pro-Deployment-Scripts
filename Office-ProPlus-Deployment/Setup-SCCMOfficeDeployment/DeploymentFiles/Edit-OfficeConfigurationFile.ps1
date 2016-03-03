@@ -2338,7 +2338,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set values
-        if($Level){
+        if($Level -ne $null){
             $LoggingElement.SetAttribute("Level", $Level) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Level')) {
