@@ -364,7 +364,9 @@ process {
         }
 
         if ($TargetFilePath) {
+        if(!(Test-Path $TargetFilePath)){
            $formattedXml | Out-File -FilePath $TargetFilePath
+           }
            if ($ComputerName.Length -eq 1) {
                $Result = $formattedXml
            }
@@ -374,7 +376,9 @@ process {
 
     } else {
         if ($TargetFilePath) {
+        if(!(Test-Path $TargetFilePath)){
            $formattedXml | Out-File -FilePath $TargetFilePath
+           }
         }
 
         $allLanguages = Get-Unique -InputObject $allLanguages
