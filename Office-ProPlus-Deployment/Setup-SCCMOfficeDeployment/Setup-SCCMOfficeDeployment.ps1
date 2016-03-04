@@ -258,6 +258,7 @@ Process
                 Write-Host 
                 Write-Host "The package has not finished deploying to the distribution points." -BackgroundColor Red
                 Write-Host "Please try this command against once the distribution points have been updated" -BackgroundColor Red
+
                 } else {
                 throw
                 }
