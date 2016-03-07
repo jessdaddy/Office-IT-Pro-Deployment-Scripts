@@ -23,6 +23,13 @@ Automates the configuration of System Center Configuration Manager (SCCM) to con
 .PARAMETER path
 The UNC Path where the downloaded bits will be stored for installation to the target machines.
 
+.PARAMETER Source
+The UNC Path where the downloaded branch bits are stored. Required if source parameter is specified.
+
+.PARAMETER Branch
+
+The update branch to be used with the deployment. Current options are "Business, Current, FirstReleaseBusiness, FirstReleaseCurrent".
+
 .PARAMETER $SiteCode
 The 3 Letter Site ID.
 
@@ -33,7 +40,7 @@ Allows the user to specify that full path to the ConfigurationManager.psd1 Power
 Sets which distribution points will be used, and distributes the package.
 
 .Example
-Setup-SCCMOfficeUpdates -Path \\SCCM-CM\OfficeDeployment -PackageName "Office ProPlus Deployment" -ProgramName "Office2016Setup.exe" -distributionPoint SCCM-CM.CONTOSO.COM
+Setup-SCCMOfficeUpdates -Path \\SCCM-CM\OfficeDeployment -PackageName "Office ProPlus Deployment" -ProgramName "Office2016Setup.exe" -distributionPoint SCCM-CM.CONTOSO.COM -source \\SCCM-CM\updates -branch Current
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true)]
@@ -73,7 +80,14 @@ Param
 	[uint16]$DeploymentExpiryDurationInDays = 15,
 
 	[Parameter()]
-	[String]$SCCMPSModulePath = $NULL
+	[String]$SCCMPSModulePath = $NULL,
+
+	[Parameter()]
+	[String]$Branch = $null,
+
+	[Parameter()]
+	[String]$Source = $null
+
 
 )
 Begin
@@ -98,6 +112,11 @@ Process
 
     if (!$Path) {
          $Path = CreateOfficeUpdateShare
+    }
+
+    if ($Branch) {
+        $TempPath = $Source + "\" + $Branch + "\*"
+        Copy-Item $TempPath $Path -Recurse
     }
 
     Set-Location $PSScriptRoot
