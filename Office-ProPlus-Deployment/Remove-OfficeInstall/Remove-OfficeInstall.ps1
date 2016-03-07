@@ -252,12 +252,7 @@
 
 function Nuke-Office{
 
-    [CmdletBinding(SupportsShouldProcess=$true)]
-    param(       
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]$Credentials
-    )
+    
 
     $c2rVBS = "OffScrubc2r.vbs"
     $03VBS = "OffScrub03.vbs"
