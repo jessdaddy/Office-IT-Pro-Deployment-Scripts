@@ -250,10 +250,6 @@
 
 }
 
-  
-
-
-
 function Nuke-Office{
 
     [CmdletBinding(SupportsShouldProcess=$true)]
@@ -309,11 +305,42 @@ function Nuke-Office{
             }
         }
 
+        $time = Get-Date -Format g
+        Write-Host ""
+        Write-Host ""$time": Removing Office products..."
+
         wscript $ActionFile
 
+        Do{
+            Start-Sleep -Seconds 5
+            $cscriptProcess = Get-Process cscript -ErrorAction Ignore
+        }
+        Until($cscriptProcess -eq $null)
+       
+        if($cscriptProcess -eq $null){
+            Stop-Process -Name cmd -ErrorAction Ignore
+            
+            $time = Get-Date -Format g
+            Write-Host ""
+            Write-Host ""$time": Searching for remaining registry keys..."
+
+            $Hives = Get-ChildItem Microsoft.PowerShell.Core\Registry::
+
+            $OfficeRegistries = foreach($Hive in $Hives){
+                Get-ChildItem "$($Hive.PSPath)" -Recurse -ErrorAction SilentlyContinue | ? PSPath -like *\Software\Microsoft\Office
+            }
+            foreach($Item in $OfficeRegistries){
+                $time = Get-Date -Format g
+                Write-Host ""
+                Write-Host ""$time": Removing registry key $Item"
+                Remove-Item $Item.PSPath -Recurse -Force -ErrorAction SilentlyContinue
+            }
+
+            $time = Get-Date -Format g
+            Write-Host ""
+            Write-Host ""$time": All Office products have been removed."
+        }
+
         .\Nuke-OfficeRegistry.ps1
-
-
-    
 
 }
