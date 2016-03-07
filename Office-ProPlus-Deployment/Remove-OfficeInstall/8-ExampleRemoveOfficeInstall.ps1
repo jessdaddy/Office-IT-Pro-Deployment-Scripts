@@ -18,8 +18,15 @@ Process {
 . $scriptPath\Install-OfficeClickToRun.ps1
 . $scriptPath\Remove-OfficeClickToRun.ps1
 
-$targetFilePath = "configuration.xml"
+$targetFilePath = $scriptPath + "\configuration.xml"
 $version = $null
+
+#Small block to make sure there is an XML copy that doesn't get overwritten
+$PathXMLToKeep = Split-Path -Parent $targetFilePath
+$PathXMLToKeep += "\originalXML\configuration.xml"
+if(!(Test-Path $PathXMLToKeep)){
+    Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $PathXMLToKeep 
+}
 
 #This example will create an Office Deployment Tool (ODT) configuration file and include all of the Languages currently in use on the computer
 #from which the script is run. It will then remove the existing Office installation and then it will then remove the Version attribute from the XML to ensure the installation gets the latest version
