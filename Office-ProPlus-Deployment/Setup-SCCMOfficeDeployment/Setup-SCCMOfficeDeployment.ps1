@@ -40,7 +40,7 @@ Allows the user to specify that full path to the ConfigurationManager.psd1 Power
 Sets which distribution points will be used, and distributes the package.
 
 .Example
-Setup-SCCMOfficeUpdates -Path \\SCCM-CM\OfficeDeployment -PackageName "Office ProPlus Deployment" -ProgramName "Office2016Setup.exe" -distributionPoint SCCM-CM.CONTOSO.COM -source \\SCCM-CM\updates -branch Current
+Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Office ProPlus Deployment" -ProgramName "Office2016Setup.exe" -distributionPoint SCCM-CM.CONTOSO.COM -source \\SCCM-CM\updates -branch Current
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true)]
