@@ -47,7 +47,6 @@ account that has Read/Write permissions to the share.
 
 }
 
-
 function Setup-SCCMOneDrivePackage {
 <#
 .SYNOPSIS
@@ -56,7 +55,7 @@ Automates the configuration of System Center Configuration Manager (SCCM) to con
 This function creates a softare package that will be used to deploy OneDrive to a specified distribution point.
 .PARAMETER path
 The UNC Path where the OneDrive setup files are located.
-.PARAMETER $SiteCode
+.PARAMETER SiteCode
 The 3 Letter Site ID.
 .PARAMETER SCCMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if SCCM is installed in a non standard path.
