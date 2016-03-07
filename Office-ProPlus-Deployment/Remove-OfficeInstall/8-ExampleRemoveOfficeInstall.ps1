@@ -16,7 +16,7 @@ Process {
 . $scriptPath\Generate-ODTConfigurationXML.ps1
 . $scriptPath\Edit-OfficeConfigurationFile.ps1
 . $scriptPath\Install-OfficeClickToRun.ps1
-. $scriptPath\Remove-OfficeClickToRun.ps1
+. $scriptPath\Remove-OfficeInstall.ps1
 
 $targetFilePath = $scriptPath + "\configuration.xml"
 $version = $null
@@ -32,7 +32,7 @@ if(!(Test-Path $PathXMLToKeep)){
 #from which the script is run. It will then remove the existing Office installation and then it will then remove the Version attribute from the XML to ensure the installation gets the latest version
 #when updating an existing install and then it will initiate a install of Office 2016 Click-To-Run.
 
-Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Remove-OfficeInstall | Set-ODTAdd -Version $version | Install-OfficeClickToRun -OfficeVersion Office2016
+Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Nuke-Office | Set-ODTAdd -Version $version | Install-OfficeClickToRun -OfficeVersion Office2016
 
 # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
 

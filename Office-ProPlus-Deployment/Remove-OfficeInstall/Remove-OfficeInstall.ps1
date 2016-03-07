@@ -341,6 +341,6 @@ function Nuke-Office{
             Write-Host ""$time": All Office products have been removed."
         }
 
-        .\Nuke-OfficeRegistry.ps1
+        #.\Nuke-OfficeRegistry.ps1
 
 }
