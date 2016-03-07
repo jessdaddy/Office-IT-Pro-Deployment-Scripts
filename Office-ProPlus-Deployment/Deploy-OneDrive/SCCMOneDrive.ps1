@@ -237,7 +237,17 @@ Process
 
      	    Start-CMPackageDeployment -CollectionName $CollectionName -PackageName $PackageName -ProgramName $ProgramName -StandardProgram  -DeployPurpose Required `
                                       -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible `
-                                      -Schedule $schedule
+                                      -Schedule $schedule -WarningAction SilentlyContinue
+
+            $deploymentCheck = Get-CMDeploymentStatus -Name $PackageName -WarningAction SilentlyContinue
+            if($deploymentCheck.PackageName -eq $PackageName){
+                Write-Host ""
+                Write-Host "The package $PackageName has been deployed successfully."
+            }
+            else{
+                Write-Host ""
+                Write-Host "The package $PackageName failed to deploy." -BackgroundColor Red -ForegroundColor White
+            }
 
         } else {
             Write-Host "Package Deployment Already Exists for: $packageName"
