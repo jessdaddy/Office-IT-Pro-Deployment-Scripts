@@ -1,4 +1,4 @@
-﻿function Retrieve-OneDriveFiles {
+﻿function Copy-OneDriveFiles {
 <#
 .SYNOPSIS
 This method will download the Office updates to a share
