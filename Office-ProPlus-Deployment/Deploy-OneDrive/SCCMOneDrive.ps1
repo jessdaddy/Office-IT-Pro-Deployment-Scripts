@@ -1,26 +1,19 @@
 ﻿function Copy-OneDriveFiles {
 <#
 .SYNOPSIS
-This method will download the Office updates to a share
+This function will copy the necessary files for deploying OneDrive.
 .DESCRIPTION
-This method is used to download the updates for Office Click-to-Run to a netork share.  This network share could then either be used as a update source for Office Click-to-Run or it could be used as a package source for SCCM.
+This function will copy the necessary files for deploying OneDrive to a shared folder. These files are used to install OneDrive.exe.
 .PARAMETER Path
-The path to the UNC share to download the Office updates to
-.PARAMETER Version
-The version of Office 2013 you wish to update to. E.g. 15.0.4737.1003
-.PARAMETER Bitness
-Specifies if the target installation is 32 bit or 64 bit. Defaults to 64 bit.
-.PARAMETER ProductVersion
-Specifies Office 2013 vs Office 2016, defaults to 2013, type in either 2013 or 2016 to specify.
+The path to the UNC share to download the OneDrive files to.
 .Example
-Download-OfficeUpdates 
-Default without parameters specified this will create a local folder named 'OfficeUpdates' on the system drive and then create a hidden share named 'OfficeUpdates$'. It will then download the latest Office update to that folder.
+Copy-OneDriveFiles 
+Default without parameters specified this will create a local folder named 'OneDriveDeployment' on the system drive and then create a 
+hidden share named 'OneDriveDeployment$'. It will then copy LaunchOneDrive.exe and OneDriveSetup.exe to the shared folder.
 .Example
-Download-OfficeUpdates -Path "\\Server\OfficeShare"
-If you do not want to host the update files on the local server you can specify a UNC share path. The script must be run with a user account that has Read/Write permissions to the share. 
-.Example
-Download-OfficeUpdates -Path "\\Server\OfficeShare" -Version "15.0.4737.1003" 
-If you specify a Version then the script will download that version.  You can see the version history at https://support.microsoft.com/en-us/gp/office-2013-365-update
+Copy-OneDriveFiles -Path "\\Server\OneDrive"
+If you do not want to host the update files on the local server you can specify a UNC share path. The script must be run with a user 
+account that has Read/Write permissions to the share. 
 #>
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
@@ -58,10 +51,11 @@ If you specify a Version then the script will download that version.  You can se
 function Setup-SCCMOneDrivePackage {
 <#
 .SYNOPSIS
-Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
+Automates the configuration of System Center Configuration Manager (SCCM) to configure a OneDrive.exe deployment.
 .DESCRIPTION
+This function creates a softare package that will be used to deploy OneDrive to a specified distribution point.
 .PARAMETER path
-The UNC Path where the downloaded bits will be stored for installation to the target machines.
+The UNC Path where the OneDrive setup files are located.
 .PARAMETER $SiteCode
 The 3 Letter Site ID.
 .PARAMETER SCCMPSModulePath
@@ -69,7 +63,9 @@ Allows the user to specify that full path to the ConfigurationManager.psd1 Power
 .PARAMETER distributionPoint
 Sets which distribution points will be used, and distributes the package.
 .Example
-Setup-SCCMOfficeUpdates -Path \\SCCM-CM\OfficeDeployment -PackageName "Office ProPlus Deployment" -ProgramName "Office2016Setup.exe" -distributionPoint SCCM-CM.CONTOSO.COM
+Setup-SCCMOneDrivePackage -Path "\\Server\OneDrive" -PackageName "OneDrive Setup" -ProgramName "LaunchOneDrive.exe" -distributionPoint "CM1.CONTOSO.COM"
+A package called "OneDrive Setup" containing a program called "LaunchOneDrive.exe will be created using the OneDrive setup files in "\\Server\OneDrive". The package will
+be copied to the CM1.CONTOSO.COM distribution point.
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true)]
@@ -172,21 +168,22 @@ End
 function Deploy-SCCMOneDrivePackage {
 <#
 .SYNOPSIS
-Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
+Deploys the OneDrive setup package.
 .DESCRIPTION
+This function deploys package to a specified device collection. 
 .PARAMETER Collection
-The target SCCM Collection
+The target SCCM Collection.
 .PARAMETER PackageName
-The Name of the SCCM package create by the Setup-SCCMOfficeProPlusPackage function
+The Name of the SCCM package create by the Setup-SCCMOneDrivePackage function.
 .PARAMETER ProgramName
-The Name of the SCCM program create by the Setup-SCCMOfficeProPlusPackage function
+The Name of the SCCM program create by the Setup-SCCMOneDrivePackage function.
 .PARAMETER UpdateOnlyChangedBits
-Determines whether or not the EnableBinaryDeltaReplication enabled or not
+Determines whether or not the EnableBinaryDeltaReplication enabled or not.
 .PARAMETER SCCMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if SCCM is installed in a non standard path.
 .Example
-Deploy-SCCMOfficeProPlusPackage -Collection "CollectionName"
-Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
+Setup-SCCMOneDrivePackage -Collection "OneDrive"
+Deploys the Package created by the Setup-SCCMOneDrivePackage to a collection called OneDrive.
 #>
     [CmdletBinding()]	
     Param
@@ -332,10 +329,10 @@ function CreateOfficeUpdateShare() {
     Param
 	(
 		[Parameter()]
-		[String]$Name = "OfficeDeployment$",
+		[String]$Name = "OneDriveDeployment$",
 		
 		[Parameter()]
-		[String]$Path = "$env:SystemDrive\OfficeDeployment"
+		[String]$Path = "$env:SystemDrive\OneDriveDeployment"
 	) 
 
     IF (!(TEST-PATH $Path)) { 
