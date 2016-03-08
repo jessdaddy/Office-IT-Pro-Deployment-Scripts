@@ -250,7 +250,7 @@
 
 }
 
-function Nuke-Office{
+function Remove-OfficeInstall{
 
     
 
