@@ -83,7 +83,7 @@ Param
 	[String]$PackageName = "OneDrive for Business Next Gen",
 		
 	[Parameter()]
-	[String]$ProgramName = "LaunchOneDrive.exe",
+	[String]$ProgramName = "Powershell.exe",
 
 	[Parameter()]	
 	[Bool]$UpdateOnlyChangedBits = $false,
@@ -194,7 +194,7 @@ Deploys the Package created by the Setup-SCCMOneDrivePackage to a collection cal
 		[String]$PackageName = "OneDrive for Business Next Gen",
 
 		[Parameter()]
-		[String]$ProgramName = "LaunchOneDrive.exe",
+		[String]$ProgramName = "Powershell.exe",
 
 		[Parameter()]	
 		[Bool]$UpdateOnlyChangedBits = $true,
@@ -299,7 +299,7 @@ function CreateSCCMProgram() {
 		[String]$Path, 
 
 		[Parameter()]
-		[String]$Name = "LaunchOneDrive.exe",
+		[String]$Name = "Powershell.exe",
 		
 		[Parameter()]
 		[String[]] $RequiredPlatformNames = @()
@@ -308,7 +308,7 @@ function CreateSCCMProgram() {
 
     $program = Get-CMProgram -PackageName $PackageName -ProgramName $Name
 
-    $commandLine = "LaunchOneDrive.exe"
+    $commandLine = "C:\Windows\System32\WindowsPowerShell\v1.0\Powershell.exe  -ExecutionPolicy Bypass -File .\DeployOneDrive.ps1"
 
     Write-Host "`tProgram: $Name"
 
