@@ -288,15 +288,15 @@ Log vbCrLf & "For detailed logging please refer to the log in folder " &chr(34)&
 If fRebootRequired Then
     'Log vbCrLf & "A restart is required to complete the operation!"
     'If NOT fQuiet Then
-        'If MsgBox("Do you want to reboot now?",vbYesNo,"Reboot Required") = VB_YES Then
-            Dim colOS, oOS
-            Dim oWmiReboot
-            Set oWmiReboot = GetObject("winmgmts:{impersonationLevel=impersonate,(Shutdown)}!\\.\root\cimv2")
-            Set colOS = oWmiReboot.ExecQuery ("Select * from Win32_OperatingSystem")
-            For Each oOS in colOS
-                oOS.Reboot()
-            Next
-        'End If
+    '    If MsgBox("Do you want to reboot now?",vbYesNo,"Reboot Required") = VB_YES Then
+    '        Dim colOS, oOS
+    '        Dim oWmiReboot
+    '        Set oWmiReboot = GetObject("winmgmts:{impersonationLevel=impersonate,(Shutdown)}!\\.\root\cimv2")
+    '        Set colOS = oWmiReboot.ExecQuery ("Select * from Win32_OperatingSystem")
+    '        For Each oOS in colOS
+    '            oOS.Reboot()
+    '        Next
+    '    End If
     'End If
 End If
 
