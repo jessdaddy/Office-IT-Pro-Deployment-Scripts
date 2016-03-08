@@ -38,8 +38,8 @@ account that has Read/Write permissions to the share.
         if (!(Test-Path -Path "$Path\OneDriveSetup.exe")) {
               Copy-Item -Path ".\OneDriveSetup.exe" -Destination $Path
         }
-        if (!(Test-Path -Path "$Path\LaunchOneDrive.exe")) {
-              Copy-Item -Path ".\LaunchOneDrive.exe" -Destination $Path
+        if (!(Test-Path -Path "$Path\DeployOneDrive.ps1")) {
+              Copy-Item -Path ".\DeployOneDrive.ps1" -Destination $Path
         }
 
 	    
