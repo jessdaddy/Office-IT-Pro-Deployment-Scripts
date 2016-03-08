@@ -16,51 +16,50 @@ If you do not want to host the update files on the local server you can specify 
 account that has Read/Write permissions to the share. 
 #>
     [CmdletBinding(SupportsShouldProcess=$true)]
-    Param
-    (
-
+    Param(
 	    [Parameter()]
 	    [String]$Path = $NULL
     )
-    Begin
-    {
+    Begin{
         $startLocation = Get-Location
     }
-    Process
-    {
-        if (!$Path) {
+    Process{
+        if(!$Path){
            $Path = CreateOfficeUpdateShare
         }
 
-
         Set-Location $PSScriptRoot
 
-        if (!(Test-Path -Path "$Path\OneDriveSetup.exe")) {
+        if(!(Test-Path -Path "$Path\OneDriveSetup.exe")){
               Copy-Item -Path ".\OneDriveSetup.exe" -Destination $Path
         }
-        if (!(Test-Path -Path "$Path\DeployOneDrive.ps1")) {
+
+        if(!(Test-Path -Path "$Path\DeployOneDrive.ps1")){
               Copy-Item -Path ".\DeployOneDrive.ps1" -Destination $Path
-        }
-
-	    
+        }	    
     }
-
 }
 
 function Setup-SCCMOneDrivePackage {
 <#
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (SCCM) to configure a OneDrive.exe deployment.
+
 .DESCRIPTION
 This function creates a softare package that will be used to deploy OneDrive to a specified distribution point.
-.PARAMETER path
+
+.PARAMETER distributionPoint
+Required. Sets which distribution points will be used, and distributes the package.
+
+.PARAMETER Path
 The UNC Path where the OneDrive setup files are located.
+
 .PARAMETER SiteCode
 The 3 Letter Site ID.
+
 .PARAMETER SCCMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if SCCM is installed in a non standard path.
-.PARAMETER distributionPoint
-Sets which distribution points will be used, and distributes the package.
+
 .Example
 Setup-SCCMOneDrivePackage -Path "\\Server\OneDrive" -PackageName "OneDrive Setup" -ProgramName "LaunchOneDrive.exe" -distributionPoint "CM1.CONTOSO.COM"
 A package called "OneDrive Setup" containing a program called "LaunchOneDrive.exe will be created using the OneDrive setup files in "\\Server\OneDrive". The package will
@@ -68,8 +67,10 @@ be copied to the CM1.CONTOSO.COM distribution point.
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true)]
-Param
-(
+Param(
+	[Parameter(Mandatory=$true)]
+	[string]$distributionPoint,
+
 	[Parameter()]
 	[String]$Path = $null,
 
@@ -92,189 +93,188 @@ Param
 	[String[]] $RequiredPlatformNames = @("All x86 Windows 7 Client", "All x86 Windows 8 Client", "All x86 Windows 8.1 Client", "All Windows 10 Professional/Enterprise and higher (32-bit) Client","All x64 Windows 7 Client", "All x64 Windows 8 Client", "All x64 Windows 8.1 Client", "All Windows 10 Professional/Enterprise and higher (64-bit) Client"),
 	
 	[Parameter()]
-	[string]$distributionPoint,
-
-	[Parameter()]
 	[uint16]$DeploymentExpiryDurationInDays = 15,
 
 	[Parameter()]
 	[String]$SCCMPSModulePath = $NULL
-
 )
-Begin
-{
-    $currentExecutionPolicy = Get-ExecutionPolicy
-	Set-ExecutionPolicy Unrestricted -Scope Process -Force  
-    $startLocation = Get-Location
-}
-Process
-{
-    Write-Host
-    Write-Host 'Configuring System Center Configuration Manager to Deploy Office ProPlus' -BackgroundColor DarkBlue
-    Write-Host
-
-    if (!$Path) {
-         $Path = CreateOfficeUpdateShare
+    Begin{
+        $currentExecutionPolicy = Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        $startLocation = Get-Location
     }
+    Process{
+        Write-Host
+        Write-Host 'Configuring System Center Configuration Manager to Deploy Office ProPlus' -BackgroundColor DarkBlue
+        Write-Host
 
-    Set-Location $PSScriptRoot
-	Set-Location $startLocation
-    Set-Location $PSScriptRoot
+        if (!$Path) {
+             $Path = CreateOfficeUpdateShare
+        }
 
-    Write-Host "Loading SCCM Module"
-    Write-Host ""
+        Set-Location $PSScriptRoot
+	    Set-Location $startLocation
+        Set-Location $PSScriptRoot
 
-    #HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SMS\Setup
+        Write-Host "Loading SCCM Module"
+        Write-Host ""
 
-    $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
+        #HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SMS\Setup
+
+        $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
     
-    if ($sccmModulePath) {
-        Import-Module $sccmModulePath
+        if ($sccmModulePath) {
+            Import-Module $sccmModulePath
 
-        if (!$SiteCode) {
-           $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
+            if (!$SiteCode) {
+               $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
+            }
+
+	        Set-Location "$SiteCode`:"	
+
+            $package = CreateSCCMPackage -Name $PackageName -Path $path -UpdateOnlyChangedBits $UpdateOnlyChangedBits
+
+            CreateSCCMProgram -Name $programName -PackageName $PackageName -Path $path -RequiredPlatformNames $requiredPlatformNames
+
+            Write-Host "Starting Content Distribution"	
+
+            if ($distributionPoint) {
+	            Start-CMContentDistribution -PackageName $PackageName -DistributionPointName $distributionPoint
+            }
+
+            Write-Host 
+            Write-Host "NOTE: In order to deploy the package you must run the function 'Deploy-SCCMOneDrivePackage'." -BackgroundColor DarkGreen -ForegroundColor White
+            Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor DarkGreen -ForegroundColor White
+            Write-Host "      otherwise the deployments will fail. The clients will continue to fail until the " -BackgroundColor DarkGreen -ForegroundColor White
+            Write-Host "      content distribution is complete." -BackgroundColor DarkGreen -ForegroundColor White
+
+        } 
+        else{
+            throw [System.IO.FileNotFoundException] "Could Not find file ConfigurationManager.psd1"
         }
-
-	    Set-Location "$SiteCode`:"	
-
-        $package = CreateSCCMPackage -Name $PackageName -Path $path -UpdateOnlyChangedBits $UpdateOnlyChangedBits
-
-        CreateSCCMProgram -Name $programName -PackageName $PackageName -Path $path -RequiredPlatformNames $requiredPlatformNames
-
-        Write-Host "Starting Content Distribution"	
-
-        if ($distributionPoint) {
-	        Start-CMContentDistribution -PackageName $PackageName -DistributionPointName $distributionPoint
-        }
-
-        Write-Host 
-        Write-Host "NOTE: In order to deploy the package you must run the function 'Deploy-SCCMOfficeUpdates'." -BackgroundColor Red
-        Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor Red
-        Write-Host "      otherwise the deployments will fail. The clients will continue to fail until the " -BackgroundColor Red
-        Write-Host "      content distribution is complete." -BackgroundColor Red
-
-    } else {
-        throw [System.IO.FileNotFoundException] "Could Not find file ConfigurationManager.psd1"
     }
-}
-End
-{
-    Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
-    Set-Location $startLocation    
-}
+    End{
+        Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
+        Set-Location $startLocation    
+    }
 }
 
 function Deploy-SCCMOneDrivePackage {
 <#
 .SYNOPSIS
 Deploys the OneDrive setup package.
+
 .DESCRIPTION
 This function deploys package to a specified device collection. 
+
 .PARAMETER Collection
 The target SCCM Collection.
+
 .PARAMETER PackageName
 The Name of the SCCM package create by the Setup-SCCMOneDrivePackage function.
+
 .PARAMETER ProgramName
 The Name of the SCCM program create by the Setup-SCCMOneDrivePackage function.
+
 .PARAMETER UpdateOnlyChangedBits
 Determines whether or not the EnableBinaryDeltaReplication enabled or not.
+
 .PARAMETER SCCMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if SCCM is installed in a non standard path.
+
 .Example
 Setup-SCCMOneDrivePackage -Collection "OneDrive"
 Deploys the Package created by the Setup-SCCMOneDrivePackage to a collection called OneDrive.
 #>
-    [CmdletBinding()]	
-    Param
-	(	
-        [Parameter(Mandatory=$true)]
-        $CollectionName,	
+[CmdletBinding()]	
+Param(	
+    [Parameter(Mandatory=$true)]
+    $CollectionName,	
 
-		[Parameter()]
-		[String]$PackageName = "OneDrive for Business Next Gen",
+    [Parameter()]
+	[String]$PackageName = "OneDrive for Business Next Gen",
 
-		[Parameter()]
-		[String]$ProgramName = "Powershell.exe",
+	[Parameter()]
+	[String]$ProgramName = "Powershell.exe",
 
-		[Parameter()]	
-		[Bool]$UpdateOnlyChangedBits = $true,
+	[Parameter()]	
+	[Bool]$UpdateOnlyChangedBits = $true,
 
-		[Parameter()]
-		[String]$SCCMPSModulePath = $NULL
-	) 
-Begin
-{
+	[Parameter()]
+	[String]$SCCMPSModulePath = $NULL
+) 
+    Begin{
 
-}
-Process
-{
-    $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
+    }
+    Process{
+        $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
     
-    if ($sccmModulePath) {
-        Import-Module $sccmModulePath
+        if ($sccmModulePath) {
+            Import-Module $sccmModulePath
 
-        if (!$SiteCode) {
-            $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
-        }
-
-	    Set-Location "$SiteCode`:"	
-
-        $package = Get-CMPackage -Name $packageName
-
-        $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
-        if ($packageDeploy.Count -eq 0) {
-            Write-Host "Creating Package Deployment for: $packageName"
-
-            $dtNow = [datetime]::Now
-            $dtNow = $dtNow.AddDays(-1)
-            $start = Get-Date -Year $dtNow.Year -Month $dtNow.Month -Day $dtNow.Day -Hour 12 -Minute 0
-
-            $schedule = New-CMSchedule -Start $start -RecurInterval Days -RecurCount 7
-
-     	    Start-CMPackageDeployment -CollectionName $CollectionName -PackageName $PackageName -ProgramName $ProgramName -StandardProgram  -DeployPurpose Required `
-                                      -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible `
-                                      -Schedule $schedule -WarningAction SilentlyContinue
-
-            $deploymentCheck = Get-CMDeploymentStatus -Name $PackageName -WarningAction SilentlyContinue
-            if($deploymentCheck.PackageName -eq $PackageName){
-                Write-Host ""
-                Write-Host "The package $PackageName has been deployed successfully."
+            if (!$SiteCode) {
+                $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
             }
+
+	        Set-Location "$SiteCode`:"	
+
+            $package = Get-CMPackage -Name $packageName
+
+            $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
+            if ($packageDeploy.Count -eq 0) {
+                Write-Host ""
+                Write-Host "Creating Package Deployment for: $packageName"
+
+                $dtNow = [datetime]::Now
+                $dtNow = $dtNow.AddDays(-1)
+                $start = Get-Date -Year $dtNow.Year -Month $dtNow.Month -Day $dtNow.Day -Hour 12 -Minute 0
+
+                $schedule = New-CMSchedule -Start $start -RecurInterval Days -RecurCount 7
+
+     	        Start-CMPackageDeployment -CollectionName $CollectionName -PackageName $PackageName -ProgramName $ProgramName -StandardProgram  -DeployPurpose Required `
+                                          -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible `
+                                          -Schedule $schedule -WarningAction SilentlyContinue
+
+                $deploymentCheck = Get-CMDeploymentStatus -Name $PackageName -WarningAction SilentlyContinue
+                if($deploymentCheck.PackageName -eq $PackageName){
+                    Write-Host ""
+                    Write-Host "The package $PackageName has been deployed successfully."
+                }
+                else{
+                    Write-Host ""
+                    Write-Host "The package $PackageName failed to deploy." -BackgroundColor Red -ForegroundColor White
+                }
+
+            } 
             else{
-                Write-Host ""
-                Write-Host "The package $PackageName failed to deploy." -BackgroundColor Red -ForegroundColor White
+                Write-Host "Package Deployment Already Exists for: $packageName"
             }
-
-        } else {
-            Write-Host "Package Deployment Already Exists for: $packageName"
         }
     }
 }
-}
 
 function CreateSCCMPackage() {
-    [CmdletBinding()]	
-    Param
-	(
-		[Parameter()]
-		[String]$Name = "OneDrive for Business Next Gen",
+[CmdletBinding()]	
+Param(
+    [Parameter()]
+	[String]$Name = "OneDrive for Business Next Gen",
 		
-		[Parameter(Mandatory=$True)]
-		[String]$Path,
+	[Parameter(Mandatory=$True)]
+	[String]$Path,
 
-		[Parameter()]	
-		[Bool]$UpdateOnlyChangedBits = $true
-	) 
+	[Parameter()]	
+	[Bool]$UpdateOnlyChangedBits = $true
+) 
 
     Write-Host "`tPackage: $Name"
 
     $package = Get-CMPackage -Name $Name 
 
-    if($package -eq $null -or !$package)
-    {
+    if($package -eq $null -or !$package){
         Write-Host "`t`tCreating Package: $Name"
         $package = New-CMPackage -Name $Name  -Path $path
-    } else {
+    } 
+    else{
         Write-Host "`t`tAlready Exists"	
     }
 		
@@ -289,22 +289,20 @@ function CreateSCCMPackage() {
 }
 
 function CreateSCCMProgram() {
-    [CmdletBinding()]	
-    Param
-	(
-		[Parameter()]
-		[String]$PackageName = "OneDrive for Business Next Gen",
+[CmdletBinding()]	
+Param(
+	[Parameter()]
+	[String]$PackageName = "OneDrive for Business Next Gen",
 		
-		[Parameter(Mandatory=$True)]
-		[String]$Path, 
+	[Parameter(Mandatory=$True)]
+	[String]$Path, 
 
-		[Parameter()]
-		[String]$Name = "Powershell.exe",
+	[Parameter()]
+	[String]$Name = "Powershell.exe",
 		
-		[Parameter()]
-		[String[]] $RequiredPlatformNames = @()
-
-	) 
+	[Parameter()]
+	[String[]] $RequiredPlatformNames = @()
+) 
 
     $program = Get-CMProgram -PackageName $PackageName -ProgramName $Name
 
@@ -312,11 +310,11 @@ function CreateSCCMProgram() {
 
     Write-Host "`tProgram: $Name"
 
-    if($program -eq $null -or !$program)
-    {
+    if($program -eq $null -or !$program){
         Write-Host "`t`tCreating Program..."	        
 	    $program = New-CMProgram -PackageName $PackageName -StandardProgramName $Name -DriveMode RenameWithUnc -CommandLine $commandLine -ProgramRunType OnlyWhenUserIsLoggedOn -RunMode RunWithUserRights -UserInteraction $false -RunType Normal
-    } else {
+    } 
+    else{
         Write-Host "`t`tAlready Exists"
     }
 
@@ -324,17 +322,16 @@ function CreateSCCMProgram() {
 }
 
 function CreateOfficeUpdateShare() {
-    [CmdletBinding()]	
-    Param
-	(
-		[Parameter()]
-		[String]$Name = "OneDriveDeployment$",
+[CmdletBinding()]	
+Param(
+	[Parameter()]
+	[String]$Name = "OneDriveDeployment$",
 		
-		[Parameter()]
-		[String]$Path = "$env:SystemDrive\OneDriveDeployment"
-	) 
+	[Parameter()]
+	[String]$Path = "$env:SystemDrive\OneDriveDeployment"
+) 
 
-    IF (!(TEST-PATH $Path)) { 
+    if (!(Test-Path $Path)) { 
       $addFolder = New-Item $Path -type Directory 
     }
     
@@ -374,8 +371,7 @@ function GetSupportedPlatforms([String[]] $requiredPlatformNames){
 
     $supportedPlatforms = @()
 
-    foreach($p in $requiredPlatforms)
-    {
+    foreach($p in $requiredPlatforms){
         $osDetail = ([WmiClass]("\\$computerName\root\sms\site_$siteCode`:SMS_OS_Details")).CreateInstance()    
         $osDetail.MaxVersion = $p.OSMaxVersion
         $osDetail.MinVersion = $p.OSMinVersion
@@ -402,7 +398,8 @@ function CreateDownloadXmlFile([string]$Path, [string]$ConfigFileName){
 	  $addNode.OfficeClientEdition = $bitness
 
       $doc.Save($sourceFilePath)
-    } else {
+    } 
+    else{
       $doc = New-Object System.XML.XMLDocument
 
       $configuration = $doc.CreateElement("Configuration");
@@ -454,15 +451,14 @@ function CreateUpdateXmlFile([string]$Path, [string]$ConfigFileName, [string]$Bi
 }
 
 function Create-FileShare() {
-    [CmdletBinding()]	
-    Param
-	(
-		[Parameter()]
-		[String]$Name = "",
+[CmdletBinding()]	
+Param(
+	[Parameter()]
+	[String]$Name = "",
 		
-		[Parameter()]
-		[String]$Path = ""
-	)
+	[Parameter()]
+	[String]$Path = ""
+)
 
     $description = "$name"
 
@@ -542,12 +538,11 @@ function Create-FileShare() {
 }
 
 function GetSCCMPSModulePath() {
-    [CmdletBinding()]	
-    Param
-	(
-		[Parameter()]
-		[String]$SCCMPSModulePath = $NULL
-	)
+[CmdletBinding()]	
+Param(
+	[Parameter()]
+	[String]$SCCMPSModulePath = $NULL
+)
 
     [bool]$pathExists = $false
 
@@ -573,7 +568,8 @@ function GetSCCMPSModulePath() {
        $uiAdminPath = ${env:SMS_ADMIN_UI_PATH}
        if ($uiAdminPath.ToLower().EndsWith("\bin")) {
            $dirInfo = $uiAdminPath
-       } else {
+       } 
+       else {
            $dirInfo = ([System.IO.DirectoryInfo]$uiAdminPath).Parent.FullName
        }
       
@@ -605,7 +601,8 @@ Function Get-Site([string[]]$computerName = $env:COMPUTERNAME) {
     } 
     if ($SiteCode -eq "") { 
         throw ("Sitecode of ConfigMgr Site at " + $ComputerName + " could not be determined.") 
-    } else { 
+    } 
+    else { 
         Return $SiteCode 
     } 
 }
