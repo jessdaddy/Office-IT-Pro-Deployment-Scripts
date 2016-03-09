@@ -1,4 +1,12 @@
-﻿function Copy-OneDriveFiles {
+﻿Add-Type  -ErrorAction SilentlyContinue -TypeDefinition @"
+   public enum DeploymentType
+   {
+      DefaultToBusiness,
+      EnableAddAccounts
+   }
+"@
+
+function Copy-OneDriveFiles {
 <#
 .SYNOPSIS
 This function will copy the necessary files for deploying OneDrive.
@@ -31,12 +39,28 @@ account that has Read/Write permissions to the share.
         Set-Location $PSScriptRoot
 
         if(!(Test-Path -Path "$Path\OneDriveSetup.exe")){
-              Copy-Item -Path ".\OneDriveSetup.exe" -Destination $Path
+            Copy-Item -Path ".\OneDriveSetup.exe" -Destination $Path
         }
 
-        if(!(Test-Path -Path "$Path\DeployOneDrive.ps1")){
-              Copy-Item -Path ".\DeployOneDrive.ps1" -Destination $Path
-        }	    
+        #if(!(Test-Path -Path "$Path\DeployOneDrive.ps1")){
+            #Copy-Item -Path ".\DeployOneDrive.ps1" -Destination $Path
+        #}
+        
+        if(!(Test-Path -Path "$Path\DefaultToBusinessFRE.reg")){
+            Copy-Item -Path ".\DefaultToBusinessFRE.reg" -Destination $Path
+        } 
+
+        if(!(Test-Path -Path "$Path\EnableAddAccounts.reg")){
+            Copy-Item -Path ".\EnableAddAccounts.reg" -Destination $Path
+        }
+        
+        if(!(Test-Path -Path "$Path\DefaultToBusinessFRE.ps1")){
+            Copy-Item -Path ".\DefaultToBusinessFRE.ps1" -Destination $Path
+        }
+        
+        if(!(Test-Path -Path "$Path\EnableAddAccounts.ps1")){
+            Copy-Item -Path ".\EnableAddAccounts.ps1" -Destination $Path
+        }      
     }
 }
 
@@ -48,8 +72,14 @@ Automates the configuration of System Center Configuration Manager (SCCM) to con
 .DESCRIPTION
 This function creates a softare package that will be used to deploy OneDrive to a specified distribution point.
 
-.PARAMETER distributionPoint
+.PARAMETER DistributionPoint
 Required. Sets which distribution points will be used, and distributes the package.
+
+.PARAMETER DeploymentType
+Required. Choose between DefaultToBusiness or EnableAddAccounts. DefaultToBusiness will add the necessary registry key
+to install OneDrive.exe and will open the wizard to walk the user through logging in with their work or school account. 
+EnableAddAccounts will add the necessary registry key to allow the user to add their work or school account at their own
+convenience, and will add an option in the OneDrive.exe settings to add an account.
 
 .PARAMETER Path
 The UNC Path where the OneDrive setup files are located.
@@ -64,12 +94,19 @@ Allows the user to specify that full path to the ConfigurationManager.psd1 Power
 Setup-SCCMOneDrivePackage -Path "\\Server\OneDrive" -PackageName "OneDrive Setup" -ProgramName "LaunchOneDrive.exe" -distributionPoint "CM1.CONTOSO.COM"
 A package called "OneDrive Setup" containing a program called "LaunchOneDrive.exe will be created using the OneDrive setup files in "\\Server\OneDrive". The package will
 be copied to the CM1.CONTOSO.COM distribution point.
+
+.LINK
+https://support.office.com/en-us/article/Deploying-the-OneDrive-for-Business-Next-Generation-Sync-Client-in-an-enterprise-environment-3f3a511c-30c6-404a-98bf-76f95c519668?ui=en-US&rs=en-US&ad=US
+
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true)]
 Param(
 	[Parameter(Mandatory=$true)]
-	[string]$distributionPoint,
+	[string]$DistributionPoint,
+
+    [Parameter(Mandatory=$true)]
+    [DeploymentType]$DeploymentType,
 
 	[Parameter()]
 	[String]$Path = $null,
@@ -96,7 +133,7 @@ Param(
 	[uint16]$DeploymentExpiryDurationInDays = 15,
 
 	[Parameter()]
-	[String]$SCCMPSModulePath = $NULL
+	[String]$SCCMPSModulePath = $null
 )
     Begin{
         $currentExecutionPolicy = Get-ExecutionPolicy
@@ -116,9 +153,9 @@ Param(
 	    Set-Location $startLocation
         Set-Location $PSScriptRoot
 
-        Write-Host "Loading SCCM Module"
         Write-Host ""
-
+        Write-Host "Loading SCCM Module"
+        
         #HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SMS\Setup
 
         $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
@@ -134,12 +171,12 @@ Param(
 
             $package = CreateSCCMPackage -Name $PackageName -Path $path -UpdateOnlyChangedBits $UpdateOnlyChangedBits
 
-            CreateSCCMProgram -Name $programName -PackageName $PackageName -Path $path -RequiredPlatformNames $requiredPlatformNames
+            CreateSCCMProgram -Name $programName -PackageName $PackageName -DeploymentType $DeploymentType -Path $path -RequiredPlatformNames $requiredPlatformNames
 
             Write-Host "Starting Content Distribution"	
 
             if ($distributionPoint) {
-	            Start-CMContentDistribution -PackageName $PackageName -DistributionPointName $distributionPoint
+	            Start-CMContentDistribution -PackageName $PackageName -DistributionPointName $DistributionPoint
             }
 
             Write-Host 
@@ -207,6 +244,7 @@ Param(
 
     }
     Process{
+        $startLocation = Get-Location
         $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
     
         if ($sccmModulePath) {
@@ -250,6 +288,10 @@ Param(
                 Write-Host "Package Deployment Already Exists for: $packageName"
             }
         }
+    }
+
+    End{
+        Set-Location $startLocation
     }
 }
 
@@ -295,18 +337,26 @@ Param(
 	[String]$PackageName = "OneDrive for Business Next Gen",
 		
 	[Parameter(Mandatory=$True)]
-	[String]$Path, 
+	[String]$Path,
+
+    [Parameter(Mandatory=$True)]
+    [DeploymentType] $DeploymentType, 
 
 	[Parameter()]
 	[String]$Name = "Powershell.exe",
 		
 	[Parameter()]
-	[String[]] $RequiredPlatformNames = @()
+	[String[]] $RequiredPlatformNames = @()   
 ) 
 
     $program = Get-CMProgram -PackageName $PackageName -ProgramName $Name
 
-    $commandLine = "C:\Windows\System32\WindowsPowerShell\v1.0\Powershell.exe  -ExecutionPolicy Bypass -File .\DeployOneDrive.ps1"
+    if($DeploymentType -eq "DefaultToBusiness"){
+        $commandLine = "C:\Windows\System32\WindowsPowerShell\v1.0\Powershell.exe  -ExecutionPolicy Bypass -File .\DefaultToBusinessFRE.ps1"
+    }
+    else{
+        $commandLine = "C:\Windows\System32\WindowsPowerShell\v1.0\Powershell.exe  -ExecutionPolicy Bypass -File .\EnableAddAccounts.ps1"
+    }
 
     Write-Host "`tProgram: $Name"
 
