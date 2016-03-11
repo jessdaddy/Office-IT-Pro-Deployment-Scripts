@@ -95,7 +95,7 @@ Param(
 	[Parameter(Mandatory=$true)]
 	[string]$DistributionPoint,
 
-    [Parameter(Mandatory=$true)]
+    [Parameter()]
     [DeploymentType]$DeploymentType,
 
     [Parameter()]
@@ -348,7 +348,7 @@ Param(
 	[Parameter(Mandatory=$True)]
 	[String]$Path,
 
-    [Parameter(Mandatory=$True)]
+    [Parameter()]
     [DeploymentType] $DeploymentType, 
 
     [Parameter()]

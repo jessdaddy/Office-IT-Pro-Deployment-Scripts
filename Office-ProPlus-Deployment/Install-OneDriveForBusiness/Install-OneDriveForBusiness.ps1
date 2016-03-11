@@ -1,6 +1,6 @@
 ﻿[CmdletBinding(SupportsShouldProcess=$true)]
 Param(
-    [Parameter(Mandatory=$true)]
+    [Parameter()]
     [string]$DeploymentType = "All",
 
     [Parameter()]
@@ -88,12 +88,18 @@ Process{
 
     #Install OneDriveSetup.exe
     $OneDriveExePath = "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe"
-    if(!(Test-Path $OneDriveExePath)){
-        if($Visibility -eq "Silent"){
-            & .\OneDriveSetup.exe /silent
-            if($TenantId){
-                & $OneDriveExePath "/configure_business:$TenantId"
-            }                                 
+    if($Visibility -eq "Silent"){
+        & .\OneDriveSetup.exe /silent
+        if($TenantId){              
+            & $OneDriveExePath "/configure_business:$TenantId"
+        }                                 
+    }
+    else{
+        if($TenantId){
+            if(!(Test-Path $OneDriveExePath)){
+                & .\OneDriveSetup.exe /silent
+            }
+            & $OneDriveExePath "/configure_business:$TenantId" 
         }
         else{
             & .\OneDriveSetup.exe
@@ -109,20 +115,9 @@ Process{
             if(Test-Path $OneDriveExePath){
                 Write-Host ""
                 Write-Host "OneDrive.exe has been successfully installed."
-            }                    
-        }
-    }
-    else{
-        if($TenantId){
-            & $OneDriveExePath "/configure_business:$TenantId" 
-        }
-        else{
-            if($Visibility -ne "Silent"){
-                & $OneDriveExePath
-            }
-            else{}
-        }
-    }         
+            }  
+        }                  
+    }            
 }
    
 }
