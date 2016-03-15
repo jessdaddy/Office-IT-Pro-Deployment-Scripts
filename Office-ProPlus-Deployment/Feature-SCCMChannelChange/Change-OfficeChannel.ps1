@@ -43,11 +43,18 @@ param(
     [string]$Version
 )
 begin {
+
+    $defaultDisplaySet = 'OldUpdatePath','NewUpdatePath','Version'
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+
     $UpdateURLKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'  #UpdateURL
     $Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
-    
+    $oldUpdatePath = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
 }
 process {
+        $results = new-object PSObject[] 0;
+
         #get local path
         $scriptPath = "."
 
@@ -59,12 +66,13 @@ process {
 
         #set the UpdateURL path so it can be updated in the registry
         $UpdateURLPath = $scriptPath + '\'+$Channel
+        $newUpdatePath = $UpdateURLPath
 
 
         # update reg key here for updateurl
         if(Test-Path $UpdateURLPath){
             New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
-            Write-Host "Updating RegKey `"UpdateURL`" in path `""$Office2RClientKey"`" to value `""$UpdateURLPath"`""
+            #Write-Host "Updating RegKey `"UpdateURL`" in path `""$Office2RClientKey"`" to value `""$UpdateURLPath"`""
         }
 
     
@@ -79,25 +87,25 @@ process {
     
     #get latest version available in branch
     if(!$Version){
-    [array]$totalVersion = @()
+        [array]$totalVersion = @()
 
-    $LatestBranchVersionPath = $UpdateURLPath + '\Office\Data'
-    if(Test-Path $LatestBranchVersionPath){
-    $DirectoryList = Get-ChildItem $LatestBranchVersionPath
-    Foreach($listItem in $DirectoryList){
-        if($listItem.GetType().Name -eq 'DirectoryInfo'){
-            $totalVersion+=$listItem.Name
+        $LatestBranchVersionPath = $UpdateURLPath + '\Office\Data'
+        if(Test-Path $LatestBranchVersionPath){
+        $DirectoryList = Get-ChildItem $LatestBranchVersionPath
+        Foreach($listItem in $DirectoryList){
+            if($listItem.GetType().Name -eq 'DirectoryInfo'){
+                $totalVersion+=$listItem.Name
+            }
         }
-    }
-    }
+        }
 
-    $totalVersion = $totalVersion | Sort-Object
+        $totalVersion = $totalVersion | Sort-Object
 
 
-    #sets version number to the newest version in directory for channel if version is not set by user in argument  
-    if($totalVersion.Count -gt 0){
-    $Version = $totalVersion[0]
-    }
+        #sets version number to the newest version in directory for channel if version is not set by user in argument  
+        if($totalVersion.Count -gt 0){
+        $Version = $totalVersion[0]
+        }
 
     }
 
@@ -105,14 +113,18 @@ process {
     $arguments = "/update user displaylevel=false updatepromptuser=false"
     if($Version){
         $arguments+= ' updatetoversion='+$Version
-    }    
+    }
     
-
+    $object = New-Object PSObject -Property @{OldUpdatePath = $oldUpdatePath; NewUpdatePath = $newUpdatePath; Version = $Version }
+    $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+    $results += $object
     
+    $results | fl 
+       
     #run update exe file
     Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
      
-     Wait-ForOfficeCTRUpadate
+    Wait-ForOfficeCTRUpadate
 
 }
 
