@@ -37,10 +37,7 @@ is available in the UpdateURL path.
 #>
   param(
     [Parameter(Mandatory=$true)]
-    [Channel]$Channel,
-    
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [string]$Version
+    [Channel]$Channel
   )
 
   begin {
@@ -60,7 +57,7 @@ is available in the UpdateURL path.
     $OldUpdatePath = $UpdateURLPath
     $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
 
-    $validSource = Validate-UpdateSource -UpdateSource $UpdateURLPath
+    $validSource = Test-UpdateSource -UpdateSource $UpdateURLPath
     if (!($validSource)) {
       throw "UpdateSource not Valid $UpdateURLPath"
     }
@@ -74,18 +71,9 @@ is available in the UpdateURL path.
 
     $OfficeUpdatePath = Get-OfficeC2Rexe
     
-    #get latest version available in branch
-    if(!$Version){
-       $Version = Get-LatestVersion -UpdateURLPath $UpdateURLPath
-    }
+    $Version = Get-LatestVersion -UpdateURLPath $UpdateURLPath
 
     $arguments = "/update user displaylevel=false updatepromptuser=false updatetoversion=$Version"
-    
-    $object = New-Object PSObject -Property @{OldUpdatePath = $OldUpdatePath; NewUpdatePath = $UpdateURLPath; Version = $Version }
-    $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-    $results += $object
-    
-    $results | fl 
        
     #run update exe file
     Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
@@ -95,6 +83,12 @@ is available in the UpdateURL path.
     if ($oldUpdatePath) {
        New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
     }
+
+    $object = New-Object PSObject -Property @{OldUpdatePath = $OldUpdatePath; NewUpdatePath = $UpdateURLPath; Version = $Version }
+    $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+    $results += $object
+    
+    $results | fl 
   }
 
 }
