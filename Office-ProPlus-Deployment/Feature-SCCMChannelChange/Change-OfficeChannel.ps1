@@ -35,14 +35,15 @@ Description:
 Switches the Channel of the Office install to Current, updates the current Office install to the version specified, as long as that version
 is available in the UpdateURL path.
 #>
-param(
+  param(
     [Parameter(Mandatory=$true)]
     [Channel]$Channel,
     
     [Parameter(ValueFromPipelineByPropertyName=$true)]
     [string]$Version
-)
-begin {
+  )
+
+  begin {
 
     $defaultDisplaySet = 'OldUpdatePath','NewUpdatePath','Version'
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
@@ -50,72 +51,37 @@ begin {
 
     $UpdateURLKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'  #UpdateURL
     $Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
-    $oldUpdatePath = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
 }
-process {
-        $results = new-object PSObject[] 0;
 
-        #get local path
-        $scriptPath = "."
+  process {
+    $results = new-object PSObject[] 0;
+    $scriptPath = Get-ScriptPath
 
-        if ($PSScriptRoot) {
-            $scriptPath = $PSScriptRoot
-        } else {
-            $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
-        }
+    $OldUpdatePath = $UpdateURLPath
+    $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
 
-        #set the UpdateURL path so it can be updated in the registry
-        $UpdateURLPath = $scriptPath + '\'+$Channel
-        $newUpdatePath = $UpdateURLPath
+    $validSource = Validate-UpdateSource -UpdateSource $UpdateURLPath
+    if (!($validSource)) {
+      throw "UpdateSource not Valid $UpdateURLPath"
+    }
 
+    $oldUpdatePath = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
+    if ($oldUpdatePath) {
+       New-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+    }
 
-        # update reg key here for updateurl
-        if(Test-Path $UpdateURLPath){
-            New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
-            #Write-Host "Updating RegKey `"UpdateURL`" in path `""$Office2RClientKey"`" to value `""$UpdateURLPath"`""
-        }
+    New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
 
-    
-    #find update exe file
-    $OfficeUpdatePath = Get-ItemProperty -Path $Office2RClientKey | Select-Object -Property ClientFolder
-    $temp = Out-String -InputObject $OfficeUpdatePath
-    $temp = $temp.Substring($temp.LastIndexOf('-')+2)
-    $temp = $temp.Trim()
-    $OfficeUpdatePath = $temp
-    $OfficeUpdatePath+= '\OfficeC2RClient.exe'
-
+    $OfficeUpdatePath = Get-OfficeC2Rexe
     
     #get latest version available in branch
     if(!$Version){
-        [array]$totalVersion = @()
-
-        $LatestBranchVersionPath = $UpdateURLPath + '\Office\Data'
-        if(Test-Path $LatestBranchVersionPath){
-        $DirectoryList = Get-ChildItem $LatestBranchVersionPath
-        Foreach($listItem in $DirectoryList){
-            if($listItem.GetType().Name -eq 'DirectoryInfo'){
-                $totalVersion+=$listItem.Name
-            }
-        }
-        }
-
-        $totalVersion = $totalVersion | Sort-Object
-
-
-        #sets version number to the newest version in directory for channel if version is not set by user in argument  
-        if($totalVersion.Count -gt 0){
-        $Version = $totalVersion[0]
-        }
-
+       $Version = Get-LatestVersion -UpdateURLPath $UpdateURLPath
     }
 
-
-    $arguments = "/update user displaylevel=false updatepromptuser=false"
-    if($Version){
-        $arguments+= ' updatetoversion='+$Version
-    }
+    $arguments = "/update user displaylevel=false updatepromptuser=false updatetoversion=$Version"
     
-    $object = New-Object PSObject -Property @{OldUpdatePath = $oldUpdatePath; NewUpdatePath = $newUpdatePath; Version = $Version }
+    $object = New-Object PSObject -Property @{OldUpdatePath = $OldUpdatePath; NewUpdatePath = $UpdateURLPath; Version = $Version }
     $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
     $results += $object
     
@@ -126,17 +92,47 @@ process {
      
     Wait-ForOfficeCTRUpadate
 
-}
+    if ($oldUpdatePath) {
+       New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+    }
+  }
 
 }
 
+Function Get-ScriptPath() {
+  [CmdletBinding()]
+  param(
 
+  )
 
+  process {
+    #get local path
+    $scriptPath = "."
 
+    if ($PSScriptRoot) {
+        $scriptPath = $PSScriptRoot
+    } else {
+        $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+    }
+    retur
+  }
+}
 
+Function Get-OfficeC2Rexe() {
 
+  process {
+     $Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
 
-
+     #find update exe file
+     $OfficeUpdatePath = Get-ItemProperty -Path $Office2RClientKey | Select-Object -Property ClientFolder
+     $temp = Out-String -InputObject $OfficeUpdatePath
+     $temp = $temp.Substring($temp.LastIndexOf('-')+2)
+     $temp = $temp.Trim()
+     $OfficeUpdatePath = $temp
+     $OfficeUpdatePath+= '\OfficeC2RClient.exe'
+     return $OfficeUpdatePath
+  }
+}
 
 Function Wait-ForOfficeCTRUpadate() {
     [CmdletBinding()]
@@ -288,10 +284,6 @@ Function Wait-ForOfficeCTRUpadate() {
     }
 }
 
-
-
-
-
 Function Get-OfficeCTRRegPath() {
     $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun'
     $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun'
@@ -304,9 +296,6 @@ Function Get-OfficeCTRRegPath() {
         }
     }
 }
-
-
-
 
 Function getOperationTime() {
     [CmdletBinding()]
@@ -341,9 +330,6 @@ Function getOperationTime() {
     return $operationTime
 }
 
-
-
-
 Function formatTimeItem() {
     [CmdletBinding()]
     Param(
@@ -356,4 +342,187 @@ Function formatTimeItem() {
        $returnItem = "0" + $TimeItem
     }
     return $returnItem
+}
+
+Function Test-UpdateSource() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $UpdateSource = $NULL
+    )
+
+  	$uri = [System.Uri]$UpdateSource
+
+    [bool]$sourceIsAlive = $false
+
+    if($uri.Host){
+	    $sourceIsAlive = Test-Connection -Count 1 -computername $uri.Host -Quiet
+    }else{
+        $sourceIsAlive = Test-Path $uri.LocalPath -ErrorAction SilentlyContinue
+    }
+
+    if ($sourceIsAlive) {
+        $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource
+    }
+
+    return $sourceIsAlive
+}
+
+Function Validate-UpdateSource() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $UpdateSource = $NULL
+    )
+
+    Process {
+    [bool]$validUpdateSource = $false
+    [string]$cabPath = ""
+
+    if ($UpdateSource) {
+        $mainRegPath = Get-OfficeCTRRegPath
+        $configRegPath = $mainRegPath + "\Configuration"
+        $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
+        $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+
+        if ($updateToVersion) {
+            if ($currentplatform.ToLower() -eq "x86") {
+               $cabPath = $UpdateSource + "\Office\Data\v32_" + $updateToVersion + ".cab"
+            }
+            if ($currentplatform.ToLower() -eq "x64") {
+               $cabPath = $UpdateSource + "\Office\Data\v64_" + $updateToVersion + ".cab"
+            }
+        } else {
+            if ($currentplatform.ToLower() -eq "x86") {
+               $cabPath = $UpdateSource + "\Office\Data\v32.cab"
+            }
+            if ($currentplatform.ToLower() -eq "x64") {
+               $cabPath = $UpdateSource + "\Office\Data\v64.cab"
+            }
+        }
+
+        if ($cabPath.ToLower().StartsWith("http")) {
+           $cabPath = $cabPath.Replace("\", "/")
+           $validUpdateSource = Test-URL -url $cabPath
+        } else {
+           $validUpdateSource = Test-Path -Path $cabPath
+        }
+        
+        if (!$validUpdateSource) {
+           throw "Invalid UpdateSource. File Not Found: $cabPath"
+        }
+    }
+
+    return $validUpdateSource
+    }
+}
+
+Function Get-LatestVersion() {
+  [CmdletBinding()]
+  Param(
+     [Parameter(Mandatory=$true)]
+     [string] $UpdateURLPath
+  )
+
+  process {
+    [array]$totalVersion = @()
+    $Version = $null
+
+    $LatestBranchVersionPath = $UpdateURLPath + '\Office\Data'
+    if(Test-Path $LatestBranchVersionPath){
+        $DirectoryList = Get-ChildItem $LatestBranchVersionPath
+        Foreach($listItem in $DirectoryList){
+            if($listItem.GetType().Name -eq 'DirectoryInfo'){
+                $totalVersion+=$listItem.Name
+            }
+        }
+    }
+
+    $totalVersion = $totalVersion | Sort-Object
+    
+    #sets version number to the newest version in directory for channel if version is not set by user in argument  
+    if($totalVersion.Count -gt 0){
+        $Version = $totalVersion[0]
+    }
+
+    return $Version
+  }
+}
+
+function Change-UpdatePathToChannel {
+   [CmdletBinding()]
+   param( 
+     [Parameter()]
+     [string] $UpdatePath,
+     
+     [Parameter()]
+     [Channel] $Channel
+   )
+
+   $newUpdatePath = $UpdatePath
+
+   $branchShortName = "DC"
+   if ($Channel.ToString().ToLower() -eq "current") {
+      $branchShortName = "CC"
+   }
+   if ($Channel.ToString().ToLower() -eq "firstreleasecurrent") {
+      $branchShortName = "FRCC"
+   }
+   if ($Channel.ToString().ToLower() -eq "firstreleasedeferred") {
+      $branchShortName = "FRDC"
+   }
+   if ($Channel.ToString().ToLower() -eq "deferred") {
+      $branchShortName = "DC"
+   }
+
+   $channelNames = @("FRCC", "CC", "FRDC", "DC")
+
+   $madeChange = $false
+   foreach ($channelName in $channelNames) {
+      if ($UpdatePath.ToUpper().EndsWith("\$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName", "\$branchShortName"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().Contains("\$channelName\")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName\\", "\$branchShortName\"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().EndsWith("/$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName", "/$branchShortName"
+         $madeChange = $true
+      }
+      if ($UpdatePath.ToUpper().Contains("/$channelName/")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName\/", "/$branchShortName/"
+         $madeChange = $true
+      }
+   }
+
+   if (!($madeChange)) {
+      if ($newUpdatePath.Contains("/")) {
+         if ($newUpdatePath.EndsWith("/")) {
+           $newUpdatePath += "$branchShortName"
+         } else {
+           $newUpdatePath += "/$branchShortName"
+         }
+      }
+      if ($newUpdatePath.Contains("\")) {
+         if ($newUpdatePath.EndsWith("\")) {
+           $newUpdatePath += "$branchShortName"
+         } else {
+           $newUpdatePath += "\$branchShortName"
+         }
+      }
+   }
+
+   try {
+     $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath
+   } catch {
+     $pathAlive = $false
+   }
+   
+   if ($pathAlive) {
+     return $newUpdatePath
+   } else {
+     return $UpdatePath
+   }
 }
