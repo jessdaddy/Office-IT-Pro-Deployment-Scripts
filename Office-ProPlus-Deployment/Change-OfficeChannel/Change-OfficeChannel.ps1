@@ -69,7 +69,12 @@ is available in the UpdateURL path.
 
     New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
 
+    Set-OfficeCDNUrl -Channel $Channel
+
     $OfficeUpdatePath = Get-OfficeC2Rexe
+    if (!($OfficeUpdatePath)) {
+      throw "Cannot find OfficeC2RClient.exe file"
+    }
     
     $Version = Get-LatestVersion -UpdateURLPath $UpdateURLPath
 
@@ -113,19 +118,22 @@ Function Get-ScriptPath() {
 }
 
 Function Get-OfficeC2Rexe() {
+    [CmdletBinding()]
+    Param(
 
-  process {
-     $Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
+    )
+    process {
+        $Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
 
-     #find update exe file
-     $OfficeUpdatePath = Get-ItemProperty -Path $Office2RClientKey | Select-Object -Property ClientFolder
-     $temp = Out-String -InputObject $OfficeUpdatePath
-     $temp = $temp.Substring($temp.LastIndexOf('-')+2)
-     $temp = $temp.Trim()
-     $OfficeUpdatePath = $temp
-     $OfficeUpdatePath+= '\OfficeC2RClient.exe'
-     return $OfficeUpdatePath
-  }
+        #find update exe file
+        $OfficeUpdatePath = Get-ItemProperty -Path $Office2RClientKey | Select-Object -Property ClientFolder
+        $temp = Out-String -InputObject $OfficeUpdatePath
+        $temp = $temp.Substring($temp.LastIndexOf('-')+2)
+        $temp = $temp.Trim()
+        $OfficeUpdatePath = $temp
+        $OfficeUpdatePath+= '\OfficeC2RClient.exe'
+        return $OfficeUpdatePath
+    }
 }
 
 Function Wait-ForOfficeCTRUpadate() {
@@ -519,4 +527,115 @@ function Change-UpdatePathToChannel {
    } else {
      return $UpdatePath
    }
+}
+
+function Detect-Channel() {
+   [CmdletBinding()]
+   param( 
+      
+   )
+
+   Process {
+      $currentBaseUrl = Get-OfficeCDNUrl
+      $channelXml = Get-ChannelXml
+
+      $currentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notcontains 'Business' }
+      return $currentChannel
+   }
+
+}
+
+function Get-ChannelUrl() {
+   [CmdletBinding()]
+   param( 
+      [Parameter(Mandatory=$true)]
+      [Channel]$Channel
+   )
+
+   Process {
+      $channelXml = Get-ChannelXml
+
+      $currentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
+      return $currentChannel
+   }
+
+}
+
+function Get-ChannelXml() {
+   [CmdletBinding()]
+   param( 
+      
+   )
+
+   process {
+       $cabPath = "$PSScriptRoot\ofl.cab"
+
+       if (!(Test-Path -Path $cabPath)) {
+           $webclient = New-Object System.Net.WebClient
+           $XMLFilePath = "$env:TEMP/ofl.cab"
+           $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
+           $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+       }
+
+       $tmpName = "o365client_64bit.xml"
+       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+       $tmpName = $env:TEMP + "\o365client_64bit.xml"
+       [xml]$channelXml = Get-Content $tmpName
+
+       return $channelXml
+   }
+
+}
+
+Function Set-OfficeCDNUrl() {
+   [CmdletBinding()]
+   param( 
+      [Parameter(Mandatory=$true)]
+      [Channel]$Channel
+   )
+
+   Process {
+        $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+        if (!($CDNBaseUrl)) {
+           $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+        }
+
+        $path15 = 'HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration'
+        $path16 = 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'
+        $regPath = $path16
+
+        if (Test-Path -Path $path16) { $regPath = $path16 }
+        if (Test-Path -Path $path15) { $regPath = $path15 }
+
+        $ChannelUrl = Get-ChannelUrl -Channel $Channel
+           
+        New-ItemProperty $regPath -Name CDNBaseUrl -PropertyType String -Value $ChannelUrl.URL -Force | Out-Null
+   }
+}
+
+Function Get-OfficeCDNUrl() {
+    $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+    if (!($CDNBaseUrl)) {
+       $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+    }
+    if (!($CDNBaseUrl)) {
+        Push-Location
+        $path15 = 'HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\ProductReleaseIDs\Active\stream'
+        $path16 = 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\ProductReleaseIDs\Active\stream'
+        if (Test-Path -Path $path16) { Set-Location $path16 }
+        if (Test-Path -Path $path15) { Set-Location $path15 }
+
+        $items = Get-Item . | Select-Object -ExpandProperty property
+        $properties = $items | ForEach-Object {
+           New-Object psobject -Property @{"property"=$_; "Value" = (Get-ItemProperty -Path . -Name $_).$_}
+        }
+
+        $value = $properties | Select Value
+        $firstItem = $value[0]
+        [string] $cdnPath = $firstItem.Value
+
+        $CDNBaseUrl = Select-String -InputObject $cdnPath -Pattern "http://officecdn.microsoft.com/.*/.{8}-.{4}-.{4}-.{4}-.{12}" -AllMatches | % { $_.Matches } | % { $_.Value }
+        Pop-Location
+    }
+    return $CDNBaseUrl
 }
