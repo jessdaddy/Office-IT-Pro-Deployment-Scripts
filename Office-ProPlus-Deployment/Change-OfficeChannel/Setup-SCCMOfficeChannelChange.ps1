@@ -13,23 +13,87 @@ Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
 $enumDef = "
 using System;
        [FlagsAttribute]
-       public enum OfficeBranch
+       public enum OfficeChannel
        {
           FirstReleaseCurrent = 0,
           Current = 1,
-          FirstReleaseBusiness = 2,
-          Business = 3,
-          CMValidation = 4
+          FirstReleaseDeferred = 2,
+          Deferred = 3
        }
 "
 
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
 
+function Create-SCCMOfficeChannelPackages {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param
+    (
+	    [Parameter()]	
+	    [Bool]$UpdateOnlyChangedBits = $false,
 
-[string]$SavedPackageName = "Office ProPlus Deployment"
-[string]$SavedProgramName = "ScriptInstall"
+	    [Parameter()]
+	    [String]$SiteCode = $null,
 
-function Setup-SCCMOfficeChannelChange {
+	    [Parameter()]
+	    [String]$SCCMPSModulePath = $NULL
+    )
+    Begin
+    {
+        $currentExecutionPolicy = Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        $startLocation = Get-Location
+    }
+    Process
+    {
+       . "$PSScriptRoot\Download-OfficeProPlusChannels.ps1"
+
+       $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
+       $ChannelXml = Get-ChannelXml
+
+       foreach ($Channel in $ChannelList) {
+           $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
+           $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL 
+           $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
+           $versionExists = CheckIfVersionExists -Version $latestVersion -Channel $Channel
+           $LargeDrv = Get-LargestDrive
+
+           $Path = CreateOfficeChannelShare -Path "$LargeDrv\OfficeChannels"
+           $packageName = "OfficeProPlus-$ChannelShortName-$latestVersion"
+
+           $ChannelPath = "$Path\$packageName"
+           $LocalPath = "$LargeDrv\OfficeChannels\$packageName"
+
+           [System.IO.Directory]::CreateDirectory($LocalPath) | Out-Null
+               
+           Download-OfficeProPlusChannels -TargetDirectory $LocalPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
+
+           $OSSourcePath = "$PSScriptRoot\Change-OfficeChannel.ps1"
+           $OCScriptPath = "$LocalPath\Change-OfficeChannel.ps1"
+           if (!(Test-Path $OCScriptPath)) {
+              Copy-Item -Path $OSSourcePath  -Destination $OCScriptPath -Force
+           }
+
+           if (!$versionExists) {
+              LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
+
+              $package = CreateSCCMPackage -Name $packageName -Path $ChannelPath -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits
+              [string]$CommandLine = "powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel"
+              CreateSCCMProgram -Name $packageName -PackageName $packageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+           } else {
+             Write-Host "Package with Version already exists: $latestVersion"
+           }
+
+       }
+
+    }
+    End
+    {
+        Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
+        Set-Location $startLocation    
+    }
+}
+
+function Distribute-SCCMOfficeChannelPackages {
 <#
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
@@ -58,156 +122,78 @@ Sets which distribution points will be used, and distributes the package.
 .Example
 Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Office ProPlus Deployment" -ProgramName "Office2016Setup.exe" -distributionPoint SCCM-CM.CONTOSO.COM -source \\SCCM-CM\updates -branch Current
 #>
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param
+    (
+        [Parameter()]
+        [OfficeChannel[]] $Channels = @(0,1,2,3),
 
-[CmdletBinding(SupportsShouldProcess=$true)]
-Param
-(
-	[Parameter(Mandatory=$True)]
-	[String]$Collection,
+	    [Parameter()]
+	    [string]$DistributionPoint,
 
-	[Parameter()]
-	[OfficeBranch]$Branch = $null,
+	    [Parameter()]
+	    [string]$DistributionPointGroupName,
 
-	[Parameter()]
-	[InstallType]$InstallType = "ScriptInstall",
+	    [Parameter()]
+	    [uint16]$DeploymentExpiryDurationInDays = 15,
 
-	[Parameter()]
-	[String]$ScriptName = "SCCM-OfficeDeploymentScript.ps1",
+	    [Parameter()]
+	    [String]$SiteCode = $null,
 
-	[Parameter()]
-	[String]$Path = $null,
+	    [Parameter()]
+	    [String]$SCCMPSModulePath = $NULL
 
-	[Parameter()]
-	[String]$SiteCode = $null,
-	
-	[Parameter()]
-	[String]$PackageName = $null,
-
-	[Parameter()]	
-	[Bool]$UpdateOnlyChangedBits = $false,
-
-	[Parameter()]
-	[String[]] $RequiredPlatformNames = @("All x86 Windows 7 Client", "All x86 Windows 8 Client", "All x86 Windows 8.1 Client", "All Windows 10 Professional/Enterprise and higher (32-bit) Client","All x64 Windows 7 Client", "All x64 Windows 8 Client", "All x64 Windows 8.1 Client", "All Windows 10 Professional/Enterprise and higher (64-bit) Client"),
-	
-	[Parameter()]
-	[string]$DistributionPoint,
-
-	[Parameter()]
-	[string]$DistributionPointGroupName,
-
-	[Parameter()]
-	[uint16]$DeploymentExpiryDurationInDays = 15,
-
-	[Parameter()]
-	[String]$SCCMPSModulePath = $NULL,
-
-	[Parameter()]
-	[String]$Source = $null
-
-
-)
-Begin
-{
-    $currentExecutionPolicy = Get-ExecutionPolicy
-	Set-ExecutionPolicy Unrestricted -Scope Process -Force  
-    $startLocation = Get-Location
-}
-Process
-{
-    Write-Host
-    Write-Host 'Configuring System Center Configuration Manager to Deploy Office ProPlus' -BackgroundColor DarkBlue
-    Write-Host
-
-    if ($PackageName) {
-       $SavedPackageName = $PackageName
+    )
+    Begin
+    {
+        $currentExecutionPolicy = Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        $startLocation = Get-Location
     }
+    Process
+    {
+        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
+        $ChannelXml = Get-ChannelXml
 
-    if ($ProgramName) {
-       $SavedProgramName = $ProgramName
-    }
+        foreach ($ChannelName in $ChannelList) {
+           if ($Channels -contains $ChannelName) {
+               $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $ChannelName.ToString() }
+               $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL 
+               $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
+               $versionExists = CheckIfVersionExists -Version $latestVersion -Channel $ChannelName
 
-    if (!$Path) {
-         $Path = CreateOfficeUpdateShare
-    }
+               $packageName = "OfficeProPlus-$ChannelShortName-$latestVersion"
 
-    if ($Branch) {
-        $OfficeFolder = "$Path\Office"
+               LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
-        if (Test-Path $OfficeFolder) {
-           Remove-Item $OfficeFolder -Recurse -Force
-        }
+               if ($versionExists) {
+                    if ($DistributionPointGroupName) {
+                        Write-Host "Starting Content Distribution for package: $packageName"
+	                    Start-CMContentDistribution -PackageName $packageName -DistributionPointGroupName $DistributionPointGroupName
+                    }
 
-        $TempPath = $Source + "\" + $Branch + "\*"
-        Copy-Item $TempPath $Path -Recurse
-    }
-
-    Set-Location $PSScriptRoot
-	Set-Location $startLocation
-    Set-Location $PSScriptRoot
-
-    Write-Host "Loading SCCM Module"
-    Write-Host ""
-
-    #HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SMS\Setup
-
-    $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
-    
-    if ($sccmModulePath) {
-        Import-Module $sccmModulePath
-
-        if (!$SiteCode) {
-           $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
-        }
-
-        $SourceDirectory = "$PSScriptRoot\DeploymentFiles"
-
-        if (Test-Path -Path $SourceDirectory) {
-           Copy-Item "$SourceDirectory\*.*" $Path
-        }
-        
-	    Set-Location "$SiteCode`:"	
-
-        $package = CreateSCCMPackage -Name $SavedPackageName -Path $path -UpdateOnlyChangedBits $UpdateOnlyChangedBits
-        [string]$CommandLine = ""
-
-        if ($InstallType -eq "ScriptInstall") {
-            $SavedProgramName = "ScriptInstall"
-            $CommandLine = "powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1"
-        } else {
-            $SavedProgramName = "SetupInstall"
-            $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
-        }
-
-        CreateSCCMProgram -Name $SavedProgramName -PackageName $SavedPackageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
-
-        Write-Host "Starting Content Distribution"	
-
-        if ($DistributionPointGroupName) {
-	        Start-CMContentDistribution -PackageName $SavedPackageName -DistributionPointGroupName $DistributionPointGroupName
-        }
-
-        if ($DistributionPoint) {
-            Start-CMContentDistribution -PackageName $SavedPackageName -DistributionPointName $DistributionPoint
+                    if ($DistributionPoint) {
+                        Write-Host "Starting Content Distribution for package: $packageName"
+                        Start-CMContentDistribution -PackageName $packageName -DistributionPointName $DistributionPoint
+                    }
+               }
+           }
         }
 
         Write-Host 
-        Write-Host "NOTE: In order to deploy the package you must run the function 'Deploy-SCCMOfficeUpdates'." -BackgroundColor Red
+        Write-Host "NOTE: In order to deploy the package you must run the function 'Deploy-SCCMOfficeChannelPackage'." -BackgroundColor Red
         Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor Red
         Write-Host "      otherwise the deployments will fail. The clients will continue to fail until the " -BackgroundColor Red
         Write-Host "      content distribution is complete." -BackgroundColor Red
-
-    } else {
-        throw [System.IO.FileNotFoundException] "Could Not find file ConfigurationManager.psd1"
+    }
+    End
+    {
+        Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
+        Set-Location $startLocation    
     }
 }
-End
-{
-    Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
-    Set-Location $startLocation    
-}
-}
 
-function Deploy-SCCMOfficeChannelChange {
+function Deploy-SCCMOfficeChannelPackage {
 <#
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
@@ -239,78 +225,131 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
 		[Parameter(Mandatory=$true)]
 		[String]$Collection = "",
 
-		[Parameter()]
-		[String]$PackageName = $null,
+        [Parameter(Mandatory=$true)]
+        [OfficeChannel] $Channel,
 
-		[Parameter()]
-		[String]$ProgramName = $null,
+	    [Parameter()]
+	    [String]$SiteCode = $null,
 
-		[Parameter()]	
-		[Bool]$UpdateOnlyChangedBits = $true,
-
-		[Parameter()]
-		[String]$SCCMPSModulePath = $NULL
+	    [Parameter()]
+	    [String]$SCCMPSModulePath = $NULL
 	) 
-Begin
-{
+    Begin
+    {
+        $currentExecutionPolicy = Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        $startLocation = Get-Location
+    }
+    Process
+    {
+        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
+        $ChannelXml = Get-ChannelXml
 
+        foreach ($ChannelName in $ChannelList) {
+          if ($Channel.ToString().ToLower() -eq $ChannelName.ToLower()) {
+              $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $ChannelName.ToString() }
+              $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL 
+              $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
+              $versionExists = CheckIfVersionExists -Version $latestVersion -Channel $ChannelName
+
+              LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
+
+              $packageName = "OfficeProPlus-$ChannelShortName-$latestVersion"
+              if ($versionExists) {
+
+                  $package = Get-CMPackage -Name $packageName
+
+                  $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
+                  if ($packageDeploy.Count -eq 0) {
+                    try {
+     	                Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$packageName" -ProgramName "$packageName" -StandardProgram  -DeployPurpose Required `
+                                                -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint -SlowNetworkOption RunProgramFromDistributionPoint
+                        Write-Host "Package Deployment created for: $packageName"
+                    } catch {
+                        [string]$ErrorMessage = $_.ErrorDetails 
+                        if ($ErrorMessage.ToLower().Contains("Could not find property PackageID".ToLower())) {
+                            Write-Host 
+                            Write-Host "Package: $packageName"
+                            Write-Host "The package has not finished deploying to the distribution points." -BackgroundColor Red
+                            Write-Host "Please try this command against once the distribution points have been updated" -BackgroundColor Red
+                        } else {
+                            throw
+                        }
+                    }  
+                  } else {
+                    Write-Host "Package Deployment Already Exists for: $packageName"
+                  }
+              } else {
+                 throw "Package does not exist: $packageName"
+              }
+          }
+        }
+    }
+    End {
+        Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
+        Set-Location $startLocation 
+    }
 }
-Process
-{
-    if ($PackageName) {
-       $SavedPackageName = $PackageName
-    }
 
-    if ($ProgramName) {
-       $SavedProgramName = $ProgramName
-    }
 
-    $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
+function CheckIfVersionExists() {
+    [CmdletBinding()]	
+    Param
+	(
+	   [Parameter(Mandatory=$True)]
+	   [String]$Version,
+
+		[Parameter()]
+		[String]$Channel
+    )
+    Begin
+    {
+        $startLocation = Get-Location
+    }
+    Process {
+       LoadSCCMPrereqs
+
+       $VersionName = "$Channel - $Version"
+
+       $existingPackage = Get-CMPackage | Where { $_.Version -eq $VersionName }
+       if ($existingPackage) {
+         return $true
+       }
+
+       return $false
+    }
+}
+
+function LoadSCCMPrereqs() {
+    [CmdletBinding()]	
+    Param
+	(
+	    [Parameter()]
+	    [String]$SiteCode = $null,
+
+	    [Parameter()]
+	    [String]$SCCMPSModulePath = $NULL
+    )
+    Begin
+    {
+        $currentExecutionPolicy = Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        $startLocation = Get-Location
+    }
+    Process {
+
+        $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
     
-    if ($sccmModulePath) {
-        Import-Module $sccmModulePath
+        if ($sccmModulePath) {
+            Import-Module $sccmModulePath
 
-        if (!$SiteCode) {
-            $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
-        }
+            if (!$SiteCode) {
+               $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
+            }
 
-	    Set-Location "$SiteCode`:"	
-
-        $package = Get-CMPackage -Name $SavedPackageName
-
-        $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
-        if ($packageDeploy.Count -eq 0) {
-            Write-Host "Creating Package Deployment for: $SavedPackageName"
-
-            $dtNow = [datetime]::Now
-            $dtNow = $dtNow.AddDays(-1)
-            $start = Get-Date -Year $dtNow.Year -Month $dtNow.Month -Day $dtNow.Day -Hour 12 -Minute 0
-
-            $schedule = New-CMSchedule -Start $start -RecurInterval Days -RecurCount 7
-
-            try {
-     	            Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$SavedPackageName" -ProgramName "$SavedProgramName" -StandardProgram  -DeployPurpose Required `
-                                        -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint -SlowNetworkOption RunProgramFromDistributionPoint
-                                        #-Schedule $schedule 
-            } catch {
-                [string]$ErrorMessage = $_.ErrorDetails 
-
-                if ($ErrorMessage.ToLower().Contains("Could not find property PackageID".ToLower())) {
-                Write-Host 
-                Write-Host "The package has not finished deploying to the distribution points." -BackgroundColor Red
-                Write-Host "Please try this command against once the distribution points have been updated" -BackgroundColor Red
-
-                } else {
-                throw
-                }
-            }  
-      
-
-        } else {
-            Write-Host "Package Deployment Already Exists for: $SavedPackageName"
+            Set-Location "$SiteCode`:"	
         }
     }
-}
 }
 
 function CreateSCCMPackage() {
@@ -322,6 +361,12 @@ function CreateSCCMPackage() {
 		
 		[Parameter(Mandatory=$True)]
 		[String]$Path,
+
+		[Parameter()]
+		[String]$Version,
+
+		[Parameter()]
+		[String]$Channel,
 
 		[Parameter()]	
 		[Bool]$UpdateOnlyChangedBits = $true
@@ -341,7 +386,10 @@ function CreateSCCMPackage() {
 		
     Write-Host "`t`tSetting Package Properties"
 
-	Set-CMPackage -Name $Name -Priority Normal -EnableBinaryDeltaReplication $UpdateOnlyChangedBits -CopyToPackageShareOnDistributionPoint $True
+    $VersionName = "$Channel - $Version"
+
+	Set-CMPackage -Name $Name -Priority Normal -EnableBinaryDeltaReplication $UpdateOnlyChangedBits `
+                  -CopyToPackageShareOnDistributionPoint $True -Version $VersionName
 
     Write-Host ""
 
@@ -381,6 +429,48 @@ function CreateSCCMProgram() {
 
     Write-Host ""
 }
+
+function CreateOfficeChannelShare() {
+    [CmdletBinding()]	
+    Param
+	(
+		[Parameter()]
+		[String]$Name = "OfficeChannels$",
+		
+		[Parameter()]
+		[String]$Path = "$env:SystemDrive\OfficeChannels"
+	) 
+
+    IF (!(TEST-PATH $Path)) { 
+      $addFolder = New-Item $Path -type Directory 
+    }
+    
+    $ACL = Get-ACL $Path
+
+    $identity = New-Object System.Security.Principal.NTAccount  -argumentlist ("$env:UserDomain\$env:UserName") 
+    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule -argumentlist ($identity,"FullControl","ContainerInherit, ObjectInherit","None","Allow")
+
+    $addAcl = $ACL.AddAccessRule($accessRule) | Out-Null
+
+    $identity = New-Object System.Security.Principal.NTAccount -argumentlist ("$env:UserDomain\Domain Admins") 
+    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule -argumentlist ($identity,"FullControl","ContainerInherit, ObjectInherit","None","Allow")
+    $addAcl = $ACL.AddAccessRule($accessRule) | Out-Null
+
+    $identity = "Everyone"
+    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule -argumentlist ($identity,"Read","ContainerInherit, ObjectInherit","None","Allow")
+    $addAcl = $ACL.AddAccessRule($accessRule) | Out-Null
+
+    Set-ACL -Path $Path -ACLObject $ACL | Out-Null
+    
+    $share = Get-WmiObject -Class Win32_share | Where {$_.name -eq "$Name"}
+    if (!$share) {
+       Create-FileShare -Name $Name -Path $Path | Out-Null
+    }
+
+    $sharePath = "\\$env:COMPUTERNAME\$Name"
+    return $sharePath
+}
+
 
 function CreateOfficeUpdateShare() {
     [CmdletBinding()]	
@@ -658,7 +748,7 @@ function GetSCCMPSModulePath() {
 }
 
 # Specify one of SCCM servers and Site code is returned automatically 
-Function Get-Site([string[]]$computerName = $env:COMPUTERNAME) {
+function Get-Site([string[]]$computerName = $env:COMPUTERNAME) {
     Get-WmiObject -ComputerName $ComputerName -Namespace "root\SMS" -Class "SMS_ProviderLocation" | foreach-object{ 
         if ($_.ProviderForLocalSite -eq $true){$SiteCode=$_.sitecode} 
     } 
@@ -683,5 +773,117 @@ function DownloadBits() {
 
 
 
+    }
+}
+
+function Get-ChannelXml() {
+   [CmdletBinding()]
+   param( 
+      
+   )
+
+   process {
+       $cabPath = "$PSScriptRoot\ofl.cab"
+
+       $webclient = New-Object System.Net.WebClient
+       $XMLFilePath = "$env:TEMP/ofl.cab"
+       $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
+       $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+
+       $tmpName = "o365client_64bit.xml"
+       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+       $tmpName = $env:TEMP + "\o365client_64bit.xml"
+       [xml]$channelXml = Get-Content $tmpName
+
+       return $channelXml
+   }
+
+}
+
+function Get-ChannelUrl() {
+   [CmdletBinding()]
+   param( 
+      [Parameter(Mandatory=$true)]
+      [Channel]$Channel
+   )
+
+   Process {
+      $channelXml = Get-ChannelXml
+
+      $currentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
+      return $currentChannel
+   }
+
+}
+
+function Get-BranchLatestVersion() {
+   [CmdletBinding()]
+   param( 
+      [Parameter(Mandatory=$true)]
+      [string]$ChannelUrl
+   )
+
+   process {
+       $webclient = New-Object System.Net.WebClient
+       $CABFilePath = "$env:TEMP/v64.cab"
+       $XMLDownloadURL = "$ChannelUrl/Office/Data/v64.cab"
+       $webclient.DownloadFile($XMLDownloadURL,$CABFilePath)
+
+       $tmpName = "VersionDescriptor.xml"
+       expand $CABFilePath $env:TEMP -f:$tmpName | Out-Null
+       $tmpName = $env:TEMP + "\VersionDescriptor.xml"
+       [xml]$versionXml = Get-Content $tmpName
+
+       return $versionXml.Version.Available.Build
+   }
+}
+
+function Get-LargestDrive() {
+   [CmdletBinding()]
+   param( 
+   )
+   process {
+      $drives = Get-Partition | where {$_.DriveLetter}
+      $driveInfoList = @()
+
+      foreach ($drive in $drives) {
+          $driveLetter = $drive.DriveLetter
+          $deviceFilter = "DeviceID='" + $driveLetter + ":'" 
+ 
+          $driveInfo = Get-WmiObject Win32_LogicalDisk -ComputerName "." -Filter $deviceFilter
+          $driveInfoList += $driveInfo
+      }
+
+      $SortList = Sort-Object -InputObject $driveInfoList -Property FreeSpace
+
+      $FreeSpaceDrive = $SortList[0]
+      return $FreeSpaceDrive.DeviceID
+   }
+}
+
+function ConvertChannelNameToShortName {
+    Param(
+       [Parameter()]
+       [string] $ChannelName
+    )
+    Process {
+       if ($ChannelName.ToLower() -eq "FirstReleaseCurrent".ToLower()) {
+         return "FRCC"
+       }
+       if ($ChannelName.ToLower() -eq "Current".ToLower()) {
+         return "CC"
+       }
+       if ($ChannelName.ToLower() -eq "FirstReleaseDeferred".ToLower()) {
+         return "FRDC"
+       }
+       if ($ChannelName.ToLower() -eq "Deferred".ToLower()) {
+         return "DC"
+       }
+       if ($ChannelName.ToLower() -eq "Business".ToLower()) {
+         return "DC"
+       }
+       if ($ChannelName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
+         return "FRDC"
+       }
     }
 }

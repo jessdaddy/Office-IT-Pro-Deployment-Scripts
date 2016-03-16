@@ -14,19 +14,45 @@ Add-Type -TypeDefinition $enumDef
 $enumDef = "
 using System;
        [FlagsAttribute]
-       public enum OfficeBranch
+       public enum OfficeChannel
        {
           FirstReleaseCurrent = 0,
           Current = 1,
-          FirstReleaseBusiness = 2,
-          Business = 3,
-          CMValidation = 4
+          FirstReleaseDeferred = 2,
+          Deferred = 3
        }
 "
 
 Add-Type -TypeDefinition $enumDef
 
-function Download-OfficeProPlusBranch{
+function ConvertChannelNameToShortName {
+    Param(
+       [Parameter()]
+       [string] $ChannelName
+    )
+    Process {
+       if ($ChannelName.ToLower() -eq "FirstReleaseCurrent".ToLower()) {
+         return "FRCC"
+       }
+       if ($ChannelName.ToLower() -eq "Current".ToLower()) {
+         return "CC"
+       }
+       if ($ChannelName.ToLower() -eq "FirstReleaseDeferred".ToLower()) {
+         return "FRDC"
+       }
+       if ($ChannelName.ToLower() -eq "Deferred".ToLower()) {
+         return "DC"
+       }
+       if ($ChannelName.ToLower() -eq "Business".ToLower()) {
+         return "DC"
+       }
+       if ($ChannelName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
+         return "FRDC"
+       }
+    }
+}
+
+function Download-OfficeProPlusChannels{
 <#
 .SYNOPSIS
 Downloads each Office ProPlus Branch with installation files
@@ -71,10 +97,13 @@ Param(
     [Bitness] $Bitness = 0,
 
     [Parameter()]
+    [bool] $UseChannelFolderShortName = $false,
+
+    [Parameter()]
     [bool] $OverWrite = $false,
 
     [Parameter()]
-    [OfficeBranch[]] $Branches = (0, 1, 2, 3)#, 4)
+    [OfficeChannel[]] $Channels = (0, 1, 2, 3)
 )
 
 $numberOfFiles = (($Branches.Count) * ((($Languages.Count + 1)*3) + 5))
@@ -107,7 +136,7 @@ if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v64){
 
 $j = 0
 $b = 0
-$BranchCount = $Branches.Count * 2
+$BranchCount = $Channels.Count * 2
 
 #loop to download files
 $xmlArray | %{
@@ -122,23 +151,28 @@ $xmlArray | %{
     Write-Host "Downloading Bitness : $currentBitness"
 
     #loop for each branch
-    $Branches | %{
+    $Channels | %{
         $currentBranch = $_
         $b++
 
-        Write-Progress -id 1 -Activity "Downloading Branch" -status "Branch: $($currentBranch.ToString()) : $currentBitness" -percentComplete ($b / $BranchCount *100) 
+        Write-Progress -id 1 -Activity "Downloading Channel" -status "Branch: $($currentBranch.ToString()) : $currentBitness" -percentComplete ($b / $BranchCount *100) 
+        Write-Host "`tDownloading Channel: $currentBranch"
 
-        Write-Host "`tDownloading Branch: $currentBranch"
+        $FolderName = $($_.ToString())
 
+        if ($UseChannelFolderShortName) {
+           $FolderName = ConvertChannelNameToShortName -ChannelName $FolderName  
+        }
+       
         $baseURL = $CurrentVersionXML.UpdateFiles.baseURL | ? branch -eq $_.ToString() | %{$_.URL};
-        if(!(Test-Path "$TargetDirectory\$($_.ToString())\")){
-            New-Item -Path "$TargetDirectory\$($_.ToString())\" -ItemType directory -Force | Out-Null
+        if(!(Test-Path "$TargetDirectory\$FolderName\")){
+            New-Item -Path "$TargetDirectory\$FolderName\" -ItemType directory -Force | Out-Null
         }
-        if(!(Test-Path "$TargetDirectory\$($_.ToString())\Office")){
-            New-Item -Path "$TargetDirectory\$($_.ToString())\Office" -ItemType directory -Force | Out-Null
+        if(!(Test-Path "$TargetDirectory\$FolderName\Office")){
+            New-Item -Path "$TargetDirectory\$FolderName\Office" -ItemType directory -Force | Out-Null
         }
-        if(!(Test-Path "$TargetDirectory\$($_.ToString())\Office\Data")){
-            New-Item -Path "$TargetDirectory\$($_.ToString())\Office\Data" -ItemType directory -Force | Out-Null
+        if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data")){
+            New-Item -Path "$TargetDirectory\$FolderName\Office\Data" -ItemType directory -Force | Out-Null
         }
 
         if([String]::IsNullOrWhiteSpace($Version)){
@@ -146,7 +180,7 @@ $xmlArray | %{
             $webclient = New-Object System.Net.WebClient
             $baseCabFile = $CurrentVersionXML.UpdateFiles.File | ? rename -ne $null
             $url = "$baseURL$($baseCabFile.relativePath)$($baseCabFile.rename)"
-            $destination = "$TargetDirectory\$($_.ToString())\Office\Data\$($baseCabFile.rename)"
+            $destination = "$TargetDirectory\$FolderName\Office\Data\$($baseCabFile.rename)"
 
             $webclient.DownloadFile($url,$destination)
 
@@ -170,8 +204,8 @@ $xmlArray | %{
             }
         }
 
-        if(!(Test-Path "$TargetDirectory\$($_.ToString())\Office\Data\$currentVersion")){
-            New-Item -Path "$TargetDirectory\$($_.ToString())\Office\Data\$currentVersion" -ItemType directory -Force | Out-Null
+        if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion")){
+            New-Item -Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion" -ItemType directory -Force | Out-Null
         }
 
         $numberOfFiles = 0
@@ -199,14 +233,14 @@ $xmlArray | %{
             $name = $_.name -replace "`%version`%", $currentVersion
             $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
             $url = "$baseURL$relativePath$name"
-            $destination = "$TargetDirectory\$($currentBranch.ToString())$relativePath$name"
+            $destination = "$TargetDirectory\$FolderName$relativePath$name"
 
             if (!(Test-Path -Path $destination) -or $OverWrite) {
                DownloadFile -url $url -targetFile $destination
             }
 
             $j = $j + 1
-            Write-Progress -id 2 -ParentId 1 -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
+            Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
         }
 
         #language files
@@ -219,14 +253,14 @@ $xmlArray | %{
                 $name = $_.name -replace "`%version`%", $currentVersion
                 $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                 $url = "$baseURL$relativePath$name"
-                $destination = "$TargetDirectory\$($currentBranch.ToString())$relativePath$name"
+                $destination = "$TargetDirectory\$FolderName$relativePath$name"
 
                 if (!(Test-Path -Path $destination) -or $OverWrite) {
                    DownloadFile -url $url -targetFile $destination
                 }
 
                 $j = $j + 1
-                Write-Progress -id 2 -ParentId 1 -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
+                Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
             }
         }
 
@@ -252,7 +286,7 @@ function DownloadFile($url, $targetFile) {
 
    $targetStream = New-Object -TypeName System.IO.FileStream -ArgumentList $targetFile, Create
 
-   $buffer = new-object byte[] 10KB
+   $buffer = new-object byte[] 8192KB
 
    $count = $responseStream.Read($buffer,0,$buffer.length)
 

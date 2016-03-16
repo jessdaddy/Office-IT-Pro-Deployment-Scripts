@@ -65,7 +65,7 @@ Param
 	[Parameter(Mandatory=$True)]
 	[String]$Collection,
 
-	[Parameter()]
+	[Parameter(Mandatory=$True)]
 	[OfficeBranch]$Branch = $null,
 
 	[Parameter()]
