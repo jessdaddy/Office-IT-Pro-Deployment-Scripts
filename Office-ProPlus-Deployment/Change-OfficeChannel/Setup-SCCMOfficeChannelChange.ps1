@@ -266,7 +266,7 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
                   $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
                   if ($packageDeploy.Count -eq 0) {
                     try {
-     	                Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$packageName" -ProgramName "$packageName" -StandardProgram  -DeployPurpose Required `
+     	                Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$packageName" -ProgramName "$packageName" -StandardProgram  -DeployPurpose Available `
                                                 -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint -SlowNetworkOption RunProgramFromDistributionPoint
                         Write-Host "Package Deployment created for: $packageName"
                     } catch {
