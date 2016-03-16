@@ -77,7 +77,7 @@ function Create-SCCMOfficeChannelPackages {
               LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
               $package = CreateSCCMPackage -Name $packageName -Path $ChannelPath -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits
-              [string]$CommandLine = "powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel"
+              [string]$CommandLine = "powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel -Channel $Channel"
               CreateSCCMProgram -Name $packageName -PackageName $packageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
            } else {
              Write-Host "Package with Version already exists: $latestVersion"
