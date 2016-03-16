@@ -46,7 +46,7 @@ is available in the UpdateURL path.
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 
-    $UpdateURLKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'  #UpdateURL
+    $UpdateURLKey = 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'  #UpdateURL
     $Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
 }
 
@@ -54,8 +54,10 @@ is available in the UpdateURL path.
     $results = new-object PSObject[] 0;
     $scriptPath = Get-ScriptPath
 
-    $OldUpdatePath = $UpdateURLPath
-    $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
+    $UpdatePath = (Get-ItemProperty $UpdateURLKey -Name UpdateUrl).UpdateUrl
+    
+    $OldUpdatePath = $UpdatePath
+    $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdatePath
 
     $validSource = Test-UpdateSource -UpdateSource $UpdateURLPath
     if (!($validSource)) {
@@ -85,9 +87,9 @@ is available in the UpdateURL path.
      
     Wait-ForOfficeCTRUpadate
 
-    if ($oldUpdatePath) {
-       New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
-    }
+    #if ($oldUpdatePath) {
+    #   New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+    #}
 
     $object = New-Object PSObject -Property @{OldUpdatePath = $OldUpdatePath; NewUpdatePath = $UpdateURLPath; Version = $Version }
     $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
@@ -113,7 +115,7 @@ Function Get-ScriptPath() {
     } else {
         $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
     }
-    retur
+    return $scriptPath
   }
 }
 
