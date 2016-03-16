@@ -28,6 +28,9 @@ function Create-SCCMOfficeChannelPackages {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
+        [Parameter()]
+        [OfficeChannel[]] $Channels = @(0,1,2,3),
+
 	    [Parameter()]	
 	    [Bool]$UpdateOnlyChangedBits = $false,
 
@@ -51,6 +54,7 @@ function Create-SCCMOfficeChannelPackages {
        $ChannelXml = Get-ChannelXml
 
        foreach ($Channel in $ChannelList) {
+         if ($Channels -contains $Channel) {
            $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
            $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL 
            $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
@@ -82,7 +86,7 @@ function Create-SCCMOfficeChannelPackages {
            } else {
              Write-Host "Package with Version already exists: $latestVersion"
            }
-
+         }
        }
 
     }
