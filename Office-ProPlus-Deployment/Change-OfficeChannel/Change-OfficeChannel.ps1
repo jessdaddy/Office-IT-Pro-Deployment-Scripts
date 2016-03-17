@@ -1,104 +1,7 @@
-﻿Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
-   public enum Channel
-   {
-      Current,
-      Deferred,
-      FirstReleaseCurrent,
-      FirstReleaseDeferred
-   }
-"@
-
-
-Function Change-OfficeChannel {
-<#
-.Synopsis
-Uses OfficeC2RClient.exe tool to change version and branch of installed office
-.DESCRIPTION
-This function will upgrade or downgrade the version of Office to the version specified, or to the
-most recent version of office found in the update folder in the Channel specified.  This function
-also simultaneously changes the channel of Office installed on the client.
-.NOTES   
-Name: Change-OfficeChannel
-DateUpdated: 2016-03-15
-.PARAMETER Channel
-The Channel associated with Office Updates ie Current, Deferred, etc.
-.PARAMETER Version
-The version of Office to install.  The install files must be located in the Channel update path
-.EXAMPLE
-Change-OfficeChannel -Channel Current
-Description:
-Switches the Channel of the Office install to Current, updates the current Office install to the most up recent update available in the
-UpdateURL path.
-.EXAMPLE
-Change-OfficeChannel -Channel Current -Version 16.0.6001.1068
-Description:
-Switches the Channel of the Office install to Current, updates the current Office install to the version specified, as long as that version
-is available in the UpdateURL path.
-#>
-  param(
+﻿  param(
     [Parameter(Mandatory=$true)]
-    [Channel]$Channel
+    [string]$Channel
   )
-
-  begin {
-
-    $defaultDisplaySet = 'OldUpdatePath','NewUpdatePath','Version'
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
-    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
-
-    $UpdateURLKey = 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'  #UpdateURL
-    $Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
-}
-
-  process {
-    $results = new-object PSObject[] 0;
-    $scriptPath = Get-ScriptPath
-
-    $UpdatePath = (Get-ItemProperty $UpdateURLKey -Name UpdateUrl).UpdateUrl
-    
-    $OldUpdatePath = $UpdatePath
-    $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdatePath
-
-    $validSource = Test-UpdateSource -UpdateSource $UpdateURLPath
-    if (!($validSource)) {
-      throw "UpdateSource not Valid $UpdateURLPath"
-    }
-
-    $oldUpdatePath = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
-    if ($oldUpdatePath) {
-       New-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
-    }
-
-    New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
-
-    Set-OfficeCDNUrl -Channel $Channel
-
-    $OfficeUpdatePath = Get-OfficeC2Rexe
-    if (!($OfficeUpdatePath)) {
-      throw "Cannot find OfficeC2RClient.exe file"
-    }
-    
-    $Version = Get-LatestVersion -UpdateURLPath $UpdateURLPath
-
-    $arguments = "/update user displaylevel=false updatepromptuser=false updatetoversion=$Version"
-       
-    #run update exe file
-    Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
-     
-    Wait-ForOfficeCTRUpadate
-
-    #if ($oldUpdatePath) {
-    #   New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
-    #}
-
-    $object = New-Object PSObject -Property @{OldUpdatePath = $OldUpdatePath; NewUpdatePath = $UpdateURLPath; Version = $Version }
-    $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-    $results += $object
-    
-    $results | fl 
-  }
-
-}
 
 Function Get-ScriptPath() {
   [CmdletBinding()]
@@ -641,3 +544,64 @@ Function Get-OfficeCDNUrl() {
     }
     return $CDNBaseUrl
 }
+
+Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
+   public enum Channel
+   {
+      Current,
+      Deferred,
+      FirstReleaseCurrent,
+      FirstReleaseDeferred
+   }
+"@
+
+$defaultDisplaySet = 'OldUpdatePath','NewUpdatePath','Version'
+$defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+$PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+
+$UpdateURLKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'  #UpdateURL
+$Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
+
+$results = new-object PSObject[] 0;
+$scriptPath = Get-ScriptPath
+
+$OldUpdatePath = $UpdateURLPath
+$UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $scriptPath
+
+$validSource = Test-UpdateSource -UpdateSource $UpdateURLPath
+if (!($validSource)) {
+    throw "UpdateSource not Valid $UpdateURLPath"
+}
+
+$oldUpdatePath = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
+if ($oldUpdatePath) {
+    New-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+}
+
+New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
+
+Set-OfficeCDNUrl -Channel $Channel
+
+$OfficeUpdatePath = Get-OfficeC2Rexe
+if (!($OfficeUpdatePath)) {
+    throw "Cannot find OfficeC2RClient.exe file"
+}
+    
+$Version = Get-LatestVersion -UpdateURLPath $UpdateURLPath
+
+$arguments = "/update user displaylevel=false updatepromptuser=false updatetoversion=$Version"
+       
+#run update exe file
+Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
+     
+Wait-ForOfficeCTRUpadate
+
+if ($oldUpdatePath) {
+    New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+}
+
+$object = New-Object PSObject -Property @{OldUpdatePath = $OldUpdatePath; NewUpdatePath = $UpdateURLPath; Version = $Version }
+$object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+$results += $object
+    
+$results | fl 
