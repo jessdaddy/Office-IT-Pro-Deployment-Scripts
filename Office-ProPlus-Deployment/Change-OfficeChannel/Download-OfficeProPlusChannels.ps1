@@ -74,7 +74,7 @@ If this parameter is specified then existing files will be overwritten.
 .PARAMETER Branches
 An array of the branches you wish to download. Defaults to all available branches (CMValidation currently not available)
 .Example
-Download-OfficeBranch -baseDestination "\\server\updateshare"
+Download-OfficeBranch -TargetDirectory "\\server\updateshare"
 Default downloads all available branches of the most recent version for both bitnesses into an update source. Downloads the English language pack by default if language is not specified.
 .Link
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
