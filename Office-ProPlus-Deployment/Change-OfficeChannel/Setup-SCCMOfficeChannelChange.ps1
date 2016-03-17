@@ -29,7 +29,7 @@ function Create-SCCMOfficeChannelPackages {
     Param
     (
         [Parameter()]
-        [OfficeChannel[]] $Channels = @(0,1,2,3),
+        [OfficeChannel[]] $Channels = @(1,2,3),
 
 	    [Parameter()]	
 	    [Bool]$UpdateOnlyChangedBits = $false,
@@ -70,6 +70,19 @@ function Create-SCCMOfficeChannelPackages {
            [System.IO.Directory]::CreateDirectory($LocalPath) | Out-Null
                
            Download-OfficeProPlusChannels -TargetDirectory $LocalPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
+
+           $versionFile32 = "$LocalPath\$ChannelShortName\Office\Data\v32_$latestVersion.cab"
+           $v32File = "$LocalPath\$ChannelShortName\Office\Data\v32.cab"
+           $versionFile64 = "$LocalPath\$ChannelShortName\Office\Data\v64_$latestVersion.cab"
+           $v64File = "$LocalPath\$ChannelShortName\Office\Data\v64.cab"
+
+           if (Test-Path -Path $versionFile32) {
+             Copy-Item -Path $versionFile32 -Destination $v32File -Force
+           }
+
+           if (Test-Path -Path $versionFile64) {
+             Copy-Item -Path $versionFile64 -Destination $v64File -Force
+           }
 
            $OSSourcePath = "$PSScriptRoot\Change-OfficeChannel.ps1"
            $OCScriptPath = "$LocalPath\Change-OfficeChannel.ps1"
@@ -130,7 +143,7 @@ Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Of
     Param
     (
         [Parameter()]
-        [OfficeChannel[]] $Channels = @(0,1,2,3),
+        [OfficeChannel[]] $Channels = @(1,2,3),
 
 	    [Parameter()]
 	    [string]$DistributionPoint,
