@@ -928,28 +928,6 @@ function odtGetOfficeLanguages() {
 
         if ($appLanguages1.Count) {
             $productsPath = join-path $officeKeyPath "ProductReleaseIDs\Active\$ProductId"
-        } else {
-            $productReleasePath = Join-Path $officeKeyPath "ProductReleaseIDs"
-            $guids= $regProv.EnumKey($HKLM, $productReleasePath)
-
-            foreach ($guid in $guids.sNames) {
-
-                $productsPath = Join-Path $officeKeyPath "ProductReleaseIDs\$guid\$ProductId.16"
-                $installedCultures = $regProv.EnumKey($HKLM, $productsPath)
-      
-                foreach ($installedCulture in $installedCultures.sNames) {
-                   if($installedCulture){
-                      if ($installedCulture.Contains("-") -and !($installedCulture.ToLower() -eq "x-none")) {
-                            $addItem = $appLanguages1.Add($installedCulture) 
-                      }
-                   }
-                }
-
-                if ($appLanguages1.Count) {
-                   $productsPath = Join-Path $officeKeyPath "ProductReleaseIDs\Culture\$ProductId"
-                }
- 
-            }
         }
 
         return $appLanguages1;
@@ -1145,7 +1123,7 @@ function officeGetExcludedApps() {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
 
-        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneDrive','OneNote','Outlook',
+        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneNote','Outlook',
                        'PowerPoint','Publisher','Word'
         #"SharePointDesigner","Visio", 'Project'
     }
@@ -1221,7 +1199,7 @@ function odtGetExcludedApps() {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
 
-        $allExcludeApps = 'Access','Excel','Groove','InfoPath','Lync','OneDrive','OneNote','Outlook',
+        $allExcludeApps = 'Access','Excel','Groove','InfoPath','Lync','OneNote','Outlook',
                        'PowerPoint','Publisher','Word'
         #"SharePointDesigner","Visio", 'Project'
     }
@@ -1391,7 +1369,7 @@ function odtAddUpdates{
 
             #Set the desired values
             if($Enabled){
-                $UpdateElement.SetAttribute("Enabled", $Enabled.ToString().ToUpper()) | Out-Null
+                $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
             } else {
               if ($PSBoundParameters.ContainsKey('Enabled')) {
                  if ($ConfigDoc.Configuration.Updates) {
@@ -1665,6 +1643,135 @@ function Format-XML ([xml]$xml, $indent=2) {
 function Win7Join([string]$st1, [string]$st2){
     [string]$tempStr = $st1 + "\" + $st2
     return $tempStr
+}
+
+
+
+
+Function Generate-InfopathSharepointConfigurationXml {
+<#
+.Synopsis
+Generates the Configuration XML from current install of infopath and sharepoint
+.DESCRIPTION
+This function will query the local or a remote computer and Generate the configuration xml based on the local Office install
+and the local languages that are used on the local computer.  If Office isn't installed then it will utilize the configuration file
+specified in the 
+.NOTES   
+Name: Generate-InfopathSharepointConfigurationXml
+Version: 1.0.3
+DateCreated: 2016-03-17
+DateUpdated: 2015-11-23
+.LINK
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+.PARAMETER ComputerName
+The computer or list of computers from which to query 
+.PARAMETER Languages
+Will expand the output to include all installed Office products
+.PARAMETER TargetFilePath
+The path and file name of the file to save the Configuration xml
+.PARAMETER IncludeUpdatePathAsSourcePath
+If this parameter is set to $true then the SourcePath in the Configuration xml will be set to 
+the current UpdatePath on the local computer.  This assumes that the UpdatePath location has 
+the required files needed to run the installation 
+.PARAMETER DefaultConfigurationXml
+This parameter sets the path to the Default Configuration XML file.  If Office is not installed on
+the computer that this script is run against it will default to this file in order to generate the 
+ODT Configuration XML.  The default file should have the products that you would want installed on 
+a workstation if Office isn't currently installed.  If this parameter is set to $NULL then it will
+not generate configuration XML if Office is not installed.  By default the script looks for a file
+called "DefaultConfiguration.xml" in the same directory as the script
+.EXAMPLE
+Generate-InfopathSharepointConfigurationXml | fl
+Description:
+Will generate the configuration XML based on the local computer
+.EXAMPLE
+Generate-InfopathSharepointConfigurationXml  -ComputerName client01,client02 | fl
+Description:
+Will generate the configuration XML based on the configuration of the remote computers client01 and client02
+.EXAMPLE
+Generate-InfopathSharepointConfigurationXml -Languages OSandUserLanguages
+Description:
+Will generate the configuration XML based on the local computer and add the languages that the Operating System and the local users
+are currently using.
+.EXAMPLE
+Generate-InfopathSharepointConfigurationXml -Languages OSLanguage
+Description:
+Will generate the configuration XML based on the local computer and add the Current UI Culture language of the Operating System
+.EXAMPLE
+Generate-InfopathSharepointConfigurationXml -Languages CurrentOfficeLanguages
+Description:
+Will generate the configuration XML based on the local computer and add only add the Languages currently in use by the current Office installation
+#>
+[CmdletBinding(SupportsShouldProcess=$true)]
+param(
+    [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
+    [string[]]$ComputerName = $env:COMPUTERNAME,
+    
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [OfficeLanguages]$Languages = "AllInUseLanguages",
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [String]$TargetFilePath = $NULL,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$IncludeUpdatePathAsSourcePath = $false,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [string]$DefaultConfigurationXml = $NULL
+)
+
+begin {
+    $HKLM = [UInt32] "0x80000002"
+    $HKCR = [UInt32] "0x80000000"
+    $HKU = [UInt32] "0x80000003"
+   
+    $clickToRunKeys = "SOFTWARE\Microsoft\Office\15.0\ClickToRun\ProductReleaseIDs\Active\O365ProPlusRetail\x-none"
+    [array]$langKeys = @()
+    [array]$langs = @()
+    foreach($lang in $availableLangs){
+        $langKeys += ('SOFTWARE\Microsoft\Office\15.0\ClickToRun\ProductReleaseIDs\Active\O365ProPlusRetail\'+ $lang)
+    }
+    [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+}
+
+process {
+    $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $ComputerName
+
+
+    foreach($key in $clickToRunKeys){
+        $configKeys = $regProv.EnumKey($HKLM, $key)
+        $clickToRunList = $configKeys.snames
+        foreach($list in $clickToRunList){
+            if(([string]$list).Contains('infopath')){
+                $configPath = Join-Path $key $list
+                $fileName = $regProv.GetStringValue($HKLM, $configPath, "FileName").sValue
+                $version = $regProv.GetStringValue($HKLM, $configPath, "Version").sValue
+                if($fileName){
+                $platform = "x64"
+                if(([string]$fileName).Contains("86")){
+                    $platform = "x86"
+                }
+                    #check for langs
+                    foreach($langInstall in $langKeys)
+                    {                                                                                           #use string manipulation to get reg path of infopath install for separate langs
+                        $tempFileName = $regProv.GetStringValue($HKLM, ($langInstall+'\'+([string]$fileName).Replace("x-none",([string]$langInstall).Substring(([string]$langInstall).LastIndexOf('\')+1))), "FileName").sValue
+                        if($tempFileName){
+                            $langs += ([string]$langInstall).Substring(([string]$langInstall).LastIndexOf('\')+1)
+                        }
+                    }
+
+                   odtAddProduct -ProductId $fileName -ConfigDoc $ConfigFile -Platform $platform -Version $version -AdditionalLanguages $langs
+                }
+            }
+        }
+    }
+
+    
+    $formattedXml = Format-XML ([xml]($ConfigFile)) -indent 4
+    Write-Host $formattedXml
+    $formattedXml | Out-File -FilePath $TargetFilePath
+}
+
 }
 
 
