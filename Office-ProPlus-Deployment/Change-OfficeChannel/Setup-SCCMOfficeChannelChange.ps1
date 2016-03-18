@@ -87,7 +87,10 @@ function Create-SCCMOfficeChannelPackages {
 
               $package = CreateSCCMPackage -Name $packageName -Path $ChannelPath -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits
               [string]$CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel.ps1 -Channel $Channel"
-              CreateSCCMProgram -Name $ProgramName -PackageName $packageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+
+              [string]$packageId = $package.PackageId
+
+              CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
            } else {
              Write-Host "Package with Version already exists: $latestVersion"
            }
@@ -266,20 +269,23 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
               $packageName = "Office 365 ProPlus ($ChannelName)"
               if ($versionExists) {
 
-                  $package = Get-CMPackage -Name $packageName
+                  $package = Get-CMPackage | Where { $_.Name -eq $packageName -and $_.Version -eq $latestVersion }
 
                   $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
                   if ($packageDeploy.Count -eq 0) {
                     try {
-     	                Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$packageName" -ProgramName "$ProgramName" `
+     	                Start-CMPackageDeployment -CollectionName "$Collection" -PackageId $package.PackageId `
+                                                  -ProgramName "$ProgramName" `
                                                   -StandardProgram  -DeployPurpose Available -RerunBehavior AlwaysRerunProgram `
                                                   -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint `
                                                   -SlowNetworkOption RunProgramFromDistributionPoint `
                                                   -AllowSharedContent $false
 
-                        Update-CMDistributionPoint -PackageName "$packageName"
+                        Update-CMDistributionPoint -PackageId $package.PackageId
 
                         Write-Host "Package Deployment created for: $packageName"
+
+                        RemovePreviousSCCMPackages -Name $packageName -Version $latestVersion
                     } catch {
                         [string]$ErrorMessage = $_.ErrorDetails 
                         if ($ErrorMessage.ToLower().Contains("Could not find property PackageID".ToLower())) {
@@ -293,7 +299,10 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
                     }  
                   } else {
                     Write-Host "Package Deployment Already Exists for: $packageName"
+                     RemovePreviousSCCMPackages -Name $packageName -Version $latestVersion
                   }
+
+
               } else {
                  throw "Package does not exist: $packageName"
               }
@@ -420,12 +429,11 @@ function CreateSCCMPackage() {
 
     Write-Host "`tPackage: $Name"
 
-    $package = Get-CMPackage -Name $Name 
-
+    $package = Get-CMPackage | Where { $_.Name -eq $Name -and $_.Version -eq $Version }
     if($package -eq $null -or !$package)
     {
         Write-Host "`t`tCreating Package: $Name"
-        $package = New-CMPackage -Name $Name  -Path $path
+        $package = New-CMPackage -Name $Name -Path $path -Version $Version
     } else {
         Write-Host "`t`tAlready Exists"	
     }
@@ -434,41 +442,67 @@ function CreateSCCMPackage() {
 
     $VersionName = "$Channel - $Version"
 
-	Set-CMPackage -Name $Name -Priority Normal -EnableBinaryDeltaReplication $UpdateOnlyChangedBits `
+	Set-CMPackage -Id $package.PackageId -Priority Normal -EnableBinaryDeltaReplication $UpdateOnlyChangedBits `
                   -CopyToPackageShareOnDistributionPoint $True -Version $Version
 
     Write-Host ""
 
-    $package = Get-CMPackage -Name $Name
+    $package = Get-CMPackage | Where { $_.Name -eq $Name -and $_.Version -eq $Version }
     return $package
 }
+
+function RemovePreviousSCCMPackages() {
+    [CmdletBinding()]	
+    Param
+	(
+		[Parameter()]
+		[String]$Name = "Office ProPlus Deployment",
+		
+		[Parameter()]
+		[String]$Version
+	) 
+    
+    if ($Version) {
+        $packages = Get-CMPackage | Where { $_.Name -eq $Name -and $_.Version -ne $Version }
+        foreach ($package in $packages) {
+           $packageName = $package.Name
+           $pkversion = $package.Version
+
+           Write-Host "Removing previous version: $packageName - $pkversion"
+           Remove-CMPackage -Id $package.PackageId -Force | Out-Null
+        }
+    }
+}
+
 
 function CreateSCCMProgram() {
     [CmdletBinding()]	
     Param
 	(
-		[Parameter()]
-		[String]$PackageName = "Office ProPlus Deployment",
+		[Parameter(Mandatory=$True)]
+		[String]$PackageID,
 		
 		[Parameter(Mandatory=$True)]
 		[String]$CommandLine, 
 
-		[Parameter()]
-		[String]$Name = "Change Channel",
+		[Parameter(Mandatory=$True)]
+		[String]$Name,
 		
 		[Parameter()]
 		[String[]] $RequiredPlatformNames = @()
 
 	) 
 
-    $program = Get-CMProgram -PackageName $PackageName -ProgramName $Name
+    $program = Get-CMProgram | Where { $_.PackageID -eq $PackageID -and $_.Name -eq $Name }
 
     Write-Host "`tProgram: $Name"
 
     if($program -eq $null -or !$program)
     {
         Write-Host "`t`tCreating Program..."	        
-	    $program = New-CMProgram -PackageName $PackageName -StandardProgramName $Name -DriveMode RenameWithUnc -CommandLine $CommandLine -ProgramRunType OnlyWhenUserIsLoggedOn -RunMode RunWithAdministrativeRights -UserInteraction $true -RunType Normal
+	    $program = New-CMProgram -PackageId $PackageID -StandardProgramName $Name -DriveMode RenameWithUnc `
+                                 -CommandLine $CommandLine -ProgramRunType OnlyWhenUserIsLoggedOn `
+                                 -RunMode RunWithAdministrativeRights -UserInteraction $true -RunType Normal
     } else {
         Write-Host "`t`tAlready Exists"
     }
