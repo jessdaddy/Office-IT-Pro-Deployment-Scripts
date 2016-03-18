@@ -24,6 +24,8 @@ using System;
 
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
 
+[string]$ProgramName = "Change Channel"
+
 function Create-SCCMOfficeChannelPackages {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
@@ -62,27 +64,17 @@ function Create-SCCMOfficeChannelPackages {
            $LargeDrv = Get-LargestDrive
 
            $Path = CreateOfficeChannelShare -Path "$LargeDrv\OfficeChannels"
-           $packageName = "OfficeProPlus-$ChannelShortName-$latestVersion"
 
-           $ChannelPath = "$Path\$packageName"
-           $LocalPath = "$LargeDrv\OfficeChannels\$packageName"
+           $packageName = "Office 365 ProPlus ($Channel)"
+
+           $ChannelPath = "$Path\$Channel"
+           $LocalPath = "$LargeDrv\OfficeChannels\$Channel"
 
            [System.IO.Directory]::CreateDirectory($LocalPath) | Out-Null
                
            Download-OfficeProPlusChannels -TargetDirectory $LocalPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
 
-           $versionFile32 = "$LocalPath\$ChannelShortName\Office\Data\v32_$latestVersion.cab"
-           $v32File = "$LocalPath\$ChannelShortName\Office\Data\v32.cab"
-           $versionFile64 = "$LocalPath\$ChannelShortName\Office\Data\v64_$latestVersion.cab"
-           $v64File = "$LocalPath\$ChannelShortName\Office\Data\v64.cab"
-
-           if (Test-Path -Path $versionFile32) {
-             Copy-Item -Path $versionFile32 -Destination $v32File -Force
-           }
-
-           if (Test-Path -Path $versionFile64) {
-             Copy-Item -Path $versionFile64 -Destination $v64File -Force
-           }
+           CreateMainCabFiles -LocalPath $LocalPath -ChannelShortName $ChannelShortName -LatestVersion $latestVersion
 
            $OSSourcePath = "$PSScriptRoot\Change-OfficeChannel.ps1"
            $OCScriptPath = "$LocalPath\Change-OfficeChannel.ps1"
@@ -94,8 +86,8 @@ function Create-SCCMOfficeChannelPackages {
               LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
               $package = CreateSCCMPackage -Name $packageName -Path $ChannelPath -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits
-              [string]$CommandLine = "powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel -Channel $Channel"
-              CreateSCCMProgram -Name $packageName -PackageName $packageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+              [string]$CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel.ps1 -Channel $Channel"
+              CreateSCCMProgram -Name $ProgramName -PackageName $packageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
            } else {
              Write-Host "Package with Version already exists: $latestVersion"
            }
@@ -179,7 +171,7 @@ Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Of
                $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
                $versionExists = CheckIfVersionExists -Version $latestVersion -Channel $ChannelName
 
-               $packageName = "OfficeProPlus-$ChannelShortName-$latestVersion"
+               $packageName = "Office 365 ProPlus ($ChannelName)"
 
                LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
@@ -271,7 +263,7 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
 
               LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
-              $packageName = "OfficeProPlus-$ChannelShortName-$latestVersion"
+              $packageName = "Office 365 ProPlus ($ChannelName)"
               if ($versionExists) {
 
                   $package = Get-CMPackage -Name $packageName
@@ -279,8 +271,14 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
                   $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
                   if ($packageDeploy.Count -eq 0) {
                     try {
-     	                Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$packageName" -ProgramName "$packageName" -StandardProgram  -DeployPurpose Available `
-                                                -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint -SlowNetworkOption RunProgramFromDistributionPoint
+     	                Start-CMPackageDeployment -CollectionName "$Collection" -PackageName "$packageName" -ProgramName "$ProgramName" `
+                                                  -StandardProgram  -DeployPurpose Available -RerunBehavior AlwaysRerunProgram `
+                                                  -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint `
+                                                  -SlowNetworkOption RunProgramFromDistributionPoint `
+                                                  -AllowSharedContent $false
+
+                        Update-CMDistributionPoint -PackageName "$packageName"
+
                         Write-Host "Package Deployment created for: $packageName"
                     } catch {
                         [string]$ErrorMessage = $_.ErrorDetails 
@@ -309,6 +307,35 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
 }
 
 
+function CreateMainCabFiles() {
+    [CmdletBinding()]	
+    Param
+	(
+		[Parameter(Mandatory=$true)]
+		[String]$LocalPath = "",
+
+        [Parameter(Mandatory=$true)]
+        [String] $ChannelShortName,
+
+        [Parameter(Mandatory=$true)]
+        [String] $LatestVersion
+	) 
+    Process {
+        $versionFile32 = "$LocalPath\$ChannelShortName\Office\Data\v32_$LatestVersion.cab"
+        $v32File = "$LocalPath\$ChannelShortName\Office\Data\v32.cab"
+        $versionFile64 = "$LocalPath\$ChannelShortName\Office\Data\v64_$LatestVersion.cab"
+        $v64File = "$LocalPath\$ChannelShortName\Office\Data\v64.cab"
+
+        if (Test-Path -Path $versionFile32) {
+            Copy-Item -Path $versionFile32 -Destination $v32File -Force
+        }
+
+        if (Test-Path -Path $versionFile64) {
+            Copy-Item -Path $versionFile64 -Destination $v64File -Force
+        }
+    }
+}
+
 function CheckIfVersionExists() {
     [CmdletBinding()]	
     Param
@@ -328,7 +355,9 @@ function CheckIfVersionExists() {
 
        $VersionName = "$Channel - $Version"
 
-       $existingPackage = Get-CMPackage | Where { $_.Version -eq $VersionName }
+       $packageName = "Office 365 ProPlus ($Channel)"
+
+       $existingPackage = Get-CMPackage | Where { $_.Name -eq $packageName -and $_.Version -eq $Version }
        if ($existingPackage) {
          return $true
        }
@@ -406,7 +435,7 @@ function CreateSCCMPackage() {
     $VersionName = "$Channel - $Version"
 
 	Set-CMPackage -Name $Name -Priority Normal -EnableBinaryDeltaReplication $UpdateOnlyChangedBits `
-                  -CopyToPackageShareOnDistributionPoint $True -Version $VersionName
+                  -CopyToPackageShareOnDistributionPoint $True -Version $Version
 
     Write-Host ""
 
@@ -425,7 +454,7 @@ function CreateSCCMProgram() {
 		[String]$CommandLine, 
 
 		[Parameter()]
-		[String]$Name = "Office2016Setup.exe",
+		[String]$Name = "Change Channel",
 		
 		[Parameter()]
 		[String[]] $RequiredPlatformNames = @()
@@ -439,7 +468,7 @@ function CreateSCCMProgram() {
     if($program -eq $null -or !$program)
     {
         Write-Host "`t`tCreating Program..."	        
-	    $program = New-CMProgram -PackageName $PackageName -StandardProgramName $Name -DriveMode RenameWithUnc -CommandLine $CommandLine -ProgramRunType OnlyWhenUserIsLoggedOn -RunMode RunWithAdministrativeRights -UserInteraction $false -RunType Normal
+	    $program = New-CMProgram -PackageName $PackageName -StandardProgramName $Name -DriveMode RenameWithUnc -CommandLine $CommandLine -ProgramRunType OnlyWhenUserIsLoggedOn -RunMode RunWithAdministrativeRights -UserInteraction $true -RunType Normal
     } else {
         Write-Host "`t`tAlready Exists"
     }

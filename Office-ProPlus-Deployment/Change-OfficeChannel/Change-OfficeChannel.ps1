@@ -555,53 +555,55 @@ Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
    }
 "@
 
-$defaultDisplaySet = 'OldUpdatePath','NewUpdatePath','Version'
-$defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
-$PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+try {
+    $defaultDisplaySet = 'OldUpdatePath','NewUpdatePath','Version'
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 
-$UpdateURLKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'  #UpdateURL
-$Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
+    $UpdateURLKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'  #UpdateURL
+    $Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
 
-$results = new-object PSObject[] 0;
-$scriptPath = Get-ScriptPath
+    $results = new-object PSObject[] 0;
+    $scriptPath = Get-ScriptPath
 
-$OldUpdatePath = $UpdateURLPath
-$UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $scriptPath
+    $OldUpdatePath = $UpdateURLPath
+    $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $scriptPath
 
-$validSource = Test-UpdateSource -UpdateSource $UpdateURLPath
-if (!($validSource)) {
-    throw "UpdateSource not Valid $UpdateURLPath"
-}
+    $validSource = Test-UpdateSource -UpdateSource $UpdateURLPath
+    if (!($validSource)) {
+        throw "UpdateSource not Valid $UpdateURLPath"
+    }
 
-$oldUpdatePath = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
-if ($oldUpdatePath) {
-    New-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
-}
+    $oldUpdatePath = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
+    if ($oldUpdatePath) {
+        New-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+    }
 
-New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
+    New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
 
-Set-OfficeCDNUrl -Channel $Channel
+    Set-OfficeCDNUrl -Channel $Channel
 
-$OfficeUpdatePath = Get-OfficeC2Rexe
-if (!($OfficeUpdatePath)) {
-    throw "Cannot find OfficeC2RClient.exe file"
-}
+    $OfficeUpdatePath = Get-OfficeC2Rexe
+    if (!($OfficeUpdatePath)) {
+        throw "Cannot find OfficeC2RClient.exe file"
+    }
     
-$Version = Get-LatestVersion -UpdateURLPath $UpdateURLPath
+    $Version = Get-LatestVersion -UpdateURLPath $UpdateURLPath
 
-$arguments = "/update user displaylevel=false updatepromptuser=false updatetoversion=$Version"
+    $arguments = "/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=$Version"
        
-#run update exe file
-Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
+    #run update exe file
+    Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
      
-Wait-ForOfficeCTRUpadate
+    Wait-ForOfficeCTRUpadate
 
-if ($oldUpdatePath) {
-    New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+    if ($oldUpdatePath) {
+        New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+    }
+
+    [System.Environment]::Exit(0)
+} catch {
+  Write-Host $Error -ForegroundColor Red
+  [System.Environment]::Exit(1)
 }
 
-$object = New-Object PSObject -Property @{OldUpdatePath = $OldUpdatePath; NewUpdatePath = $UpdateURLPath; Version = $Version }
-$object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-$results += $object
-    
-$results | fl 
