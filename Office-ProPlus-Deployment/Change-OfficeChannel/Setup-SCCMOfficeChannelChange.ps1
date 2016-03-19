@@ -26,12 +26,47 @@ Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
 
 [string]$ProgramName = "Change Channel"
 
+function Download-SCCMOfficeChannelFiles() {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param
+    (
+        [Parameter()]
+        [OfficeChannel[]] $Channels = @(1,2,3),
+
+        [Parameter()]
+	    [String]$OfficeFilesPath = $NULL
+    )
+
+    Process {
+       . "$PSScriptRoot\Download-OfficeProPlusChannels.ps1"
+
+       $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
+       $ChannelXml = Get-ChannelXml -FolderPath $OfficeFilesPath -OverWrite $true
+
+       foreach ($Channel in $ChannelList) {
+         if ($Channels -contains $Channel) {
+
+            $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
+            $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel
+            $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
+
+            Download-OfficeProPlusChannels -TargetDirectory $OfficeFilesPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
+
+            $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $true 
+         }
+       }
+    }
+}
+ 
 function Create-SCCMOfficeChannelPackages {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
         [Parameter()]
         [OfficeChannel[]] $Channels = @(1,2,3),
+
+        [Parameter()]
+	    [String]$OfficeFilesPath = $NULL,
 
 	    [Parameter()]	
 	    [Bool]$UpdateOnlyChangedBits = $false,
@@ -53,12 +88,13 @@ function Create-SCCMOfficeChannelPackages {
        . "$PSScriptRoot\Download-OfficeProPlusChannels.ps1"
 
        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
-       $ChannelXml = Get-ChannelXml
+       $ChannelXml = Get-ChannelXml -FolderPath $OfficeFilesPath -OverWrite $false
 
        foreach ($Channel in $ChannelList) {
          if ($Channels -contains $Channel) {
            $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
-           $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL 
+           $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $false
+
            $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
            $versionExists = CheckIfVersionExists -Version $latestVersion -Channel $Channel
            $LargeDrv = Get-LargestDrive
@@ -66,13 +102,24 @@ function Create-SCCMOfficeChannelPackages {
            $Path = CreateOfficeChannelShare -Path "$LargeDrv\OfficeChannels"
 
            $packageName = "Office 365 ProPlus ($Channel)"
-
            $ChannelPath = "$Path\$Channel"
            $LocalPath = "$LargeDrv\OfficeChannels\$Channel"
 
            [System.IO.Directory]::CreateDirectory($LocalPath) | Out-Null
-               
-           Download-OfficeProPlusChannels -TargetDirectory $LocalPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
+                          
+           if ($OfficeFilesPath) {
+               $officeFileChannelPath = "$OfficeFilesPath\$ChannelShortName"
+               $officeFileTargetPath = "$LocalPath"
+
+               if (!(Test-Path -Path $officeFileChannelPath)) {
+                 throw "Channel Folder Missing: $officeFileChannelPath"
+               }
+
+               [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
+               Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
+           } else {
+               Download-OfficeProPlusChannels -TargetDirectory $LocalPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
+           }
 
            CreateMainCabFiles -LocalPath $LocalPath -ChannelShortName $ChannelShortName -LatestVersion $latestVersion
 
@@ -857,22 +904,48 @@ function DownloadBits() {
 }
 
 function Get-ChannelXml() {
-   [CmdletBinding()]
-   param( 
-      
-   )
+    [CmdletBinding()]	
+    Param
+	(
+	    [Parameter()]
+	    [string]$FolderPath = $null,
+
+	    [Parameter()]
+	    [bool]$OverWrite = $false
+	)
 
    process {
        $cabPath = "$PSScriptRoot\ofl.cab"
+       [bool]$downloadFile = $true
 
-       $webclient = New-Object System.Net.WebClient
-       $XMLFilePath = "$env:TEMP/ofl.cab"
-       $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
-       $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+       if (!($OverWrite)) {
+          if ($FolderPath) {
+              $XMLFilePath = "$FolderPath\ofl.cab"
+              if (Test-Path -Path $XMLFilePath) {
+                 $downloadFile = $false
+              } else {
+                throw "File missing $FolderPath\ofl.cab"
+              }
+          }
+       }
+
+       if ($downloadFile) {
+           $webclient = New-Object System.Net.WebClient
+           $XMLFilePath = "$env:TEMP/ofl.cab"
+           $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
+           $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+
+           if ($FolderPath) {
+             [System.IO.Directory]::CreateDirectory($FolderPath) | Out-Null
+             $targetFile = "$FolderPath\ofl.cab"
+             Copy-Item -Path $XMLFilePath -Destination $targetFile -Force
+           }
+       }
 
        $tmpName = "o365client_64bit.xml"
        expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
        $tmpName = $env:TEMP + "\o365client_64bit.xml"
+       
        [xml]$channelXml = Get-Content $tmpName
 
        return $channelXml
@@ -900,14 +973,50 @@ function Get-BranchLatestVersion() {
    [CmdletBinding()]
    param( 
       [Parameter(Mandatory=$true)]
-      [string]$ChannelUrl
+      [string]$ChannelUrl,
+
+      [Parameter(Mandatory=$true)]
+      [string]$Channel,
+
+	  [Parameter()]
+	  [string]$FolderPath = $null,
+
+	  [Parameter()]
+	  [bool]$OverWrite = $false
    )
 
    process {
-       $webclient = New-Object System.Net.WebClient
-       $CABFilePath = "$env:TEMP/v64.cab"
-       $XMLDownloadURL = "$ChannelUrl/Office/Data/v64.cab"
-       $webclient.DownloadFile($XMLDownloadURL,$CABFilePath)
+
+       [bool]$downloadFile = $true
+
+       $channelShortName = ConvertChannelNameToShortName -ChannelName $Channel
+
+       if (!($OverWrite)) {
+          if ($FolderPath) {
+              $CABFilePath = "$FolderPath\$channelShortName\v64.cab"
+              if (Test-Path -Path $CABFilePath) {
+                 $downloadFile = $false
+              } else {
+                throw "File missing $FolderPath\$channelShortName\v64.cab"
+              }
+          }
+       }
+
+       if ($downloadFile) {
+           $webclient = New-Object System.Net.WebClient
+           $CABFilePath = "$env:TEMP/v64.cab"
+           $XMLDownloadURL = "$ChannelUrl/Office/Data/v64.cab"
+           $webclient.DownloadFile($XMLDownloadURL,$CABFilePath)
+
+           if ($FolderPath) {
+             [System.IO.Directory]::CreateDirectory($FolderPath) | Out-Null
+
+             $channelShortName = ConvertChannelNameToShortName -ChannelName $Channel 
+
+             $targetFile = "$FolderPath\$channelShortName\v64.cab"
+             Copy-Item -Path $CABFilePath -Destination $targetFile -Force
+           }
+       }
 
        $tmpName = "VersionDescriptor.xml"
        expand $CABFilePath $env:TEMP -f:$tmpName | Out-Null
