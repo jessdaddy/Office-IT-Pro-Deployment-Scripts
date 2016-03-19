@@ -68,6 +68,9 @@ function Create-SCCMOfficeChannelPackages {
         [Parameter()]
 	    [String]$OfficeFilesPath = $NULL,
 
+        [Parameter()]
+	    [bool]$MoveOfflineFiles = $false,
+
 	    [Parameter()]	
 	    [Bool]$UpdateOnlyChangedBits = $false,
 
@@ -116,7 +119,12 @@ function Create-SCCMOfficeChannelPackages {
                }
 
                [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
-               Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
+
+               if ($MoveOfflineFiles) {
+                 Move-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Force
+               } else {
+                 Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
+               }
            } else {
                Download-OfficeProPlusChannels -TargetDirectory $LocalPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
            }
