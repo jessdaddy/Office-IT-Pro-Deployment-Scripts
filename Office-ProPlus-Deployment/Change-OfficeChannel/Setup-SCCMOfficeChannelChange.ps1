@@ -225,7 +225,7 @@ Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Of
         foreach ($ChannelName in $ChannelList) {
            if ($Channels -contains $ChannelName) {
                $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $ChannelName.ToString() }
-               $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL 
+               $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
                $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
                $versionExists = CheckIfVersionExists -Version $latestVersion -Channel $ChannelName
 
