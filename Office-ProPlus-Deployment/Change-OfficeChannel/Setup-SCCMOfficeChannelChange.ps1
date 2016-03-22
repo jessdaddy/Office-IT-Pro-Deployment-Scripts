@@ -34,7 +34,14 @@ function Download-SCCMOfficeChannelFiles() {
         [OfficeChannel[]] $Channels = @(1,2,3),
 
         [Parameter()]
-	    [String]$OfficeFilesPath = $NULL
+	    [String]$OfficeFilesPath = $NULL,
+
+        [Parameter()]
+        [ValidateSet("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
+                    "ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
+                    "tr-tr","uk-ua")]
+        [string[]] $Languages = ("en-us")
+        
     )
 
     Process {
@@ -50,7 +57,7 @@ function Download-SCCMOfficeChannelFiles() {
             $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel
             $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
 
-            Download-OfficeProPlusChannels -TargetDirectory $OfficeFilesPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
+            Download-OfficeProPlusChannels -TargetDirectory $OfficeFilesPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true -Languages $Languages
 
             $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $true 
          }
@@ -70,6 +77,9 @@ function Create-SCCMOfficeChannelPackages {
 
         [Parameter()]
 	    [bool]$MoveOfflineFiles = $false,
+
+		[Parameter()]
+		[String]$CustomPackageShareName = "OfficeFiles",
 
 	    [Parameter()]	
 	    [Bool]$UpdateOnlyChangedBits = $false,
@@ -140,7 +150,7 @@ function Create-SCCMOfficeChannelPackages {
            if (!$versionExists) {
               LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
-              $package = CreateSCCMPackage -Name $packageName -Path $ChannelPath -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits
+              $package = CreateSCCMPackage -Name $packageName -Path $ChannelPath -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits -CustomPackageShareName $CustomPackageShareName
               [string]$CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel.ps1 -Channel $Channel"
 
               [string]$packageId = $package.PackageId
@@ -315,7 +325,7 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
         foreach ($ChannelName in $ChannelList) {
           if ($Channel.ToString().ToLower() -eq $ChannelName.ToLower()) {
               $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $ChannelName.ToString() }
-              $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL 
+              $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
               $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
               $versionExists = CheckIfVersionExists -Version $latestVersion -Channel $ChannelName
 
@@ -328,9 +338,11 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
 
                   $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
                   if ($packageDeploy.Count -eq 0) {
+
                     try {
-     	                Start-CMPackageDeployment -CollectionName "$Collection" -PackageId $package.PackageId `
-                                                  -ProgramName "$ProgramName" `
+                        $packageId = $package.PackageId
+
+     	                Start-CMPackageDeployment -CollectionName "$Collection" -PackageId $packageId -ProgramName "$ProgramName" `
                                                   -StandardProgram  -DeployPurpose Available -RerunBehavior AlwaysRerunProgram `
                                                   -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint `
                                                   -SlowNetworkOption RunProgramFromDistributionPoint `
@@ -478,6 +490,9 @@ function CreateSCCMPackage() {
 		[Parameter()]
 		[String]$Channel,
 
+		[Parameter()]
+		[String]$CustomPackageShareName = "OfficeFiles",
+
 		[Parameter()]	
 		[Bool]$UpdateOnlyChangedBits = $true
 	) 
@@ -498,7 +513,7 @@ function CreateSCCMPackage() {
     $VersionName = "$Channel - $Version"
 
 	Set-CMPackage -Id $package.PackageId -Priority Normal -EnableBinaryDeltaReplication $UpdateOnlyChangedBits `
-                  -CopyToPackageShareOnDistributionPoint $True -Version $Version
+                  -CopyToPackageShareOnDistributionPoint $True -Version $Version -CustomPackageShareName $CustomPackageShareName
 
     Write-Host ""
 
