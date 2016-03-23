@@ -1,6 +1,9 @@
 ﻿  param(
-    [Parameter(Mandatory=$true)]
-    [string]$Channel
+    [Parameter()]
+    [string]$Channel = $null,
+
+    [Parameter()]
+    [switch]$RollBack
   )
 
 Function Get-ScriptPath() {
@@ -345,12 +348,48 @@ Function Get-LatestVersion() {
         }
     }
 
-    $totalVersion = $totalVersion | Sort-Object
+    $totalVersion = $totalVersion | Sort-Object -Descending
     
     #sets version number to the newest version in directory for channel if version is not set by user in argument  
     if($totalVersion.Count -gt 0){
         $Version = $totalVersion[0]
     }
+
+    return $Version
+  }
+}
+
+Function Get-PreviousVersion() {
+  [CmdletBinding()]
+  Param(
+     [Parameter(Mandatory=$true)]
+     [string] $UpdateURLPath
+  )
+
+  process {
+    [array]$totalVersion = @()
+    $Version = $null
+
+    $LatestBranchVersionPath = $UpdateURLPath + '\Office\Data'
+    if(Test-Path $LatestBranchVersionPath){
+        $DirectoryList = Get-ChildItem $LatestBranchVersionPath
+        Foreach($listItem in $DirectoryList){
+            if($listItem.GetType().Name -eq 'DirectoryInfo'){
+              if ($listItem.Name -match '\d{2}\.\d\.\d{4}\.\d{4}') {
+                $totalVersion+=$listItem.Name
+              }
+            }
+        }
+    }
+
+    $totalVersion = $totalVersion | Sort-Object -Descending
+    
+    #sets version number to the newest version in directory for channel if version is not set by user in argument  
+    if($totalVersion.Count -gt 1){
+        $Version = $totalVersion[1]
+    } else {
+        return $null
+    } 
 
     return $Version
   }
@@ -463,7 +502,6 @@ function Get-ChannelUrl() {
       $currentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
       return $currentChannel
    }
-
 }
 
 function Get-ChannelXml() {
@@ -556,54 +594,76 @@ Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
 "@
 
 try {
-    $defaultDisplaySet = 'OldUpdatePath','NewUpdatePath','Version'
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
-    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+
+    if (!($RollBack)) {
+      if (!($Channel)) {
+         throw "Channel Parameter is required"
+      }
+    }
 
     $UpdateURLKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'  #UpdateURL
     $Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
 
-    $results = new-object PSObject[] 0;
     $scriptPath = Get-ScriptPath
 
     $OldUpdatePath = $UpdateURLPath
-    $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $scriptPath
 
+    if ($RollBack) {
+       $Channel = (Detect-Channel).branch
+    }
+
+    $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $scriptPath
+   
     $validSource = Test-UpdateSource -UpdateSource $UpdateURLPath
     if (!($validSource)) {
         throw "UpdateSource not Valid $UpdateURLPath"
     }
 
     $oldUpdatePath = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
+    $currentVersion = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").VersionToReport
     if ($oldUpdatePath) {
         New-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
     }
 
     New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
 
-    Set-OfficeCDNUrl -Channel $Channel
+    if (!($RollBack)) {
+       Set-OfficeCDNUrl -Channel $Channel
+    }
 
     $OfficeUpdatePath = Get-OfficeC2Rexe
     if (!($OfficeUpdatePath)) {
         throw "Cannot find OfficeC2RClient.exe file"
     }
     
-    $Version = Get-LatestVersion -UpdateURLPath $UpdateURLPath
-
-    $arguments = "/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=$Version"
-       
-    #run update exe file
-    Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
-     
-    Wait-ForOfficeCTRUpadate
-
-    if ($oldUpdatePath) {
-        New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+    if ($RollBack) {
+      $Version = Get-PreviousVersion -UpdateURLPath $UpdateURLPath
+      if (!($Version)) {
+        throw "Rollback Version Not Available"
+      }
+    } else {
+      $Version = Get-LatestVersion -UpdateURLPath $UpdateURLPath
     }
 
-    [System.Environment]::Exit(0)
+    if (($Version) -and ($currentVersion -ne $Version)) {
+        $arguments = "/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=$Version"
+       
+        #run update exe file
+        Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
+     
+        Wait-ForOfficeCTRUpadate
+
+        if ($oldUpdatePath) {
+            New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+            Remove-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -Force | Out-Null
+        }
+    } else {
+        Write-Host "The client already has version installed: $Version"
+    }
+    #[System.Environment]::Exit(0)
 } catch {
-  Write-Host $Error -ForegroundColor Red
-  [System.Environment]::Exit(1)
+  Write-Host $_ -ForegroundColor Red
+  $Error = $null
+  #[System.Environment]::Exit(1)
 }
 
