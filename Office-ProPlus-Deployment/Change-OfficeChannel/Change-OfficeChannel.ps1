@@ -185,6 +185,7 @@ Function Wait-ForOfficeCTRUpadate() {
        if ($updateRunning) {
           if ($failure) {
             Write-Host "Update Failed"
+            throw "Update Failed"
           } else {
             Write-Host "Update Completed - Total Time: $totalOperationTime"
           }
@@ -511,9 +512,9 @@ function Get-ChannelXml() {
    )
 
    process {
-       $cabPath = "$PSScriptRoot\ofl.cab"
+       $XMLFilePath = "$PSScriptRoot\ofl.cab"
 
-       if (!(Test-Path -Path $cabPath)) {
+       if (!(Test-Path -Path $XMLFilePath)) {
            $webclient = New-Object System.Net.WebClient
            $XMLFilePath = "$env:TEMP/ofl.cab"
            $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
@@ -601,10 +602,22 @@ try {
       }
     }
 
+    [bool]$PolicyPath = $true
+    [bool]$SetBack = $false
+
     $UpdateURLKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'  #UpdateURL
     $Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
+    $OfficePolicyPath = 'HKLM:\Software\Policies\Microsoft\Office\16.0\common\officeupdate'
 
-    $scriptPath = Get-ScriptPath
+    $UpdateURLPath = (Get-ItemProperty $OfficePolicyPath).updatepath
+    if (!($UpdateURLPath)) {
+        $UpdateURLPath  = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
+        $PolicyPath = $false
+    }
+    if (!($UpdateURLPath)) {
+        $UpdateURLPath = Get-ScriptPath
+        $SetBack = $true
+    }
 
     $OldUpdatePath = $UpdateURLPath
 
@@ -612,23 +625,28 @@ try {
        $Channel = (Detect-Channel).branch
     }
 
-    $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $scriptPath
+    $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
    
     $validSource = Test-UpdateSource -UpdateSource $UpdateURLPath
     if (!($validSource)) {
         throw "UpdateSource not Valid $UpdateURLPath"
     }
 
-    $oldUpdatePath = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
     $currentVersion = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").VersionToReport
-    if ($oldUpdatePath) {
-        New-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+
+    if ($SetBack) {
+        $oldUpdatePath = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
+        if ($oldUpdatePath) {
+            New-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+        }
     }
 
-    New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
-
-    if (!($RollBack)) {
-       Set-OfficeCDNUrl -Channel $Channel
+    if ($UpdateURLPath) {
+        if ($PolicyPath) {
+            New-ItemProperty $OfficePolicyPath -Name updatepath -PropertyType String -Value $UpdateURLPath -Force | Out-Null
+        } else {
+            New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
+        }
     }
 
     $OfficeUpdatePath = Get-OfficeC2Rexe
@@ -653,17 +671,27 @@ try {
      
         Wait-ForOfficeCTRUpadate
 
-        if ($oldUpdatePath) {
-            New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
-            Remove-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -Force | Out-Null
+        if (!($RollBack)) {
+           Set-OfficeCDNUrl -Channel $Channel
+        }
+
+        if ($SetBack) {
+            if ($oldUpdatePath) {
+                New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+                Remove-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -Force | Out-Null
+            }
         }
     } else {
         Write-Host "The client already has version installed: $Version"
+
+        if (!($RollBack)) {
+           Set-OfficeCDNUrl -Channel $Channel
+        }
     }
-    #[System.Environment]::Exit(0)
+    [System.Environment]::Exit(0)
 } catch {
   Write-Host $_ -ForegroundColor Red
   $Error = $null
-  #[System.Environment]::Exit(1)
+  [System.Environment]::Exit(1)
 }
 
