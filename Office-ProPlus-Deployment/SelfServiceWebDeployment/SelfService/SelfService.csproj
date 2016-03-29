@@ -226,11 +226,11 @@
     <Content Include="Content\Install_Files\Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.deploy" />
     <Content Include="Content\Install_Files\Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.manifest" />
     <Content Include="Content\Install_Files\ODT_Launcher.application" />
-    <Content Include="Content\Install_Files\ODT_Launcher.exe.config.deploy" />
     <Content Include="Content\Install_Files\ODT_Launcher.exe.deploy" />
+    <Content Include="Content\Install_Files\ODT_Launcher.exe.config.deploy" />
+    <Content Include="Content\Install_Files\Content\setup.exe.deploy" />
     <Content Include="Content\Install_Files\ODT_Launcher.exe.manifest" />
     <Content Include="Content\Install_Files\ODT_Launcher.exe.config" />
-    <Content Include="Content\Install_Files\Content\setup.exe.deploy" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\FileSaver.js" />
     <Content Include="Scripts\FileSaver.min.js" />
