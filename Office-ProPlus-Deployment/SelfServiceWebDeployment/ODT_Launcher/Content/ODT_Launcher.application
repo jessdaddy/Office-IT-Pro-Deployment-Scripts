@@ -13,14 +13,14 @@
     <framework targetVersion="4.5" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.manifest" size="3483">
+    <dependentAssembly dependencyType="install" codebase="Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.manifest" size="3880">
       <assemblyIdentity name="ODT_Launcher.exe" version="1.0.0.15" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>H4UE0rPU+gHhnQuI5gJTnB6UYERUi7ScX8MNrD1vxGA=</dsig:DigestValue>
+        <dsig:DigestValue>76/uBn4zGH1smHvSB47/IGr+ByKj7VFEOuRISj0jUmU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

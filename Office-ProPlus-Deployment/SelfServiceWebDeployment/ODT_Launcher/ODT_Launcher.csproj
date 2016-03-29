@@ -22,11 +22,11 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://localhost/Content/Install_Files/</InstallUrl>
+    <InstallUrl>http://localhost/Content/</InstallUrl>
     <WebPage>index.cshtml</WebPage>
     <TrustUrlParameters>true</TrustUrlParameters>
-    <ApplicationRevision>16</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationRevision>15</ApplicationRevision>
+    <ApplicationVersion>1.0.0.15</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <ExcludeDeploymentUrl>true</ExcludeDeploymentUrl>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -86,13 +86,11 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="bin\Debug\bin\ODT_Launcher.exe.config" />
-    <None Include="Content\Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.application" />
-    <None Include="Content\Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.config.deploy" />
-    <None Include="Content\Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.deploy" />
-    <None Include="Content\Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.manifest" />
     <None Include="Content\ODT_Launcher.application" />
     <None Include="ODT_Launcher.exe.config" />
     <None Include="ODT_Launcher_1_TemporaryKey.pfx" />
+    <None Include="ODT_Launcher_2_TemporaryKey.pfx" />
+    <None Include="ODT_Launcher_3_TemporaryKey.pfx" />
     <None Include="ODT_Launcher_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -173,7 +171,9 @@
       <FileType>File</FileType>
     </PublishFile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Content\Application Files\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
