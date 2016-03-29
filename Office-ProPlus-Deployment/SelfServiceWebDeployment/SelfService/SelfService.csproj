@@ -153,6 +153,7 @@
       <CustomToolNamespace>SelfService</CustomToolNamespace>
     </Content>
     <Content Include="Content\Install_Files\ODT_Launcher.exe" />
+    <Content Include="Content\Install_Files\ODT_Launcher.pdb" />
     <Content Include="Content\Install_Files\setup.exe" />
     <Content Include="Content\Office2016Setup.exe" />
     <Content Include="Content\setup.exe" />

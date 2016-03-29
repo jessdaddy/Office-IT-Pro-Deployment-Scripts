@@ -49,26 +49,10 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>och6SJ12lQNvHcDrH/FEGC3ivJdQZSd84IgVe5k2Nts=</dsig:DigestValue>
+        <dsig:DigestValue>vu5lkQRsv1xhP54qyG2QKfBIuXTBxOfuSiNU79vzQ1Q=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="Content\setup.exe" size="425472">
-    <hash>
-      <dsig:Transforms>
-        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-      </dsig:Transforms>
-      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>GXAE8bprjlevGCGBFf/PM1mmGsiRN0YiCn178Klg1K8=</dsig:DigestValue>
-    </hash>
-  </file>
-  <file name="ODT_Launcher.exe.config" size="187">
-    <hash>
-      <dsig:Transforms>
-        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-      </dsig:Transforms>
-      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>xm4bo26HQ0LNVwz1vdPYtzhkpMnp2AI5i+f0b+OahTI=</dsig:DigestValue>
-    </hash>
-  </file>
+  <file name="Content\setup.exe" size="425472" />
+  <file name="ODT_Launcher.exe.config" size="187" />
 </asmv1:assembly>
