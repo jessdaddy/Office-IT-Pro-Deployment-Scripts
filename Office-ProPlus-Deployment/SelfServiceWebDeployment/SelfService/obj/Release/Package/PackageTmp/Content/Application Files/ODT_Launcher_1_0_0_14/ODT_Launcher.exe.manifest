@@ -44,22 +44,8 @@
   <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ODT_Launcher.exe" size="24064">
       <assemblyIdentity name="ODT_Launcher" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
-      <hash>
-        <dsig:Transforms>
-          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-        </dsig:Transforms>
-        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>NPud/oR9GwEwJwfRwqnYgAR124XytOSWjtWGSxOaxuk=</dsig:DigestValue>
-      </hash>
     </dependentAssembly>
   </dependency>
   <file name="ODT_Launcher.exe.config" size="187">
-    <hash>
-      <dsig:Transforms>
-        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-      </dsig:Transforms>
-      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>xm4bo26HQ0LNVwz1vdPYtzhkpMnp2AI5i+f0b+OahTI=</dsig:DigestValue>
-    </hash>
   </file>
 </asmv1:assembly>

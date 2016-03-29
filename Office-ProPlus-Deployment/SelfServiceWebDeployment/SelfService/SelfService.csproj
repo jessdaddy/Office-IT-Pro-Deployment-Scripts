@@ -153,7 +153,6 @@
       <CustomToolNamespace>SelfService</CustomToolNamespace>
     </Content>
     <Content Include="Content\Install_Files\ODT_Launcher.exe" />
-    <Content Include="Content\Install_Files\ODT_Launcher.pdb" />
     <Content Include="Content\Install_Files\setup.exe" />
     <Content Include="Content\Office2016Setup.exe" />
     <Content Include="Content\setup.exe" />
@@ -227,10 +226,10 @@
     <Content Include="Content\Install_Files\Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.manifest" />
     <Content Include="Content\Install_Files\ODT_Launcher.application" />
     <Content Include="Content\Install_Files\ODT_Launcher.exe.deploy" />
-    <Content Include="Content\Install_Files\ODT_Launcher.exe.config.deploy" />
+    <None Include="Content\Install_Files\ODT_Launcher.exe.config.deploy" />
     <Content Include="Content\Install_Files\Content\setup.exe.deploy" />
     <Content Include="Content\Install_Files\ODT_Launcher.exe.manifest" />
-    <Content Include="Content\Install_Files\ODT_Launcher.exe.config" />
+    <None Include="Content\Install_Files\ODT_Launcher.exe.config" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\FileSaver.js" />
     <Content Include="Scripts\FileSaver.min.js" />
@@ -279,6 +278,7 @@
     <Content Include="Scripts\ss.min.js.map">
       <DependentUpon>ss.min.js</DependentUpon>
     </Content>
+    <Content Include="Error.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
