@@ -153,7 +153,7 @@
       <CustomToolNamespace>SelfService</CustomToolNamespace>
     </Content>
     <Content Include="Content\Install_Files\ODT_Launcher.exe" />
-    <Content Include="Content\Install_Files\ODT_Launcher.pdb" />
+    <Content Include="Content\Install_Files\setup.exe" />
     <Content Include="Content\Office2016Setup.exe" />
     <Content Include="Content\setup.exe" />
     <Content Include="Content\taggle.css" />
@@ -215,21 +215,21 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Content\Install_Files\ODT_Launcher.application" />
     <Content Include="Content\Install_Files\app.publish\Application Files\ODT_Launcher_1_0_0_15\Content\setup.exe.deploy" />
     <Content Include="Content\Install_Files\app.publish\Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.config.deploy" />
     <Content Include="Content\Install_Files\app.publish\Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.deploy" />
     <Content Include="Content\Install_Files\app.publish\Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.manifest" />
-    <Content Include="Content\Install_Files\Content\setup.exe.deploy" />
     <Content Include="Content\Install_Files\app.publish\ODT_Launcher.application" />
-    <Content Include="Content\Install_Files\ODT_Launcher.exe.manifest" />
     <Content Include="Content\Install_Files\Application Files\ODT_Launcher_1_0_0_15\Content\setup.exe.deploy" />
     <Content Include="Content\Install_Files\Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.config.deploy" />
     <Content Include="Content\Install_Files\Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.deploy" />
     <Content Include="Content\Install_Files\Application Files\ODT_Launcher_1_0_0_15\ODT_Launcher.exe.manifest" />
+    <Content Include="Content\Install_Files\ODT_Launcher.application" />
     <Content Include="Content\Install_Files\ODT_Launcher.exe.config.deploy" />
     <Content Include="Content\Install_Files\ODT_Launcher.exe.deploy" />
+    <Content Include="Content\Install_Files\ODT_Launcher.exe.manifest" />
     <Content Include="Content\Install_Files\ODT_Launcher.exe.config" />
+    <Content Include="Content\Install_Files\Content\setup.exe.deploy" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\FileSaver.js" />
     <Content Include="Scripts\FileSaver.min.js" />
@@ -281,7 +281,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\Content\" />
     <Folder Include="Content\themes\Install_Files\" />
     <Folder Include="Content\XML_Build_Files\Generated_Files\" />
     <Folder Include="Models\" />
