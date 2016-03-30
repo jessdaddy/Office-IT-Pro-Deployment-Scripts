@@ -293,10 +293,9 @@ span.ms-Button-label {
 .custom-footer {
     position: relative;
     height: 100px;
-    margin-top: 35%;
-    bottom: 100%;
+    margin-top:  5%;
+    bottom: -30px;
     background-color: #F2F2F2;
-    text-align: right;
 }
 
 

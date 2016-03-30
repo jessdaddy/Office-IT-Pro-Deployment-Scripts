@@ -155,7 +155,6 @@ function generateXML() {
                     setupPath = xhr.setup;
                     manifestPath = xhr.manifest;
                     
-                    //console.log(exePath);
 
                     window.open(exePath+ "?xml=" + xmlConfigPath + "&installer=" + setupPath);
 
@@ -295,7 +294,7 @@ function getBuild( ){
                         }
 
                        
-                        $("#buildsTable").append("<div class='ms-Table-row custom-table-row shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "location-filter'>\
+                        $("#buildsTable").append("<div class='ms-Table-row custom-table-row shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "location-filter "+ buildType.replace(" ","-").toLowerCase() +"-filter'>\
                             <span class='ms-Table-cell ms-font-l custom-first-cell custom-cell filter-field'><i class='ms-Icon ms-Icon--people package-people-table'></i>" + buildType + "</span>\
                             <span class='ms-Table-cell custom-cell'>"+ $(this).attr('Location') + "</span>\
                             <span class='ms-Table-cell custom-cell'><i class='ms-Icon ms-Icon--tag custom-table-tag'></i>"+ textString + "</span>\
@@ -317,7 +316,7 @@ function getBuild( ){
                             }
                         }
 
-                        $("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm12 ms-u-md6 ms-u-lg4 ms-u-xl3  package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + " location-filter'>\
+                        $("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm12 ms-u-md6 ms-u-lg4 ms-u-xl3  package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + " location-filter " + buildType.replace(" ","-").toLowerCase() +"-filter'>\
                                                         <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
                                                             <div class='ms-Callout-main'>\
                                                                 <div class='ms-Callout-header custom-callout-header'>\
@@ -344,7 +343,7 @@ function getBuild( ){
                                                                         <p class='ms-font-l type-label filter-field'>" + buildType + "</b></p><br />\
                                                                     </div>\
                                                                     <div class='ms-Grid-row'>\
-                                                                        <p class='location-label ' >"+ $(this).attr('Location') + "</p>\
+                                                                        <p class='location-label filter-field' >"+ $(this).attr('Location') + "</p>\
                                                                     </div>\
                                                                 </div>\
                                                             </div>\
@@ -418,6 +417,14 @@ function getFilters() {
                 $(xml).find('Build').each(function () {
 
                     var filter = $(this).attr('Filters').split(',');
+                    var type = $(this).attr("Type");
+
+                    if (type) {
+                        if (availableFilters.indexOf(type.toLocaleLowerCase()) < 0) {
+                            availableFilters.push(type.toLocaleLowerCase());
+                        }
+                    }
+
                     if (Array.isArray(filter)) {
                         filter.forEach(function (element) {
                             if (availableFilters.indexOf(element.toLocaleLowerCase()) < 0) {
@@ -498,11 +505,19 @@ function searchBoxFilter() {
 
             $(".type-label").each(function () {
                 if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
+                    console.log('"' + searchTerm + '"');
                     $(this).parent().parent().parent().parent().parent().parent().addClass('search-filter');
                 }
             });
 
             $(".tags-list li").each(function () {
+
+                if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
+                    $(this).parent().parent().parent().parent().parent().parent().addClass('search-filter');
+                }
+            });
+
+            $(".location-label").each(function () {
 
                 if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
                     $(this).parent().parent().parent().parent().parent().parent().addClass('search-filter');
@@ -555,7 +570,8 @@ function locationFilter(location) {
 }
 
 function addFilter(filter) {
-    if (appliedFilters.indexOf(filter) === -1) {
+    console.log(filter + " "+appliedFilters.indexOf(filter));
+    if (appliedFilters.indexOf(filter.replace(" ","-")) === -1) {
         appliedFilters.push(filter);
     }
 }
@@ -566,7 +582,7 @@ function applyFilters() {
     {
         var filterString = ".package-group";
         appliedFilters.forEach(function (element) {
-            filterString += "." + element + "-filter";
+            filterString += "." + element.replace(" ","-") + "-filter";
         });
 
 
@@ -619,6 +635,11 @@ function prepTags() {
 }
 
 function updateAutocomplete() {
+
+    jQuery.fn.extend({
+        propAttr: $.fn.prop || $.fn.attr
+    });
+
     var container = searchBoxTaggle.getContainer();
     var input = searchBoxTaggle.getInput();
     searchBoxTaggle.settings.allowedTags = availableFilters;
