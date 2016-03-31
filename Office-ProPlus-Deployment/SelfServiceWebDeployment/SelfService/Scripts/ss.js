@@ -85,11 +85,11 @@ var languageDictionary = {
 
 var availableFilters = [];
 var searchBoxTaggle;
-var primaryLanguage; 
+var primaryLanguage;
 var currentLocation;
 var currentFilter;
 var listView = 0;
-var xmlConfigPath,exePath,setupPath,manifestPath; 
+var xmlConfigPath, exePath, setupPath, manifestPath;
 var appliedFilters = [];
 var previousSearch = "";
 
@@ -146,29 +146,29 @@ function generateXML() {
         {
             type: "POST",
             url: ServerSide.GenerateXML,
-            data: { buildName: buildID, languageList: languages, uiLanguage: primaryLanguage},
-            traditional:true,
-            success: 
+            data: { buildName: buildID, languageList: languages, uiLanguage: primaryLanguage },
+            traditional: true,
+            success:
                 function (xhr) {
                     xmlConfigPath = xhr.xml;
                     exePath = xhr.exe;
                     setupPath = xhr.setup;
                     manifestPath = xhr.manifest;
-                    
 
-                    window.open(exePath+ "?xml=" + xmlConfigPath + "&installer=" + setupPath);
+
+                    window.open(exePath + "?xml=" + xmlConfigPath + "&installer=" + setupPath);
 
                     $('#directDL').attr({ target: "_blank", href: exePath });
                     buildQueryString();
                     showModal('downloadModal');
-                    
+
                 },
             error:
-                function(xhr) {
+                function (xhr) {
                     $('#errorMessage').removeClass('hidden');
                     $('#errorText').text(xhr.responseText);
                 }
-    })
+        })
 }
 
 function showModal(modalId) {
@@ -178,8 +178,7 @@ function showModal(modalId) {
         $('#directDL').text(versionToInstall + " click here");
     }
 
-    if (modalId === 'productModal')
-    {
+    if (modalId === 'productModal') {
         resetFilters();
         $('#buildsTable').empty();
         $('#buildsGrid').empty();
@@ -224,7 +223,7 @@ function getLanguages() {
                         $('#languagesGrid ').append("<div class='ms-Grid-col ms-u-sm6 ms-u-md6 ms-u-lg3 ms-u-xl3 languageli'><label><input type='checkbox' id='" + id + "' class='languageCheckBox' />\
                                      <span class='ms-font-m checkboxLabel'>" + label + "</span></label></div>");
                     }
-                });  
+                });
             }
     });
 }
@@ -251,17 +250,16 @@ function getPrimaryLanguages() {
     });
 }
 
-function getBuild( ){
+function getBuild() {
 
-    
+
     $.ajax({
         type: "GET",
         url: "SelfServiceConfig.xml",
         datatype: "xml",
         success:
             function (xml) {
-                if (listView === 1)
-                {
+                if (listView === 1) {
                     $("#buildsTable").empty();
                     $("#buildsTable").append("<div class='ms-Table-row'>\
                             <span class='ms-Table-cell custom-cell' style='padding-left:4%'>Name</span>\
@@ -278,13 +276,12 @@ function getBuild( ){
 
 
 
-                    if (listView === 1)
-                    {
-                       
+                    if (listView === 1) {
+
                         if (Array.isArray(filters)) {
                             filters.forEach(function (element) {
                                 classString += element.toLocaleLowerCase() + "-filter ";
-                                textString +=   " "+element + ",";
+                                textString += " " + element + ",";
                             });
                         } else {
                             if (filters) {
@@ -293,8 +290,8 @@ function getBuild( ){
                             }
                         }
 
-                       
-                        $("#buildsTable").append("<div class='ms-Table-row custom-table-row shown " + $(this).attr('Location').toLocaleLowerCase().replace(/\W+/g, " ").replace(/\ /g, "-") + "-filter " + classString + "location-filter " + buildType.toLowerCase().replace(/\W+/g, "-").replace(/\ /g, "-") + "-filter'>\
+
+                        $("#buildsTable").append("<div class='ms-Table-row custom-table-row shown " + $(this).attr('Location').toLocaleLowerCase().replace(/\W+/g, " ").replace(/\ /g, "-") + "-filter " + classString + "location-filter " + buildType.toLowerCase().replace(/\ /g, "-").replace(/\W+/g, "-") + "-filter'>\
                             <span class='ms-Table-cell ms-font-l custom-first-cell custom-cell filter-field'><i class='ms-Icon ms-Icon--people package-people-table'></i>" + buildType + "</span>\
                             <span class='ms-Table-cell custom-cell'>"+ $(this).attr('Location') + "</span>\
                             <span class='ms-Table-cell custom-cell'><i class='ms-Icon ms-Icon--tag custom-table-tag'></i>"+ textString + "</span>\
@@ -302,8 +299,7 @@ function getBuild( ){
                         </div>");
 
                     }
-                    else
-                    {
+                    else {
                         if (Array.isArray(filters)) {
                             filters.forEach(function (element) {
                                 classString += element.toLocaleLowerCase() + "-filter ";
@@ -371,9 +367,8 @@ function toggleCallout(event) {
     $(event.target).parents().eq(3).find('#custom-callout').toggleClass('hidden');
 }
 
-function closeCallout(event)
-{
-  
+function closeCallout(event) {
+
     $(event.target).parents().eq(3).find('#calloutTag').toggleClass('callout-open');
     $(event.target).parents().eq(3).find('#custom-callout').addClass('hidden');
 }
@@ -392,11 +387,10 @@ function getLocations(callback) {
 
                 $(xml).find('Build').each(function () {
                     var location = $(this).attr('Location');
-                    if($.inArray(location,locations) === -1)
-                    {
+                    if ($.inArray(location, locations) === -1) {
                         availableFilters.push(location.replace(/\,/g, " "));
                         locations.push(location);
-                        $("#ddl-Location").siblings('ul').attr('id','ul-Location');
+                        $("#ddl-Location").siblings('ul').attr('id', 'ul-Location');
                         $("#ddl-Location").siblings('ul').append("<li class='ms-Dropdown-item'>" + location + "</li>");
                     }
                 });
@@ -483,58 +477,166 @@ function getCompanyInfo() {
                     } else {
                         $('.companyLogo').addClass('hidden');
                     }
-                    
+
                 });
             }
     });
 }
 
 function searchBoxFilter() {
+
     var searchTerm = searchBoxTaggle.getInput().value;
     searchTerm = searchTerm.toLocaleLowerCase();
+    console.log(searchTerm);
     if (listView === 0) {
         $(".package-group").removeClass('search-filter');
         removeFilter("search");
         if (searchTerm) {
 
-            $(".package-main p").each(function () {
-                if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
-                    $(this).parent().parent().parent().addClass('search-filter');
+            $(".package-main p").each(function() {
+                var parent = $(this).parent().parent().parent();
+                if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0 &&
+                    $(parent).attr('class').indexOf('hidden') >= 0) {
+
+                    $(parent).addClass('search-filter');
                 }
             });
 
-            $(".type-label").each(function () {
-                if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
-                    $(this).parent().parent().parent().parent().parent().parent().addClass('search-filter');
+            $(".type-label").each(function() {
+                var parent = $(this).parent().parent().parent().parent().parent().parent();
+                if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0 &&
+                    $(parent).attr('class').indexOf('hidden') < 0) {
+
+                    $(parent).addClass('search-filter');
+
                 }
             });
 
-            $(".tags-list li").each(function () {
+            $(".tags-list li").each(function() {
+                var parent = $(this).parent().parent().parent().parent().parent().parent();
+                if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0 &&
+                    $(parent).attr('class').indexOf('hidden') < 0) {
 
-                if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
-                    $(this).parent().parent().parent().parent().parent().parent().addClass('search-filter');
+                    $(parent).addClass('search-filter');
+
                 }
             });
 
-            $(".location-label").each(function () {
+            $(".location-label").each(function() {
+                var parent = $(this).parent().parent().parent().parent().parent().parent();
+                if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0 &&
+                    $(parent).attr('class').indexOf('hidden') < 0) {
 
-                if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
-                    $(this).parent().parent().parent().parent().parent().parent().addClass('search-filter');
+                    $(parent).addClass('search-filter');
+
                 }
             });
 
 
             addFilter("search");
+
+        } else if (searchTerm === "" && $('.taggle_list').children('.taggle').length > 0) {
+
+            $('.taggle_list').children('.taggle').each(function() {
+
+                var tagTerm = $(this).children('input')[0].value;
+
+                console.log(tagTerm);
+
+                $(".package-main p").each(function() {
+                    var parent = $(this).parent().parent().parent();
+
+                    if ($(this).text().toLocaleLowerCase().indexOf(tagTerm) >= 0) {
+                        $(parent).addClass('search-filter');
+                        $(parent).removeClass('hidden');
+                    }
+                });
+
+                $(".type-label").each(function() {
+                    var parent = $(this).parent().parent().parent().parent().parent().parent();
+
+                    if ($(this).text().toLocaleLowerCase().indexOf(tagTerm) >= 0) {
+                        $(parent).addClass('search-filter');
+                        $(parent).removeClass('hidden');
+
+                    }
+                });
+
+                $(".tags-list li").each(function() {
+                    var parent = $(this).parent().parent().parent().parent().parent().parent();
+
+                    if ($(this).text().toLocaleLowerCase().indexOf(tagTerm) >= 0) {
+                        $(parent).addClass('search-filter');
+                        $(parent).removeClass('hidden');
+
+                    }
+                });
+
+                $(".location-label").each(function() {
+                    var parent = $(this).parent().parent().parent().parent().parent().parent();
+
+                    if ($(this).text().toLocaleLowerCase().indexOf(tagTerm) >= 0) {
+                        $(parent).addClass('search-filter');
+                        $(parent).removeClass('hidden');
+
+                    }
+                });
+
+            });
+
+            $('#ul-Location').children('li').each(function() {
+                if ($(this).attr('class').indexOf('is-selected') >= 0) {
+                    $(this).click();
+                }
+            });
+
+            addFilter("search");
+
+        } else {
+            $(".package-main p").each(function () {
+                var parent = $(this).parent().parent().parent();
+                    $(parent).removeClass('search-filter');
+                    $(parent).removeClass('hidden');
+                
+            });
+
+            $(".type-label").each(function () {
+                var parent = $(this).parent().parent().parent().parent().parent().parent();
+
+                $(parent).removeClass('search-filter');
+                $(parent).removeClass('hidden')
+            });
+
+            $(".tags-list li").each(function () {
+                var parent = $(this).parent().parent().parent().parent().parent().parent();
+
+                $(parent).removeClass('search-filter');
+                $(parent).removeClass('hidden')
+            });
+
+            $(".location-label").each(function () {
+                var parent = $(this).parent().parent().parent().parent().parent().parent();
+
+                $(parent).removeClass('search-filter');
+                $(parent).removeClass('hidden')
+            });
+
+
+            $('#ul-Location').children('li').each(function () {
+                if ($(this).attr('class').indexOf('is-selected') >= 0) {
+                    $(this).click();
+                }
+            });
         }
-    }
-    else {
+    } else {
 
         $(".custom-table-row").removeClass('search-filter');
         removeFilter("search");
         if (searchTerm) {
 
-            $(".custom-table-row span").each(function () {
-                if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
+            $(".custom-table-row span").each(function() {
+                if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0 &&
+                    $(this).parent().attr('class').indexOf('hidden') < 0) {
                     $(this).parent().addClass('search-filter');
                 }
             });
@@ -542,13 +644,21 @@ function searchBoxFilter() {
             addFilter("search");
         }
 
+        $('#ul-Location').children('li').each(function () {
+            if ($(this).attr('class').indexOf('is-selected') >= 0) {
+                $(this).click();
+            }
+        });
+
+
     
     }
-   
+
     applyFilters();
 }
 
 function setTaggleFilters() {
+    console.log("asdf");
     taggles = searchBoxTaggle.getTagValues();
     taggles.forEach(function (element) {
         addFilter(element);
@@ -576,8 +686,7 @@ function addFilter(filter) {
 
 function applyFilters() {
 
-    if (listView === 0)
-    {
+    if (listView === 0) {
         var filterString = ".package-group";
         appliedFilters.forEach(function (element) {
             filterString += "." + element.replace(/\W+/g, "-").replace(/\ /g, "-") + "-filter";
@@ -587,8 +696,7 @@ function applyFilters() {
         $(".package-group").addClass("hidden");
         $(filterString).removeClass("hidden").addClass('shown');
     }
-    else
-    {
+    else {
 
         var filterString = ".custom-table-row";
         appliedFilters.forEach(function (element) {
@@ -599,7 +707,7 @@ function applyFilters() {
         $(".custom-table-row").addClass("hidden");
         $(filterString).removeClass("hidden").addClass('shown');
     }
-    
+
 }
 
 function removeFilter(filter) {
@@ -608,9 +716,9 @@ function removeFilter(filter) {
 
 function addLocationClick() {
     $('#ul-Location li').each(function () {
-        $(this).attr('onclick', "locationFilter('"+$(this).text().toLocaleLowerCase()+"')");
+        $(this).attr('onclick', "locationFilter('" + $(this).text().toLocaleLowerCase() + "')");
     });
-            }
+}
 
 function prepTags() {
     searchBoxTaggle = new Taggle('outerSearchBox',
@@ -679,9 +787,9 @@ function isTileView() {
 function focusDialog() {
     $('html,body').animate({
 
-        scrollTop: $('.custom-mini-banner').offset().top + 500 
+        scrollTop: $('.custom-mini-banner').offset().top + 500
     }, 500);
-    
+
 }
 
 function toggleBanner() {
@@ -708,15 +816,16 @@ $(document).ready(function () {
 
     //searchbox filter
     $("#outerSearchBox").keyup(function (e) {
-        searchBoxFilter(e);
+
+        console.log(e.keyCode);
+
+        if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode == 8) {
+            searchBoxFilter(e);
+
+        }
     });
 
-    //filter reset --REMOVE THIS--
-    $('#btn-Reset').click(function () {
-        resetFilters();
-    });
 
- 
 
     prepTags();
 });

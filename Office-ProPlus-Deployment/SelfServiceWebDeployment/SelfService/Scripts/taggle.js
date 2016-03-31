@@ -6,14 +6,14 @@
  * @description Taggle is a dependency-less tagging library
  */
 
-(function(window, document) {
+(function (window, document) {
     'use strict';
 
     /////////////////////
     // Default options //
     /////////////////////
 
-    var noop = function() {};
+    var noop = function () { };
 
     var DEFAULTS = {
         /**
@@ -196,7 +196,7 @@
      * @param {Mixed} el ID of an element or the actual element
      * @param {Object} options
      */
-    var Taggle = function(el, options) {
+    var Taggle = function (el, options) {
         this.settings = _extend({}, DEFAULTS, options);
         this.measurements = {
             container: {
@@ -216,11 +216,11 @@
         this.sizer = document.createElement('div');
         this.pasting = false;
         this.placeholder = null;
-        this.searchIcon = null; 
-        
+        this.searchIcon = null;
+
 
         if (this.settings.placeholder) {
-            this.placeholder = document.createElement('span');            
+            this.placeholder = document.createElement('span');
         }
 
         if (!this.settings.submitKeys.length) {
@@ -239,7 +239,7 @@
     /**
      * Gets all the layout measurements up front
      */
-    Taggle.prototype._getMeasurements = function() {
+    Taggle.prototype._getMeasurements = function () {
         var style;
         var lpad;
         var rpad;
@@ -257,7 +257,7 @@
     /**
      * Setup the div container for tags to be entered
      */
-    Taggle.prototype._setupTextarea = function() {
+    Taggle.prototype._setupTextarea = function () {
         var fontSize;
 
         this.list.className = 'taggle_list';
@@ -277,7 +277,7 @@
             this.placeholder.style.opacity = 0;
             this.placeholder.classList.add('taggle_placeholder');
 
-            
+
             this.container.appendChild(this.placeholder);
             _setText(this.placeholder, this.settings.placeholder);
 
@@ -297,10 +297,10 @@
     /**
      * Attaches neccessary events
      */
-    Taggle.prototype._attachEvents = function() {
+    Taggle.prototype._attachEvents = function () {
         var self = this;
 
-        _on(this.container, 'click', function() {
+        _on(this.container, 'click', function () {
             self.input.focus();
         });
 
@@ -314,7 +314,7 @@
      * Resizes the hidden input where user types to fill in the
      * width of the div
      */
-    Taggle.prototype._fixInputWidth = function() {
+    Taggle.prototype._fixInputWidth = function () {
         var width;
         var inputRect;
         var rect;
@@ -344,7 +344,7 @@
      * @param  {String} text tag value
      * @return {Boolean}
      */
-    Taggle.prototype._canAdd = function(e, text) {
+    Taggle.prototype._canAdd = function (e, text) {
         if (!text) {
             return false;
         }
@@ -380,12 +380,12 @@
      * @param  {Boolean} caseSensitive
      * @return {Boolean}
      */
-    Taggle.prototype._tagIsInArray = function(text, arr, caseSensitive) {
+    Taggle.prototype._tagIsInArray = function (text, arr, caseSensitive) {
         if (caseSensitive) {
             return arr.indexOf(text) !== -1;
         }
 
-        var lowercased = [].slice.apply(arr).map(function(str) {
+        var lowercased = [].slice.apply(arr).map(function (str) {
             return str.toLowerCase();
         });
 
@@ -397,7 +397,7 @@
      * @param  {Event} e
      * @param  {String} text
      */
-    Taggle.prototype._add = function(e, text) {
+    Taggle.prototype._add = function (e, text) {
         var self = this;
         var values = text || '';
 
@@ -405,9 +405,9 @@
             values = _trim(this.input.value);
         }
 
-        values.split(',').map(function(val) {
+        values.split(',').map(function (val) {
             return self._formatTag(val);
-        }).forEach(function(val) {
+        }).forEach(function (val) {
             if (!self._canAdd(e, val)) {
                 return;
             }
@@ -430,7 +430,7 @@
      * Removes last tag if it has already been probed
      * @param  {Event} e
      */
-    Taggle.prototype._checkLastTag = function(e) {
+    Taggle.prototype._checkLastTag = function (e) {
         e = e || window.event;
 
         var taggles = this.container.querySelectorAll('.taggle');
@@ -438,28 +438,19 @@
         var hotClass = 'taggle_hot';
         var heldDown = this.input.classList.contains('taggle_back');
 
-        // prevent holding backspace from deleting all tags
-        if (this.input.value === '' && e.keyCode === BACKSPACE && !heldDown) {
-            if (lastTaggle.classList.contains(hotClass)) {
-                this.input.classList.add('taggle_back');
-                this._remove(lastTaggle, e);
-                this._fixInputWidth();
-                this._focusInput();
-            }
-            else {
-                lastTaggle.classList.add(hotClass);
-            }
+        if (this.input.value === '' && e.keyCode === BACKSPACE) {
+            this._remove(lastTaggle, e);
+            this._fixInputWidth();
+            this._focusInput();
         }
-        else if (lastTaggle.classList.contains(hotClass)) {
-            lastTaggle.classList.remove(hotClass);
-        }
+
     };
 
     /**
      * Setter for the hidden input.
      * @param {Number} width
      */
-    Taggle.prototype._setInputWidth = function(width) {
+    Taggle.prototype._setInputWidth = function (width) {
         this.input.style.width = (width || 50) + 'px';
     };
 
@@ -468,7 +459,7 @@
      * @param  {String} text
      * @return {Boolean}
      */
-    Taggle.prototype._hasDupes = function(text) {
+    Taggle.prototype._hasDupes = function (text) {
         var needle = this.tag.values.indexOf(text);
         var tagglelist = this.container.querySelector('.taggle_list');
         var dupes;
@@ -496,7 +487,7 @@
      * @param  {Number}  key code
      * @return {Boolean}
      */
-    Taggle.prototype._isConfirmKey = function(key) {
+    Taggle.prototype._isConfirmKey = function (key) {
         var confirmKey = false;
 
         if (this.settings.submitKeys.indexOf(key) > -1) {
@@ -511,7 +502,7 @@
     /**
      * Handles focus state of div container.
      */
-    Taggle.prototype._focusInput = function() {
+    Taggle.prototype._focusInput = function () {
         this._fixInputWidth();
 
         if (!this.container.classList.contains(this.settings.containerFocusClass)) {
@@ -527,7 +518,7 @@
      * Runs all the events that need to happen on a blur
      * @param  {Event} e
      */
-    Taggle.prototype._blurEvent = function(e) {
+    Taggle.prototype._blurEvent = function (e) {
         if (this.settings.saveOnBlur) {
             e = e || window.event;
 
@@ -561,7 +552,7 @@
      * Runs all the events that need to run on keydown
      * @param  {Event} e
      */
-    Taggle.prototype._keydownEvents = function(e) {
+    Taggle.prototype._keydownEvents = function (e) {
         e = e || window.event;
 
         var key = e.keyCode;
@@ -587,7 +578,7 @@
      * Runs all the events that need to run on keyup
      * @param  {Event} e
      */
-    Taggle.prototype._keyupEvents = function(e) {
+    Taggle.prototype._keyupEvents = function (e) {
         e = e || window.event;
 
         this.input.classList.remove('taggle_back');
@@ -604,7 +595,7 @@
      * Confirms the inputted value to be converted to a tag
      * @param  {Event} e
      */
-    Taggle.prototype._confirmValidTagEvent = function(e) {
+    Taggle.prototype._confirmValidTagEvent = function (e) {
         e = e || window.event;
 
         // prevents from jumping out of textarea
@@ -621,7 +612,7 @@
     /**
      * Approximates when the hidden input should break to the next line
      */
-    Taggle.prototype._listenForEndOfContainer = function() {
+    Taggle.prototype._listenForEndOfContainer = function () {
         var width = this.sizer.getBoundingClientRect().width;
         var max = this.measurements.container.rect.width - this.measurements.container.padding;
         var size = parseInt(this.sizer.style.fontSize, 10);
@@ -632,7 +623,7 @@
         }
     };
 
-    Taggle.prototype._createTag = function(text) {
+    Taggle.prototype._createTag = function (text) {
         var li = document.createElement('li');
         var close = document.createElement('button');
         var hidden = document.createElement('input');
@@ -677,7 +668,7 @@
      * @param  {li} li List item to remove
      * @param  {Event} e
      */
-    Taggle.prototype._remove = function(li, e) {
+    Taggle.prototype._remove = function (li, e) {
         var span;
         var text;
         var elem;
@@ -713,11 +704,11 @@
      * @param {String} text Tag text
      * @return {String}
      */
-    Taggle.prototype._formatTag = function(text) {
+    Taggle.prototype._formatTag = function (text) {
         return this.settings.preserveCase ? text : text.toLowerCase();
     };
 
-    Taggle.prototype.getTags = function() {
+    Taggle.prototype.getTags = function () {
         return {
             elements: this.getTagElements(),
             values: this.getTagValues()
@@ -726,25 +717,25 @@
 
     // @todo
     // @deprecated
-    Taggle.prototype.getTagElements = function() {
+    Taggle.prototype.getTagElements = function () {
         return this.tag.elements;
     };
 
     // @todo
     // @deprecated
-    Taggle.prototype.getTagValues = function() {
+    Taggle.prototype.getTagValues = function () {
         return [].slice.apply(this.tag.values);
     };
 
-    Taggle.prototype.getInput = function() {
+    Taggle.prototype.getInput = function () {
         return this.input;
     };
 
-    Taggle.prototype.getContainer = function() {
+    Taggle.prototype.getContainer = function () {
         return this.container;
     };
 
-    Taggle.prototype.add = function(text) {
+    Taggle.prototype.add = function (text) {
         var isArr = _isArray(text);
 
         if (isArr) {
@@ -761,7 +752,7 @@
         return this;
     };
 
-    Taggle.prototype.remove = function(text, all) {
+    Taggle.prototype.remove = function (text, all) {
         var len = this.tag.values.length - 1;
         var found = false;
 
@@ -781,7 +772,7 @@
         return this;
     };
 
-    Taggle.prototype.removeAll = function() {
+    Taggle.prototype.removeAll = function () {
         for (var i = this.tag.values.length - 1; i >= 0; i--) {
             this._remove(this.tag.elements[i]);
         }
@@ -792,7 +783,7 @@
     /* global define, module */
     if (typeof define === 'function' && define.amd) {
         // AMD
-        define([], function() {
+        define([], function () {
             return Taggle;
         });
     }
