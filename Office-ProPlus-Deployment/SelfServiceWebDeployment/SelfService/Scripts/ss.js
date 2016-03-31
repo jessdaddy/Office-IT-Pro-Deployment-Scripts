@@ -280,12 +280,12 @@ function getBuild() {
 
                         if (Array.isArray(filters)) {
                             filters.forEach(function (element) {
-                                classString += element.toLocaleLowerCase() + "-filter ";
+                                classString += element.toLocaleLowerCase().replace(/\W+/g, "-").replace(/\ /g, "-") + "-filter ";
                                 textString += " " + element + ",";
                             });
                         } else {
                             if (filters) {
-                                classString += filters + "-filter ";
+                                classString += filters.replace(/\W+/g, "-").replace(/\ /g, "-") + "-filter ";
                                 textString += " " + element + ",";
                             }
                         }
