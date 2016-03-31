@@ -107,16 +107,16 @@
         }
 
 
-       // if (!/Trident/i.test(navigator.userAgent) && !/Edge/i.test(navigator.userAgent)) {
-       //    $(".custom-Dialog").children().empty();
-       //    $(".custom-Dialog").append("<div class='ms-Grid custom-Dialog-main'><div class='ms-Grid-row'>\
-       //                 <div class='ms-Grid-col ms-u-sm12'>\
-       //             <div class='ms-Grid -header custom-header'>\
-       //                 <div class='ms-Grid-row'>\
-       //                     <div class='ms-font-su'>This site is only accessible via Internet Explorer or Microsoft Edge.</div>\
-       //             </div></div></div></div></div>");
+        if (!/Trident/i.test(navigator.userAgent) && !/Edge/i.test(navigator.userAgent)) {
+           $(".custom-Dialog").children().empty();
+           $(".custom-Dialog").append("<div class='ms-Grid custom-Dialog-main'><div class='ms-Grid-row'>\
+                        <div class='ms-Grid-col ms-u-sm12'>\
+                    <div class='ms-Grid -header custom-header'>\
+                        <div class='ms-Grid-row'>\
+                            <div class='ms-font-su'>This site is only accessible via Internet Explorer or Microsoft Edge.</div>\
+                    </div></div></div></div></div>");
 
-       //}
+       }
           
 
     });
