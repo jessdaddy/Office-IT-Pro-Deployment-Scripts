@@ -294,7 +294,7 @@ function getBuild( ){
                         }
 
                        
-                        $("#buildsTable").append("<div class='ms-Table-row custom-table-row shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + "location-filter "+ buildType.replace(" ","-").toLowerCase() +"-filter'>\
+                        $("#buildsTable").append("<div class='ms-Table-row custom-table-row shown " + $(this).attr('Location').toLocaleLowerCase().replace(/\W+/g, " ").replace(/\ /g, "-") + "-filter " + classString + "location-filter " + buildType.toLowerCase().replace(/\W+/g, "-").replace(/\ /g, "-") + "-filter'>\
                             <span class='ms-Table-cell ms-font-l custom-first-cell custom-cell filter-field'><i class='ms-Icon ms-Icon--people package-people-table'></i>" + buildType + "</span>\
                             <span class='ms-Table-cell custom-cell'>"+ $(this).attr('Location') + "</span>\
                             <span class='ms-Table-cell custom-cell'><i class='ms-Icon ms-Icon--tag custom-table-tag'></i>"+ textString + "</span>\
@@ -316,7 +316,7 @@ function getBuild( ){
                             }
                         }
 
-                        $("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm12 ms-u-md6 ms-u-lg4 ms-u-xl3  package-group shown " + $(this).attr('Location').toLocaleLowerCase() + "-filter " + classString + " location-filter " + buildType.replace(" ","-").toLowerCase() +"-filter'>\
+                        $("#buildsGrid").append("<div class='ms-Grid-col ms-u-sm12 ms-u-md6 ms-u-lg4 ms-u-xl3  package-group shown " + $(this).attr('Location').toLocaleLowerCase().replace(/\W+/g, " ").replace(/\ /g, "-") + "-filter " + classString + " location-filter " + buildType.toLowerCase().replace(/\W+/g, "-").replace(/\ /g, "-") + "-filter'>\
                                                         <div id='custom-callout' class='ms-Callout ms-Callout--OOBE ms-Callout--arrowLeft hidden'>\
                                                             <div class='ms-Callout-main'>\
                                                                 <div class='ms-Callout-header custom-callout-header'>\
@@ -394,7 +394,7 @@ function getLocations(callback) {
                     var location = $(this).attr('Location');
                     if($.inArray(location,locations) === -1)
                     {
-                        availableFilters.push(location);
+                        availableFilters.push(location.replace(/\,/g, " "));
                         locations.push(location);
                         $("#ddl-Location").siblings('ul').attr('id','ul-Location');
                         $("#ddl-Location").siblings('ul').append("<li class='ms-Dropdown-item'>" + location + "</li>");
@@ -505,7 +505,6 @@ function searchBoxFilter() {
 
             $(".type-label").each(function () {
                 if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0) {
-                    console.log('"' + searchTerm + '"');
                     $(this).parent().parent().parent().parent().parent().parent().addClass('search-filter');
                 }
             });
@@ -570,8 +569,7 @@ function locationFilter(location) {
 }
 
 function addFilter(filter) {
-    console.log(filter + " "+appliedFilters.indexOf(filter));
-    if (appliedFilters.indexOf(filter.replace(" ","-")) === -1) {
+    if (appliedFilters.indexOf(filter.replace(/\W+/g, "-").replace(/\ /g, "-")) === -1) {
         appliedFilters.push(filter);
     }
 }
@@ -582,7 +580,7 @@ function applyFilters() {
     {
         var filterString = ".package-group";
         appliedFilters.forEach(function (element) {
-            filterString += "." + element.replace(" ","-") + "-filter";
+            filterString += "." + element.replace(/\W+/g, "-").replace(/\ /g, "-") + "-filter";
         });
 
 
@@ -594,7 +592,7 @@ function applyFilters() {
 
         var filterString = ".custom-table-row";
         appliedFilters.forEach(function (element) {
-            filterString += "." + element + "-filter";
+            filterString += "." + element.replace(/\W+/g, "-").replace(/\ /g, "-") + "-filter";
         });
 
 
@@ -605,9 +603,7 @@ function applyFilters() {
 }
 
 function removeFilter(filter) {
-    if (appliedFilters.indexOf(filter) >= 0) {
-        appliedFilters.splice(appliedFilters.indexOf(filter), 1);
-    }
+    appliedFilters.splice(appliedFilters.indexOf(filter), 1);
 }
 
 function addLocationClick() {
