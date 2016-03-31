@@ -487,7 +487,6 @@ function searchBoxFilter() {
 
     var searchTerm = searchBoxTaggle.getInput().value;
     searchTerm = searchTerm.toLocaleLowerCase();
-    console.log(searchTerm);
     if (listView === 0) {
         $(".package-group").removeClass('search-filter');
         removeFilter("search");
@@ -541,7 +540,6 @@ function searchBoxFilter() {
 
                 var tagTerm = $(this).children('input')[0].value;
 
-                console.log(tagTerm);
 
                 $(".package-main p").each(function() {
                     var parent = $(this).parent().parent().parent();
@@ -658,7 +656,6 @@ function searchBoxFilter() {
 }
 
 function setTaggleFilters() {
-    console.log("asdf");
     taggles = searchBoxTaggle.getTagValues();
     taggles.forEach(function (element) {
         addFilter(element);
@@ -817,7 +814,6 @@ $(document).ready(function () {
     //searchbox filter
     $("#outerSearchBox").keyup(function (e) {
 
-        console.log(e.keyCode);
 
         if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode == 8) {
             searchBoxFilter(e);
