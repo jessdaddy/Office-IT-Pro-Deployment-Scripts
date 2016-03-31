@@ -17,9 +17,6 @@ This function will query the local computer and returns the information about Of
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 
-.EXAMPLE
-Get-LocalOfficeVersion
-
 Description:
 Will return the locally installed Office product
 
@@ -30,7 +27,7 @@ Description:
 Will return the locally installed Office product
 
 .EXAMPLE
-Get-LocalOfficeVersion | select *
+Get-LocalOfficeVersion
 
 Description:
 Will return the locally installed Office product with all of the available properties
