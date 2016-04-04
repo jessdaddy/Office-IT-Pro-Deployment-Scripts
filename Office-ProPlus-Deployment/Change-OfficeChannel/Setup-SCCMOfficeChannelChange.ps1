@@ -59,6 +59,9 @@ function Download-SCCMOfficeChannelFiles() {
 
             Download-OfficeProPlusChannels -TargetDirectory $OfficeFilesPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true -Languages $Languages
 
+            $cabFilePath = "$env:TEMP/ofl.cab"
+            Copy-Item -Path $cabFilePath -Destination "$OfficeFilesPath\ofl.cab" -Force
+
             $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $true 
          }
        }
@@ -96,9 +99,13 @@ function Create-SCCMOfficeChannelPackages {
 	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
         $startLocation = Get-Location
     }
-    Process
-    {
+    Process {
        . "$PSScriptRoot\Download-OfficeProPlusChannels.ps1"
+
+       $cabFilePath = "$OfficeFilesPath\ofl.cab"
+       if (Test-Path $cabFilePath) {
+            Copy-Item -Path $cabFilePath -Destination "$PSScriptRoot\ofl.cab" -Force
+       }
 
        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
        $ChannelXml = Get-ChannelXml -FolderPath $OfficeFilesPath -OverWrite $false
@@ -135,8 +142,18 @@ function Create-SCCMOfficeChannelPackages {
                } else {
                  Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
                }
+
+               $cabFilePath = "$OfficeFilesPath\ofl.cab"
+               if (Test-Path $cabFilePath) {
+                  Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+               }
            } else {
                Download-OfficeProPlusChannels -TargetDirectory $LocalPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
+
+               $cabFilePath = "$env:TEMP/ofl.cab"
+               if (!(Test-Path $cabFilePath)) {
+                 Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+               }
            }
 
            CreateMainCabFiles -LocalPath $LocalPath -ChannelShortName $ChannelShortName -LatestVersion $latestVersion
