@@ -291,18 +291,17 @@ process {
 }
 
 }
+
 function Remove-OfficeInstall{
 
-    
-
-    $c2rVBS = "OffScrubc2r.vbs"
-    $03VBS = "OffScrub03.vbs"
-    $07VBS = "OffScrub07.vbs"
-    $10VBS = "OffScrub10.vbs"
-    $15MSIVBS = "OffScrub_O15msi.vbs"
-    $16MSIVBS = "OffScrub_O16msi.vbs"
-
-
+    $scriptPath = GetScriptPath
+$scriptPath
+    $c2rVBS = "$scriptPath\OffScrubc2r.vbs"
+    $03VBS = "$scriptPath\OffScrub03.vbs"
+    $07VBS = "$scriptPath\OffScrub07.vbs"
+    $10VBS = "$scriptPath\OffScrub10.vbs"
+    $15MSIVBS = "$scriptPath\OffScrub_O15msi.vbs"
+    $16MSIVBS = "$scriptPath\OffScrub_O16msi.vbs"
 
     $versionTest = Get-OfficeVersion
     $c2r = $versionTest.ClicktoRun
@@ -379,4 +378,12 @@ function Remove-OfficeInstall{
 
         #.\Nuke-OfficeRegistry.ps1
 
+}
+
+function GetScriptPath() {
+   if ($PSScriptRoot) {
+     return $PSScriptRoot
+   } else {
+     return ".\"
+   }
 }
