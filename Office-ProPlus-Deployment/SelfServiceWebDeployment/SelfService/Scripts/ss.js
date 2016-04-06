@@ -1,6 +1,7 @@
 ﻿var productToInstall = "";
 var versionToInstall = "";
 var languages = "";
+
 var languageDictionary = {
     "English": "en-us",
     "Arabic": "ar-sa",
