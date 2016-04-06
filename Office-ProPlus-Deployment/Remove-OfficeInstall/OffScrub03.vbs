@@ -3265,18 +3265,21 @@ Sub CreateLog
     'Create the log file
     Set DateTime = CreateObject("WbemScripting.SWbemDateTime")
     DateTime.SetVarDate Now,True
-    sLogName = sLogDir & "\" & oWShell.ExpandEnvironmentStrings("%COMPUTERNAME%")
-    sLogName = sLogName &  "_" & Left(DateTime.Value,14)
-    sLogName = sLogName & "_ScrubLog.txt"
+    'sLogName = sLogDir & "\" & oWShell.ExpandEnvironmentStrings("%COMPUTERNAME%")
+    'sLogName = sLogName &  "_" & Left(DateTime.Value, 14)
+    'sLogName = sLogName & "_ScrubLog.txt"
+    'sLogName = "C:\Users\JohnTest\Documents\Remove-Install\logFile.txt"
+    sLogName = WScript.Arguments(0)
     Err.Clear
-    Set LogStream = oFso.CreateTextFile(sLogName,True,True)
+    Set LogStream = oFso.CreateTextFile(sLogName,False,True)
     If Err <> 0 Then 
         Err.Clear
-        sLogDir = sScrubDir
-        sLogName = sLogDir & "\" & oWShell.ExpandEnvironmentStrings("%COMPUTERNAME%")
-        sLogName = sLogName &  "_" & Left(DateTime.Value,14)
-        sLogName = sLogName & "_ScrubLog.txt"
-        Set LogStream = oFso.CreateTextFile(sLogName,True,True)
+        'sLogName = sLogDir & "\" & oWShell.ExpandEnvironmentStrings("%COMPUTERNAME%")
+    'sLogName = sLogName &  "_" & Left(DateTime.Value, 14)
+    'sLogName = sLogName & "_ScrubLog.txt"
+    'sLogName = "C:\Users\JohnTest\Documents\Remove-Install\logFile.txt"
+    sLogName = WScript.Arguments(0)
+        Set LogStream = oFso.CreateTextFile(sLogName,False,True)
     End If
 
     Log "Microsoft Customer Support Services - " & ONAME & " Removal Utility" & vbCrLf & vbCrLf & _

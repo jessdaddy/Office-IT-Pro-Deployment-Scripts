@@ -50,11 +50,18 @@ function Install-OfficeClickToRun {
         [OfficeCTRVersion] $OfficeVersion = "Office2016",
 
         [Parameter()]
+        [string]$LogFile,
+
+        [Parameter()]
         [bool] $WaitForInstallToFinish = $true
 
     )
-
+    $InstallTime = [System.Diagnostics.Stopwatch]::StartNew()
     $scriptRoot = GetScriptRoot
+
+    if(!$LogFile){
+        $LogFile = Join-Path $scriptRoot "log.txt"
+    }
 
     #Load the file
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
@@ -120,13 +127,20 @@ function Install-OfficeClickToRun {
     $cmdLine = $officeCtrPath
     $cmdArgs = "/configure " + $TargetFilePath
 
-    Write-Host "Installing Office Click-To-Run..."
+    $time = Get-Date -Format g
+    Out-File -FilePath $LogFile -InputObject $time": Installing Office Click-To-Run..." -Append
+    Write-Host ""$time": Installing Office Click-To-Run..."
 
-    StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
+    StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $true
 
     if ($WaitForInstallToFinish) {
          Wait-ForOfficeCTRInstall
     }
+
+            Write-Host ""
+            Out-File -FilePath $LogFile -InputObject "" -Append
+            Write-Host ""$time": Total Time for Install: $($InstallTime.Elapsed.ToString())"
+            Out-File -FilePath $LogFile -InputObject $time"Total Time for Install: "$($InstallTime.Elapsed.ToString()) -Append
 }
 
 Function checkForLanguagesInSourceFiles() {

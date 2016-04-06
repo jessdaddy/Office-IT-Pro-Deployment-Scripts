@@ -20,6 +20,9 @@ Process {
 
 $targetFilePath = $scriptPath + "\configuration.xml"
 $version = $null
+$targetLogPath = $scriptPath + "\logFile.txt"
+
+$TotalTime = [System.Diagnostics.Stopwatch]::StartNew()
 
 #Small block to make sure there is an XML copy that doesn't get overwritten
 $PathXMLToKeep = Split-Path -Parent $targetFilePath
@@ -32,7 +35,16 @@ if(!(Test-Path $PathXMLToKeep)){
 #from which the script is run. It will then remove the existing Office installation and then it will then remove the Version attribute from the XML to ensure the installation gets the latest version
 #when updating an existing install and then it will initiate a install of Office 2016 Click-To-Run.
 
-Set-ODTAdd -TargetFilePath $PathXMLToKeep -Version $version -TargetFilePath $targetFilePath | Remove-OfficeInstall | Install-OfficeClickToRun -OfficeVersion Office2016 -TargetFilePath $targetFilePath
+Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $version -TargetFilePath $targetFilePath
+Remove-OfficeInstall -LogFile  $targetLogPath
+Install-OfficeClickToRun -OfficeVersion Office2016 -TargetFilePath $targetFilePath -LogFile $targetLogPath
+
+
+            $time = Get-Date -Format g
+            Write-Host ""
+            Out-File -FilePath $targetLogPath -InputObject "" -Append
+            Write-Host ""$time": Total Time for Entire Script: $($TotalTime.Elapsed.ToString())"
+            Out-File -FilePath $targetLogPath -InputObject $time"Total Time for Entire Script: "$($TotalTime.Elapsed.ToString()) -Append
 
 # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
 

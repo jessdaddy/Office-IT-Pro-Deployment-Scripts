@@ -291,17 +291,32 @@ process {
 }
 
 }
-
 function Remove-OfficeInstall{
+param(
+    [Parameter()]
+    [string]$LogFile
+    )
+    $uninstallTime = [System.Diagnostics.Stopwatch]::StartNew()
+    
+    if(!$LogFile){
+     $scriptPath = "."
 
-    $scriptPath = GetScriptPath
-$scriptPath
-    $c2rVBS = "$scriptPath\OffScrubc2r.vbs"
-    $03VBS = "$scriptPath\OffScrub03.vbs"
-    $07VBS = "$scriptPath\OffScrub07.vbs"
-    $10VBS = "$scriptPath\OffScrub10.vbs"
-    $15MSIVBS = "$scriptPath\OffScrub_O15msi.vbs"
-    $16MSIVBS = "$scriptPath\OffScrub_O16msi.vbs"
+    if ($PSScriptRoot) {
+        $scriptPath = $PSScriptRoot
+    } else {
+        $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+    }
+        [string]$LogFile = $scriptPath+"\log.txt"
+    }
+
+    $c2rVBS = "OffScrubc2r.vbs"
+    $03VBS = "OffScrub03.vbs"
+    $07VBS = "OffScrub07.vbs"
+    $10VBS = "OffScrub10.vbs"
+    $15MSIVBS = "OffScrub_O15msi.vbs"
+    $16MSIVBS = "OffScrub_O16msi.vbs"
+
+
 
     $versionTest = Get-OfficeVersion
     $c2r = $versionTest.ClicktoRun
@@ -341,10 +356,13 @@ $scriptPath
         }
 
         $time = Get-Date -Format g
+        
         Write-Host ""
-        Write-Host ""$time": Removing Office products..."
+        
+        
+        Write-Host $time": Removing Office products..."
 
-        wscript $ActionFile
+        wscript $ActionFile $LogFile
 
         Do{
             Start-Sleep -Seconds 5
@@ -356,7 +374,9 @@ $scriptPath
             Stop-Process -Name cmd -ErrorAction Ignore
             
             $time = Get-Date -Format g
+            Out-File -FilePath $LogFile -InputObject "" -Append
             Write-Host ""
+            Out-File -FilePath $LogFile -InputObject $time": Searching for remaining registry keys..." -Append
             Write-Host ""$time": Searching for remaining registry keys..."
 
             $Hives = Get-ChildItem Microsoft.PowerShell.Core\Registry::
@@ -366,24 +386,27 @@ $scriptPath
             }
             foreach($Item in $OfficeRegistries){
                 $time = Get-Date -Format g
+                Out-File -FilePath $LogFile -InputObject "" -Append
+                Out-File -FilePath $LogFile -InputObject $time": Removing Office products..." -Append
+                Out-File -FilePath $LogFile -InputObject "" -Append
                 Write-Host ""
+
                 Write-Host ""$time": Removing registry key $Item"
+                Out-File -FilePath $LogFile -InputObject $time": Removing registry key "$Item -Append
                 Remove-Item $Item.PSPath -Recurse -Force -ErrorAction SilentlyContinue
             }
 
             $time = Get-Date -Format g
             Write-Host ""
+            Out-File -FilePath $LogFile -InputObject "" -Append
             Write-Host ""$time": All Office products have been removed."
+            Out-File -FilePath $LogFile -InputObject $time": All Office products have been removed." -Append
         }
 
+            Write-Host ""
+            Out-File -FilePath $LogFile -InputObject "" -Append
+            Write-Host ""$time": Total Time for UnInstall: $($uninstallTime.Elapsed.ToString())"
+            Out-File -FilePath $LogFile -InputObject $time"Total Time for UnInstall: "$($uninstallTime.Elapsed.ToString()) -Append
         #.\Nuke-OfficeRegistry.ps1
 
-}
-
-function GetScriptPath() {
-   if ($PSScriptRoot) {
-     return $PSScriptRoot
-   } else {
-     return ".\"
-   }
 }
