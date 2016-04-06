@@ -11,9 +11,10 @@
     <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.components.min.css">
 
 </head>
-<body>
+<body style="overflow: hidden;">
+
     <div class="ms-Grid ms-bgColor-themePrimary banner">
-        <div class="ms-Grid-row">
+        <div id="topBar" class="ms-Grid-row">
             <div class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-lg12 ms-u-xl12">
                 <img class="ms-fontColor-white companyLogo " />
                 <span class="ms-font-xl ms-fontColor-white companyName">
@@ -45,7 +46,7 @@
                 <i class="ms-Icon ms-Icon--x" onclick="toggleBanner()"></i>
             </div>
         </div>
-    </div> 
+    </div>
 
     <div id="mini-banner" class="custom-mini-banner hidden">
         <div class="ms-Grid">
@@ -58,12 +59,11 @@
                 </div>
             </div>
         </div>
-
     </div>
 
-    <div id="productModal" class="custom-Dialog" tabindex="1">
-        <div class="ms-Grid custom-Dialog-main">
-            <div class="ms-Grid-row">
+    <div id="productModal" class="custom-Dialog" tabindex="1" style="width: 100%;">
+        <div id="productContainer" class="ms-Grid custom-Dialog-main" style="width: 98%;">
+            <div id="searchBar" class="ms-Grid-row">
                 <div class="ms-Grid-col ms-u-sm12">
                     <div class="ms-Grid -header custom-header">
                         <div class="ms-Grid-row">
@@ -95,10 +95,10 @@
                 </div>
             </div>
 
-            <div class="ms-Grid -inner custom-Dialog-inner">
-                <div class="ms-Grid-row"> 
+            <div id="productList" class="ms-Grid-inner custom-Dialog-inner" style="overflow-y: auto; overflow-x: auto; width: 100%;">
+                <div class="ms-Grid-row">
                     <div class="ms-Grid-col ms-u-sm12">
-                        
+
                     </div>
                 </div>
 
@@ -106,16 +106,15 @@
                     @*BUILDS GO HERE*@
                 </div>
 
-                <div id="buildsTable" class="ms-Table" style="font-weight:bold;width:90%">
+                <div id="buildsTable" class="ms-Table" style="font-weight: bold; width: 90%">
                     @*BUILDS GO HERE*@
                 </div>
             </div>
         </div>
     </div>
 
-
-    <div id="primaryLanguageModal" class=" custom-Dialog hidden" tabindex="1">
-        <div class=" custom-Dialog-main">
+    <div id="primaryLanguageModal" class="custom-Dialog hidden" tabindex="1">
+        <div class="custom-Dialog-main">
             <button class="-button custom-back-button" onclick="showModal('productModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/Custom-Back-Arrow.png" />
                 <span class="ms-font-l ms-fontWeight-regular">Back</span>
@@ -139,8 +138,8 @@
         </div>
     </div>
 
-    <div id="languageModal" class=" custom-Dialog hidden" tabindex="1">
-        <div class=" custom-Dialog-main">
+    <div id="languageModal" class="custom-Dialog hidden" tabindex="1">
+        <div class="custom-Dialog-main">
             <button class="-button custom-back-button" onclick="showModal('primaryLanguageModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/Custom-Back-Arrow.png" />
                 <span class="ms-font-l ms-fontWeight-regular">Back</span>
@@ -166,9 +165,9 @@
         </div>
     </div>
 
-    <div id="confirmationModal" class=" custom-Dialog hidden" tabindex="1">
+    <div id="confirmationModal" class="custom-Dialog hidden" tabindex="1">
 
-        <div class=" custom-Dialog-main">
+        <div class="custom-Dialog-main">
             <button class="-button custom-back-button" onclick="showModal('languageModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/Custom-Back-Arrow.png" />
                 <span class="ms-font-l ms-fontWeight-regular">Back</span>
@@ -193,47 +192,47 @@
                         </div>
                     </div>
                 </div>
-                        <div class="ms-Grid-row">
-                            <div class="ms-Grid-col ms-u-sm8 ms-u-smPush1 ms-u-md8 ms-u-mdPush3 ms-u-lg10  ms-u-lgPush2 ms-u-xl8 ms-u-xlPush4">
-                                <p class="ms-font-m-plus">Here's what you are about to download. If this is correct please click the  <b>Install</b> button to proceed downloading</p>
+                <div class="ms-Grid-row">
+                    <div class="ms-Grid-col ms-u-sm8 ms-u-smPush1 ms-u-md8 ms-u-mdPush3 ms-u-lg10  ms-u-lgPush2 ms-u-xl8 ms-u-xlPush4">
+                        <p class="ms-font-m-plus">
+                            Here's what you are about to download. If this is correct please click the <b>Install</b> button to proceed downloading
+                        </p>
+                    </div>
+                </div>
+                <div class="ms-Grid-row">
+                    <div class="ms-Grid-col ms-u-sm12 ms-u-smPush0 ms-u-md12 ms-u-mdPush1 ms-u-lg12 ms-u-lgPush1 ms-u-xl10 ms-u-xlPush2">
+                        <div class="confirmation-information">
+                            <div class="ms-Grid-row">
+                                <div class="ms-Grid-col ms-u-sm3 ms-u-smPush1 ms-u-md2 ms-u-mdPush1 ms-u-xl2confirmationField">
+                                    <p class="ms-font-l">Office Version:</p>
+                                </div>
+                                <div class="ms-Grid-col ms-u-sm4 ms-u-smPush1  ms-u-md3 ms-u-mdPush2 ms-u-xl2 ms-u-xlPush1 confirmationField">
+                                    <p id="versionSpan" class="ms-font-l"></p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="ms-Grid-row">
-                            <div class="ms-Grid-col ms-u-sm12 ms-u-smPush0 ms-u-md12 ms-u-mdPush1 ms-u-lg12 ms-u-lgPush1 ms-u-xl10 ms-u-xlPush2">
-                                <div class="confirmation-information">
-                                    <div class="ms-Grid-row">
-                                        <div class="ms-Grid-col ms-u-sm3 ms-u-smPush1 ms-u-md2 ms-u-mdPush1 ms-u-xl2confirmationField">
-                                            <p class="ms-font-l">Office Version:</p>
-                                        </div>
-                                        <div class="ms-Grid-col ms-u-sm4 ms-u-smPush1  ms-u-md3 ms-u-mdPush2 ms-u-xl2 ms-u-xlPush1 confirmationField">
-                                            <p id="versionSpan" class="ms-font-l"></p>
-                                        </div>
-                                    </div>
-                                    <div class="ms-Grid-row">
-                                        <div class="ms-Grid-col  ms-u-sm3 ms-u-smPush1  ms-u-md2 ms-u-mdPush1 confirmationField">
-                                            <p class="ms-font-l">Product Package:</p>
-                                        </div>
-                                        <div class="ms-Grid-col ms-u-sm4 ms-u-smPush2  ms-u-md3 ms-u-mdPush2 ms-u-xl2 ms-u-xlPush1 confirmationField">
-                                            <p id="productSpan" class="ms-font-l"></p>
-                                        </div>
-                                    </div>
-                                    <div class="ms-Grid-row">
-                                        <div class="ms-Grid-col  ms-u-sm3 ms-u-smPush1 ms-u-md2 ms-u-mdPush1 confirmationField">
-                                            <p class="ms-font-l">Languages:</p>
-                                        </div>
-                                        <div class="ms-Grid-col  ms-u-sm6 ms-u-smPush3 ms-u-md7 ms-u-mdPush2 ms-u-lg8 ms-u-lgPush1 ms-u-xl8 ms-u-xlPush1">
-                                            <p id="languageSpan" class="ms-font-l">
+                            <div class="ms-Grid-row">
+                                <div class="ms-Grid-col  ms-u-sm3 ms-u-smPush1  ms-u-md2 ms-u-mdPush1 confirmationField">
+                                    <p class="ms-font-l">Product Package:</p>
+                                </div>
+                                <div class="ms-Grid-col ms-u-sm4 ms-u-smPush2  ms-u-md3 ms-u-mdPush2 ms-u-xl2 ms-u-xlPush1 confirmationField">
+                                    <p id="productSpan" class="ms-font-l"></p>
+                                </div>
+                            </div>
+                            <div class="ms-Grid-row">
+                                <div class="ms-Grid-col  ms-u-sm3 ms-u-smPush1 ms-u-md2 ms-u-mdPush1 confirmationField">
+                                    <p class="ms-font-l">Languages:</p>
+                                </div>
+                                <div class="ms-Grid-col  ms-u-sm6 ms-u-smPush3 ms-u-md7 ms-u-mdPush2 ms-u-lg8 ms-u-lgPush1 ms-u-xl8 ms-u-xlPush1">
+                                    <p id="languageSpan" class="ms-font-l">
 
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class=" -actions confirmationActions">
-                                        <div>
-                                            <button id="installOffice"class="-action ms-Button ms-Button--primary" onclick="generateXML()">
-                                                <span class="ms-Button-label">Install</span>
-                                            </button>
-                                        </div>
-                                    </div>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="-actions confirmationActions">
+                                <div>
+                                    <button id="installOffice" class="-action ms-Button ms-Button--primary" onclick="generateXML()">
+                                        <span class="ms-Button-label">Install</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -243,9 +242,9 @@
         </div>
     </div>
 
-    <div id="downloadModal" class=" custom-Dialog hidden" tabindex="1">
+    <div id="downloadModal" class="custom-Dialog hidden" tabindex="1">
 
-        <div class=" custom-Dialog-main">
+        <div class="custom-Dialog-main">
             <button class="-button custom-back-button" onclick="showModal('confirmationModal')">
                 <img class="ms-Icon ms-Icon--x" src="~/Content/imgs/Custom-Back-Arrow.png" />
                 <span class="ms-font-l ms-fontWeight-regular">Back</span>
@@ -255,17 +254,17 @@
                 <hr />
             </div>
             <div class="-inner custom-Dialog-inner">
-                <p class="ms-font-l">If your download doesn't start after 10 seconds please download Office <a id="directDL"  ></a> .</p>
+                <p class="ms-font-l">
+                    If your download doesn't start after 10 seconds please download Office <a id="directDL"></a> .
+                </p>
             </div>
         </div>
     </div>
 
-    <div id="helpModal" class=" custom-Dialog hidden" tabindex="1">
+    <div id="helpModal" class="custom-Dialog hidden" tabindex="1">
 
         @Html.Partial("~/Views/SHared/_help.cshtml")
     </div>
-
-  
 
     <script type="text/javascript" src="./Scripts/vkbeautify.0.99.00.beta.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
@@ -274,6 +273,4 @@
 
 </body>
 </html>
-
-
 

@@ -93,6 +93,7 @@ var xmlConfigPath, exePath, setupPath, manifestPath;
 var appliedFilters = [];
 var previousSearch = "";
 
+
 function setProduct(product, build) {
     buildID = build;
     getPrimaryLanguages();
@@ -297,7 +298,6 @@ function getBuild() {
                             <span class='ms-Table-cell custom-cell'><i class='ms-Icon ms-Icon--tag custom-table-tag'></i>"+ textString + "</span>\
                             <span class='ms-Table-cell custom-cell custom-last-cell' onclick='setProduct(\"2016\",\""+ $(this).attr('ID') + "\")'><i class='ms-Icon ms-Icon--download custom-table-tag' ></i><a class='ms-link'>Install</a></span>\
                         </div>");
-
                     }
                     else {
                         if (Array.isArray(filters)) {
@@ -356,6 +356,8 @@ function getBuild() {
                                                     </div>\
                                                 </div> \
                                             </div>");
+
+
                     }
                 });
             }
@@ -492,7 +494,7 @@ function searchBoxFilter() {
         removeFilter("search");
         if (searchTerm) {
 
-            $(".package-main p").each(function() {
+            $(".package-main p").each(function () {
                 var parent = $(this).parent().parent().parent();
                 if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0 &&
                     $(parent).attr('class').indexOf('hidden') >= 0) {
@@ -501,7 +503,7 @@ function searchBoxFilter() {
                 }
             });
 
-            $(".type-label").each(function() {
+            $(".type-label").each(function () {
                 var parent = $(this).parent().parent().parent().parent().parent().parent();
                 if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0 &&
                     $(parent).attr('class').indexOf('hidden') < 0) {
@@ -511,7 +513,7 @@ function searchBoxFilter() {
                 }
             });
 
-            $(".tags-list li").each(function() {
+            $(".tags-list li").each(function () {
                 var parent = $(this).parent().parent().parent().parent().parent().parent();
                 if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0 &&
                     $(parent).attr('class').indexOf('hidden') < 0) {
@@ -521,7 +523,7 @@ function searchBoxFilter() {
                 }
             });
 
-            $(".location-label").each(function() {
+            $(".location-label").each(function () {
                 var parent = $(this).parent().parent().parent().parent().parent().parent();
                 if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0 &&
                     $(parent).attr('class').indexOf('hidden') < 0) {
@@ -536,12 +538,12 @@ function searchBoxFilter() {
 
         } else if (searchTerm === "" && $('.taggle_list').children('.taggle').length > 0) {
 
-            $('.taggle_list').children('.taggle').each(function() {
+            $('.taggle_list').children('.taggle').each(function () {
 
                 var tagTerm = $(this).children('input')[0].value;
 
 
-                $(".package-main p").each(function() {
+                $(".package-main p").each(function () {
                     var parent = $(this).parent().parent().parent();
 
                     if ($(this).text().toLocaleLowerCase().indexOf(tagTerm) >= 0) {
@@ -550,7 +552,7 @@ function searchBoxFilter() {
                     }
                 });
 
-                $(".type-label").each(function() {
+                $(".type-label").each(function () {
                     var parent = $(this).parent().parent().parent().parent().parent().parent();
 
                     if ($(this).text().toLocaleLowerCase().indexOf(tagTerm) >= 0) {
@@ -560,7 +562,7 @@ function searchBoxFilter() {
                     }
                 });
 
-                $(".tags-list li").each(function() {
+                $(".tags-list li").each(function () {
                     var parent = $(this).parent().parent().parent().parent().parent().parent();
 
                     if ($(this).text().toLocaleLowerCase().indexOf(tagTerm) >= 0) {
@@ -570,7 +572,7 @@ function searchBoxFilter() {
                     }
                 });
 
-                $(".location-label").each(function() {
+                $(".location-label").each(function () {
                     var parent = $(this).parent().parent().parent().parent().parent().parent();
 
                     if ($(this).text().toLocaleLowerCase().indexOf(tagTerm) >= 0) {
@@ -582,7 +584,7 @@ function searchBoxFilter() {
 
             });
 
-            $('#ul-Location').children('li').each(function() {
+            $('#ul-Location').children('li').each(function () {
                 if ($(this).attr('class').indexOf('is-selected') >= 0) {
                     $(this).click();
                 }
@@ -593,9 +595,9 @@ function searchBoxFilter() {
         } else {
             $(".package-main p").each(function () {
                 var parent = $(this).parent().parent().parent();
-                    $(parent).removeClass('search-filter');
-                    $(parent).removeClass('hidden');
-                
+                $(parent).removeClass('search-filter');
+                $(parent).removeClass('hidden');
+
             });
 
             $(".type-label").each(function () {
@@ -632,7 +634,7 @@ function searchBoxFilter() {
         removeFilter("search");
         if (searchTerm) {
 
-            $(".custom-table-row span").each(function() {
+            $(".custom-table-row span").each(function () {
                 if ($(this).text().toLocaleLowerCase().indexOf(searchTerm) >= 0 &&
                     $(this).parent().attr('class').indexOf('hidden') < 0) {
                     $(this).parent().addClass('search-filter');
@@ -649,7 +651,7 @@ function searchBoxFilter() {
         });
 
 
-    
+
     }
 
     applyFilters();
@@ -792,6 +794,8 @@ function focusDialog() {
 function toggleBanner() {
     $('#banner').toggleClass('hidden');
     $('#mini-banner').toggleClass('hidden');
+
+    resizeWindow();
 }
 
 function closeDialog() {
@@ -800,6 +804,30 @@ function closeDialog() {
 
 function directDL() {
     window.location.href = xmlConfigPath;
+}
+
+function resizeWindow() {
+    var topBarHeight = $("#topBar");
+    var banner = $("#banner");
+    var miniBanner = $("#mini-banner");
+    var searchBar = $("searchBar");
+
+    var prodModelHeight = 0;
+    var buildListHeight = 0;
+
+    if (miniBanner.is(':visible')) {
+        prodModelHeight = $(document).height() - topBarHeight.height() - miniBanner.height();
+        buildListHeight = $(document).height() - topBarHeight.height() - searchBar.height() - miniBanner.height() - 80;
+    } else {
+        prodModelHeight = $(document).height() - topBarHeight.height() - banner.height();
+        buildListHeight = $(document).height() - topBarHeight.height() - searchBar.height() - banner.height() - 80;
+    }
+
+    var pageWidth = $(document).height();
+
+    $("#productModal").height(prodModelHeight);
+    $("#productList").height(buildListHeight);
+    //$("#productContainer").width(pageWidth);
 }
 
 $(document).ready(function () {
@@ -813,15 +841,12 @@ $(document).ready(function () {
 
     //searchbox filter
     $("#outerSearchBox").keyup(function (e) {
-
-
         if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode == 8) {
             searchBoxFilter(e);
-
         }
     });
 
-
-
     prepTags();
+
+    resizeWindow();
 });
