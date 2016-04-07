@@ -797,6 +797,7 @@ function toggleBanner() {
     $('#mini-banner').toggleClass('hidden');
 
     resizeWindow();
+
 }
 
 function closeDialog() {
@@ -815,23 +816,34 @@ function resizeWindow() {
 
     var prodModelHeight = 0;
     var buildListHeight = 0;
+    var winHeight = $(window).height();
+    var winWidth = $(window).width();
 
     if (miniBanner.is(':visible')) {
-        prodModelHeight = $(document).height() - topBarHeight.height() - miniBanner.height();
-        buildListHeight = $(document).height() - topBarHeight.height() - searchBar.height() - miniBanner.height() - 80;
+        prodModelHeight = winHeight - topBarHeight.height() - miniBanner.height();
+        buildListHeight = winHeight - topBarHeight.height() - searchBar.height() - miniBanner.height() - 80;
     } else {
-        prodModelHeight = $(document).height() - topBarHeight.height() - banner.height();
-        buildListHeight = $(document).height() - topBarHeight.height() - searchBar.height() - banner.height() - 80;
+        prodModelHeight = winHeight - topBarHeight.height() - banner.height();
+        buildListHeight = winHeight - topBarHeight.height() - searchBar.height() - banner.height() - 80;
     }
-
-    var pageWidth = $(document).height();
 
     $("#productModal").height(prodModelHeight);
     $("#productList").height(buildListHeight);
-    //$("#productContainer").width(pageWidth);
+    //$("#productContainer").width(winWidth - 50);
 }
 
+$(document).resize(function() {
+    resizeWindow();
+});
+
 $(document).ready(function () {
+
+    $("#btAbout").mouseover(function () {
+        $(this).animate({ backgroundColor: "#005a9e" }, 'slow');
+    });
+    $("#btAbout").mouseout(function () {
+        $(this).animate({ backgroundColor: "#0078d7" }, 'slow');
+    });
 
     setVersion('2016');
     getCompanyInfo();

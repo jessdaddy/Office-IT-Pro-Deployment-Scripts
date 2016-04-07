@@ -72,7 +72,6 @@ C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deploy
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\obj\Debug\SelfService.dll
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\obj\Debug\SelfService.pdb
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\bin\SelfServiceConfig.xml
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\bin\bin\Debug\bin\ODT_Launcher.exe
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\bin\ODT_Launcher.exe
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\bin\SelfService.dll.config
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\bin\SelfService.dll

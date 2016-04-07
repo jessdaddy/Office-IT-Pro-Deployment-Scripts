@@ -1,24 +1,16 @@
 ﻿<SelfServiceSite>
-  <Company LogoSrc="" Name="The Company"/>
+  <Company LogoSrc="" Name="Contoao"/>
   <Help>
     <Item>
       <Question>The Download For Office 365 Won't Start.</Question>
       <Answer>
-        If you get to the end of the setup configuration and after 10 seconds your download refuses to start, please try downloading the files directly from https://support.office.com/en-us/article/Download-and-install-Office-using-Office-365-for-business-on-your-PC-72977511-dfd1-4d8b-856f-405cfb76839c here.
+        Please contact your administrator to get assistance with installing Office 365 ProPlus
       </Answer>
     </Item>
     <Item>
       <Question>I Don't See My Specific Build.</Question>
       <Answer>
         Please contact your administrator and let them know that the build you were expecting isn't provided.
-      </Answer>
-    </Item>
-    <Item>
-      <Question>
-        An Error Occurs During The Office 365 Installation Process
-      </Question>
-      <Answer>
-        If you were able to download the installation files and encounter an error while installing please go to https://support.office.com/en-us/article/Troubleshoot-installing-Office-and-Office-365-35ff2def-e0b2-4dac-9784-4cf212c1f6c2 for basic troubleshooting information.
       </Answer>
     </Item>
   </Help>

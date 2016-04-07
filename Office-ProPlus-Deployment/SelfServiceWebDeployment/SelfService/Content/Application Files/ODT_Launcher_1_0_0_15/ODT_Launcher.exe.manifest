@@ -42,7 +42,7 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ODT_Launcher.exe" size="24064">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ODT_Launcher.exe" size="24576">
       <assemblyIdentity name="ODT_Launcher" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
@@ -53,6 +53,6 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="Content\setup.exe" size="425472" />
+  <file name="setup.exe" size="425472" />
   <file name="ODT_Launcher.exe.config" size="187" />
 </asmv1:assembly>

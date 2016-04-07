@@ -1,4 +1,3 @@
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\bin\Debug\bin\ODT_Launcher.exe
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\ODT_Launcher.exe
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\ODT_Launcher.exe.config
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\ODT_Launcher.exe.manifest

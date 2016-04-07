@@ -85,7 +85,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="bin\Debug\bin\ODT_Launcher.exe.config" />
     <None Include="Content\ODT_Launcher.application" />
     <None Include="ODT_Launcher.exe.config" />
     <None Include="ODT_Launcher_1_TemporaryKey.pfx" />
@@ -94,17 +93,11 @@
     <None Include="ODT_Launcher_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\Debug\bin\Debug\ODT_Launcher.exe" />
-    <Content Include="bin\Debug\bin\ODT_Launcher.exe">
-      <CustomToolNamespace>SelfService</CustomToolNamespace>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Content\setup.exe" />
     <Content Include="ODT_Launcher.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <CustomToolNamespace>SelfService</CustomToolNamespace>
     </Content>
-    <Content Include="bin\Debug\ODT_Launcher.pdb" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -130,36 +123,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PublishFile Include="bin\Debug\bin\Debug\ODT_Launcher.exe">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>File</FileType>
-    </PublishFile>
-    <PublishFile Include="bin\Debug\bin\ODT_Launcher.exe">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>File</FileType>
-    </PublishFile>
-    <PublishFile Include="bin\Debug\ODT_Launcher.pdb">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Exclude</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>File</FileType>
-    </PublishFile>
     <PublishFile Include="Content\setup.exe">
       <Visible>False</Visible>
       <Group>

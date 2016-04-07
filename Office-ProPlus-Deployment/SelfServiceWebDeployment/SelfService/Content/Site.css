@@ -6,6 +6,11 @@
     width: 100%;
 }
 
+#btAbout {
+    margin-right: 3px;
+    width: 50px;
+}
+
 .checkboxLabel {
     display: inline;
     padding-left: 10px;
@@ -27,8 +32,6 @@
     margin-right: auto;
     margin-top: 2%;
 }
-
-
 
 .custom-back-button {
     display: block;
@@ -134,16 +137,14 @@ input[type=checkbox],input[type=radio] {
 .helpButton {
     /*margin-left:70%;*/
     float:right;
-    border-left: 1px solid white;
-    border-right: 1px solid white;
-    padding: 15px 10px 15px 10px;
-    margin-right:-10px;
+    border-left: 1px solid #4c9cd6;
+    border-right: 1px solid #4c9cd6;
+    padding: 15px 10px 15px 14px;
+    
     cursor:pointer;
 }
 
-.helpButton:hover {
-    background-color: #005a9e;
-}
+
 
 .banner {
     width: 100%;
@@ -158,7 +159,7 @@ input[type=checkbox],input[type=radio] {
     float:left;
     vertical-align: bottom;
     padding-left:10px;
-    border-left: 1px solid white;
+    border-left: 1px solid #4c9cd6;
     margin-top:10px;
     margin-bottom:10px;
 }
@@ -168,6 +169,7 @@ input[type=checkbox],input[type=radio] {
     padding-right:10px;
     margin-top:10px;
     margin-bottom:10px;
+    font-weight: bold;
 }
 
 .custom-SearchBox {

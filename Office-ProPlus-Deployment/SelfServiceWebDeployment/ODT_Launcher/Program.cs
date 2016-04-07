@@ -22,11 +22,9 @@ namespace ODT_Launcher
     { 
         
         private XmlDocument _xmlDoc = null;
-
         public string xmlServerPath { get; set; }
         public string setupServerPath { get; set; }
-
-
+        
         public static void Main(string[] args)
         {
             try
@@ -44,39 +42,9 @@ namespace ODT_Launcher
             }
         }
 
-
-
-        private void fileDownloader(string filePath, string fileName)
-        {
-            string userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            string downloadPath = Path.Combine(userPath, userPath + @"\AppData\Local\Temp\OfficeProPlus\" + fileName);
-
-            using (var client = new WebClient())
-            {
-                client.DownloadFile(filePath, downloadPath);
-            }
-        }
-
-
-        private List<string> getQueryStringParams()
-        {
-            var queryString = new List<string>();
-
-            if (ApplicationDeployment.IsNetworkDeployed)
-            {
-               queryString = ApplicationDeployment.CurrentDeployment.ActivationUri.ToString().Split('=').ToList();
-                Console.WriteLine(queryString[1]);
-            }
-
-            return (queryString);
-        }
-
-
         public void RunProgram()
         {
-
             var queryString = getQueryStringParams();
-
             try
             {
                 xmlServerPath = queryString[1].Replace("%2F", "/").Replace("%3A", ":").Split('&')[0];
@@ -91,7 +59,7 @@ namespace ODT_Launcher
                 var frame = st.GetFrame(0);
 
                 var line = frame.GetFileLineNumber();
-                Console.WriteLine(e.Message + e.StackTrace + " "+line);
+                Console.WriteLine(e.Message + e.StackTrace + " " + line);
             }
 
             var fileNames = new List<string>();
@@ -114,7 +82,7 @@ namespace ODT_Launcher
                         return;
                     }
                 }
-                
+
                 var filesXml = GetTextFileContents("files.xml");
                 if (!string.IsNullOrEmpty(filesXml))
                 {
@@ -126,11 +94,11 @@ namespace ODT_Launcher
                 string xmlPath = xmlServerPath;
                 string setupPath = setupServerPath;
 
-                string xmlInstall = installDir + @"\"+"configuration.xml";
-                string setupInstall = installDir + @"\"+"officeSetup.exe";
+                string xmlInstall = installDir + @"\" + "configuration.xml";
+                string setupInstall = installDir + @"\" + "officeSetup.exe";
 
-                fileDownloader(xmlPath,"configuration.xml");
-                fileDownloader(setupPath,"officeSetup.exe");
+                fileDownloader(xmlPath, "configuration.xml");
+                fileDownloader(setupPath, "officeSetup.exe");
 
                 Console.WriteLine("Done");
 
@@ -195,6 +163,32 @@ namespace ODT_Launcher
             {
                 CleanUp(installDir);
             }
+            Console.WriteLine("Done");
+            Console.ReadLine();
+        }
+
+        private void fileDownloader(string filePath, string fileName)
+        {
+            string userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string downloadPath = Path.Combine(userPath, userPath + @"\AppData\Local\Temp\OfficeProPlus\" + fileName);
+
+            using (var client = new WebClient())
+            {
+                client.DownloadFile(filePath, downloadPath);
+            }
+        }
+        
+        private List<string> getQueryStringParams()
+        {
+            var queryString = new List<string>();
+
+            if (ApplicationDeployment.IsNetworkDeployed)
+            {
+               queryString = ApplicationDeployment.CurrentDeployment.ActivationUri.ToString().Split('=').ToList();
+                Console.WriteLine(queryString[1]);
+            }
+
+            return (queryString);
         }
 
         private void ShowHelp()
