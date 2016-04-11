@@ -150,7 +150,7 @@ Process
 
         if ($InstallType -eq "ScriptInstall") {
             $SavedProgramName = "ScriptInstall"
-            $CommandLine = "powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1"
+            $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1"
         } else {
             $SavedProgramName = "SetupInstall"
             $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
