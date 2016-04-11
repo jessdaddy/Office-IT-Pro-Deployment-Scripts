@@ -785,7 +785,14 @@ function isTileView() {
 }
 
 function focusDialog() {
+    var winHeight = $(window).height();
+
+    $("#productModal").height(winHeight);
+    $("#productList").height(winHeight - 80);
+
     $('html,body').animate({
+
+
 
         scrollTop: $('.custom-mini-banner').offset().top + 500
     }, 500);
@@ -797,7 +804,6 @@ function toggleBanner() {
     $('#mini-banner').toggleClass('hidden');
 
     resizeWindow();
-
 }
 
 function closeDialog() {

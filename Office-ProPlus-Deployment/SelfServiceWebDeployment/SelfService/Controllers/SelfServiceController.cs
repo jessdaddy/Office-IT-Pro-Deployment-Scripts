@@ -41,11 +41,9 @@ namespace SelfService.Controllers
         {
             return ConfigurationManager.AppSettings["Version"];
         }
-
-
+        
         //
         // GET: /SelfService/Details/5
-
         public ActionResult Details(int id)
         {
             return View();
@@ -53,7 +51,6 @@ namespace SelfService.Controllers
 
         //
         // GET: /SelfService/Create
-
         public ActionResult Create()
         {
             return View();
@@ -61,7 +58,6 @@ namespace SelfService.Controllers
 
         //
         // POST: /SelfService/Create
-
         [HttpPost]
         public ActionResult Create(FormCollection collection)
         {
@@ -79,7 +75,6 @@ namespace SelfService.Controllers
 
         //
         // GET: /SelfService/Edit/5
-
         public ActionResult Edit(int id)
         {
             return View();
@@ -87,7 +82,6 @@ namespace SelfService.Controllers
 
         //
         // POST: /SelfService/Edit/5
-
         [HttpPost]
         public ActionResult Edit(int id, FormCollection collection)
         {
@@ -105,7 +99,6 @@ namespace SelfService.Controllers
 
         //
         // GET: /SelfService/Delete/5
-
         public ActionResult Delete(int id)
         {
             return View();
@@ -113,7 +106,6 @@ namespace SelfService.Controllers
 
         //
         // POST: /SelfService/Delete/5
-
         [HttpPost]
         public ActionResult Delete(int id, FormCollection collection)
         {
@@ -128,24 +120,23 @@ namespace SelfService.Controllers
                 return View();
             }
         }
+        
+        private static void AddLanguages(XDocument doc, IEnumerable<string> languageList){
 
-
-        private void addLanguages(XDocument doc, List<string> languageList){
-
-            foreach (string language in languageList)
+            foreach (var language in languageList)
             {
-                doc.Root.Element("Add").Element("Product").Add(
+                doc?.Root?.Element("Add")?.Element("Product")?.Add(
                     new XElement("Language",
                         new XAttribute("ID", language)));
             } 
         }
 
-        private void createQueryString(string xmlPath, string setupPath)
+        private void CreateQueryString(string xmlPath, string setupPath)
         {
-            var baseURL = Request.Url.GetLeftPart(UriPartial.Authority);
-            var builder = new UriBuilder(baseURL); 
+            var baseUrl = Request.Url?.GetLeftPart(UriPartial.Authority);
+            if (baseUrl == null) return;
+            var builder = new UriBuilder(baseUrl); 
           
-
             var query = HttpUtility.ParseQueryString(string.Empty);
             query["xmlPath"] = xmlPath;
             query["setupPath"] = setupPath;
@@ -153,45 +144,43 @@ namespace SelfService.Controllers
             builder.Query = query.ToString();
 
             Response.Redirect("index.cshtml?xml=" + xmlPath + "&installer=" + setupPath);
-
-
         }
 
-
-        public ActionResult generateXML(string buildName, List<string> languageList, string uiLanguage)
+        public ActionResult GenerateXml(string buildName, List<string> languageList, string uiLanguage)
         {
-            string result;
-
             try
             {            
-                string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                var oldXML = XDocument.Load(currentDirectory + "Content\\XML_Build_Files\\Base_Files\\" + buildName + ".xml");
-                XDocument newXML = new XDocument(oldXML);
+                var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                var buildXml = XDocument.Load(currentDirectory + "XmlFiles\\" + buildName + ".xml");
 
-                newXML.Root.Element("Add").Element("Product").Add(
-                  new XElement("Language",
-                      new XAttribute("ID", uiLanguage)));
+                var generatedXml = new XDocument(buildXml);
+                generatedXml.Root?.Element("Add")?.Element("Product")?.Add(
+                    new XElement("Language",
+                        new XAttribute("ID", uiLanguage)));
 
-
-                if(languageList.Count > 1)
+                if (languageList.Count > 1)
                 {
-                    addLanguages(newXML, languageList);
+                    AddLanguages(generatedXml, languageList);
                 }
 
-                string fileName = Guid.NewGuid().ToString() + ".xml";
-                string savePath = currentDirectory + "Content\\XML_Build_Files\\Generated_Files\\" + fileName;
-                newXML.Save(savePath);
+                var fileName = Guid.NewGuid().ToString() + ".xml";
+                var saveDir = currentDirectory + "Content\\Generated_Files";
+                var savePath = saveDir + @"\" + fileName;
 
-                string xmlPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/XML_Build_Files/Generated_Files/" + fileName ;
-                string exePath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath +  "/Content/ODT_Launcher.application";
-                string setupPath = Request.Url.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "Content/Office2016Setup.exe";
+                Directory.CreateDirectory(saveDir);
 
+                generatedXml.Save(savePath);
+
+                var xmlPath = Request.Url?.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "/Content/Generated_Files/" + fileName ;
+                var exePath = Request.Url?.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "/App/SelfServiceInstaller.application";
+                var setupPath = Request.Url?.GetLeftPart(UriPartial.Authority) + HttpRuntime.AppDomainAppVirtualPath + "/Content/Office2016Setup.exe";
 
                 return Json(new { xml = xmlPath, exe = exePath, setup = setupPath });
             }
             catch(Exception e)
             {
                 Response.StatusCode = 500;
+                string result;
                 if (e.Message.Contains("Could not find file"))
                 {
                     result = "Base configuration file does not exist for " + buildName;
