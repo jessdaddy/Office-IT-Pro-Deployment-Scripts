@@ -10,6 +10,22 @@ using System;
 "
 Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
 
+$enumDef = "
+using System;
+       [FlagsAttribute]
+       public enum OfficeBranch
+       {
+          FirstReleaseCurrent = 0,
+          Current = 1,
+          FirstReleaseBusiness = 2,
+          Business = 3,
+          CMValidation = 4
+       }
+"
+
+Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
+
+
 [string]$SavedPackageName = "Office ProPlus Deployment"
 [string]$SavedProgramName = "ScriptInstall"
 
@@ -50,6 +66,9 @@ Param
 	[String]$Collection,
 
 	[Parameter()]
+	[OfficeBranch]$Branch = $null,
+
+	[Parameter()]
 	[InstallType]$InstallType = "ScriptInstall",
 
 	[Parameter()]
@@ -83,9 +102,6 @@ Param
 	[String]$SCCMPSModulePath = $NULL,
 
 	[Parameter()]
-	[String]$Branch = $null,
-
-	[Parameter()]
 	[String]$Source = $null
 
 
@@ -115,6 +131,12 @@ Process
     }
 
     if ($Branch) {
+        $OfficeFolder = "$Path\Office"
+
+        if (Test-Path $OfficeFolder) {
+           Remove-Item $OfficeFolder -Recurse -Force
+        }
+
         $TempPath = $Source + "\" + $Branch + "\*"
         Copy-Item $TempPath $Path -Recurse
     }
@@ -645,4 +667,21 @@ Function Get-Site([string[]]$computerName = $env:COMPUTERNAME) {
     } else { 
         Return $SiteCode 
     } 
+}
+
+function DownloadBits() {
+    [CmdletBinding()]	
+    Param
+	(
+	    [Parameter()]
+	    [OfficeBranch]$Branch = $null
+	)
+
+    $DownloadScript = "$PSScriptRoot\Download-OfficeProPlusBranch.ps1"
+    if (Test-Path -Path $DownloadScript) {
+       
+
+
+
+    }
 }
