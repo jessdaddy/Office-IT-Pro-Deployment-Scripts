@@ -79,6 +79,9 @@ function Create-SCCMOfficeDeployment {
 	    [String]$OfficeFilesPath = $NULL,
 
         [Parameter()]
+        [String]$IncludeSourceFilesInPackage = $true,
+
+        [Parameter()]
 	    [bool]$MoveOfflineFiles = $false,
 
 		[Parameter()]
@@ -127,32 +130,34 @@ function Create-SCCMOfficeDeployment {
 
            [System.IO.Directory]::CreateDirectory($LocalPath) | Out-Null
                           
-           if ($OfficeFilesPath) {
-               $officeFileChannelPath = "$OfficeFilesPath\$ChannelShortName"
-               $officeFileTargetPath = "$LocalPath"
+           if ($IncludeSourceFilesInPackage) {
+               if ($OfficeFilesPath) {
+                   $officeFileChannelPath = "$OfficeFilesPath\$ChannelShortName"
+                   $officeFileTargetPath = "$LocalPath"
 
-               if (!(Test-Path -Path $officeFileChannelPath)) {
-                 throw "Channel Folder Missing: $officeFileChannelPath"
-               }
+                   if (!(Test-Path -Path $officeFileChannelPath)) {
+                     throw "Channel Folder Missing: $officeFileChannelPath"
+                   }
 
-               [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
+                   [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
 
-               if ($MoveOfflineFiles) {
-                 Move-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Force
+                   if ($MoveOfflineFiles) {
+                     Move-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Force
+                   } else {
+                     Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
+                   }
+
+                   $cabFilePath = "$OfficeFilesPath\ofl.cab"
+                   if (Test-Path $cabFilePath) {
+                      Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+                   }
                } else {
-                 Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
-               }
+                   Download-OfficeProPlusChannels -TargetDirectory $LocalPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
 
-               $cabFilePath = "$OfficeFilesPath\ofl.cab"
-               if (Test-Path $cabFilePath) {
-                  Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
-               }
-           } else {
-               Download-OfficeProPlusChannels -TargetDirectory $LocalPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
-
-               $cabFilePath = "$env:TEMP/ofl.cab"
-               if (!(Test-Path $cabFilePath)) {
-                 Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+                   $cabFilePath = "$env:TEMP/ofl.cab"
+                   if (!(Test-Path $cabFilePath)) {
+                     Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+                   }
                }
            }
 
@@ -168,7 +173,16 @@ function Create-SCCMOfficeDeployment {
               LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
               $package = CreateSCCMPackage -Name $packageName -Path $ChannelPath -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits
-              [string]$CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel.ps1 -Channel $Channel"
+
+              [string]$CommandLine = ""
+
+              if ($InstallType -eq "ScriptInstall") {
+                  $SavedProgramName = "ScriptInstall"
+                  $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1"
+              } else {
+                  $SavedProgramName = "SetupInstall"
+                  $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
+              }
 
               [string]$packageId = $package.PackageId
 
@@ -186,6 +200,185 @@ function Create-SCCMOfficeDeployment {
         Set-Location $startLocation    
     }
 }
+
+function Setup-SCCMOfficeDeploymentPackageOLD {
+<#
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
+
+.DESCRIPTION
+
+.PARAMETER path
+The UNC Path where the downloaded bits will be stored for installation to the target machines.
+
+.PARAMETER Source
+The UNC Path where the downloaded branch bits are stored. Required if source parameter is specified.
+
+.PARAMETER Branch
+
+The update branch to be used with the deployment. Current options are "Business, Current, FirstReleaseBusiness, FirstReleaseCurrent".
+
+.PARAMETER $SiteCode
+The 3 Letter Site ID.
+
+.PARAMETER SCCMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if SCCM is installed in a non standard path.
+
+.PARAMETER distributionPoint
+Sets which distribution points will be used, and distributes the package.
+
+.Example
+Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Office ProPlus Deployment" -ProgramName "Office2016Setup.exe" -distributionPoint SCCM-CM.CONTOSO.COM -source \\SCCM-CM\updates -branch Current
+#>
+
+[CmdletBinding(SupportsShouldProcess=$true)]
+Param
+(
+	[Parameter(Mandatory=$True)]
+	[String]$Collection,
+
+	[Parameter()]
+	[OfficeBranch]$Branch = $null,
+
+	[Parameter()]
+	[InstallType]$InstallType = "ScriptInstall",
+
+	[Parameter()]
+	[String]$ScriptName = "SCCM-OfficeDeploymentScript.ps1",
+
+	[Parameter()]
+	[String]$Path = $null,
+
+	[Parameter()]
+	[String]$SiteCode = $null,
+	
+	[Parameter()]
+	[String]$PackageName = $null,
+
+	[Parameter()]	
+	[Bool]$UpdateOnlyChangedBits = $false,
+
+	[Parameter()]
+	[String[]] $RequiredPlatformNames = @("All x86 Windows 7 Client", "All x86 Windows 8 Client", "All x86 Windows 8.1 Client", "All Windows 10 Professional/Enterprise and higher (32-bit) Client","All x64 Windows 7 Client", "All x64 Windows 8 Client", "All x64 Windows 8.1 Client", "All Windows 10 Professional/Enterprise and higher (64-bit) Client"),
+	
+	[Parameter()]
+	[string]$DistributionPoint,
+
+	[Parameter()]
+	[string]$DistributionPointGroupName,
+
+	[Parameter()]
+	[uint16]$DeploymentExpiryDurationInDays = 15,
+
+	[Parameter()]
+	[String]$SCCMPSModulePath = $NULL,
+
+	[Parameter()]
+	[String]$Source = $null
+
+
+)
+Begin
+{
+    $currentExecutionPolicy = Get-ExecutionPolicy
+	Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+    $startLocation = Get-Location
+}
+Process
+{
+    Write-Host
+    Write-Host 'Configuring System Center Configuration Manager to Deploy Office ProPlus' -BackgroundColor DarkBlue
+    Write-Host
+
+    if ($PackageName) {
+       $SavedPackageName = $PackageName
+    }
+
+    if ($ProgramName) {
+       $SavedProgramName = $ProgramName
+    }
+
+    if (!$Path) {
+         $Path = CreateOfficeUpdateShare
+    }
+
+    if ($Branch) {
+        $OfficeFolder = "$Path\Office"
+
+        if (Test-Path $OfficeFolder) {
+           Remove-Item $OfficeFolder -Recurse -Force
+        }
+
+        $TempPath = $Source + "\" + $Branch + "\*"
+        Copy-Item $TempPath $Path -Recurse
+    }
+
+    Set-Location $PSScriptRoot
+	Set-Location $startLocation
+    Set-Location $PSScriptRoot
+
+    Write-Host "Loading SCCM Module"
+    Write-Host ""
+
+    #HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SMS\Setup
+
+    $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
+    
+    if ($sccmModulePath) {
+        Import-Module $sccmModulePath
+
+        if (!$SiteCode) {
+           $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
+        }
+
+        $SourceDirectory = "$PSScriptRoot\DeploymentFiles"
+
+        if (Test-Path -Path $SourceDirectory) {
+           Copy-Item "$SourceDirectory\*.*" $Path
+        }
+        
+	    Set-Location "$SiteCode`:"	
+
+        $package = CreateSCCMPackage -Name $SavedPackageName -Path $path -UpdateOnlyChangedBits $UpdateOnlyChangedBits
+        [string]$CommandLine = ""
+
+        if ($InstallType -eq "ScriptInstall") {
+            $SavedProgramName = "ScriptInstall"
+            $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1"
+        } else {
+            $SavedProgramName = "SetupInstall"
+            $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
+        }
+
+        CreateSCCMProgram -Name $SavedProgramName -PackageName $SavedPackageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+
+        Write-Host "Starting Content Distribution"	
+
+        if ($DistributionPointGroupName) {
+	        Start-CMContentDistribution -PackageName $SavedPackageName -DistributionPointGroupName $DistributionPointGroupName
+        }
+
+        if ($DistributionPoint) {
+            Start-CMContentDistribution -PackageName $SavedPackageName -DistributionPointName $DistributionPoint
+        }
+
+        Write-Host 
+        Write-Host "NOTE: In order to deploy the package you must run the function 'Deploy-SCCMOfficeUpdates'." -BackgroundColor Red
+        Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor Red
+        Write-Host "      otherwise the deployments will fail. The clients will continue to fail until the " -BackgroundColor Red
+        Write-Host "      content distribution is complete." -BackgroundColor Red
+
+    } else {
+        throw [System.IO.FileNotFoundException] "Could Not find file ConfigurationManager.psd1"
+    }
+}
+End
+{
+    Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
+    Set-Location $startLocation    
+}
+}
+
 
 function Distribute-SCCMOfficeChannelPackages {
 <#
