@@ -26,8 +26,6 @@ using System;
 
 Add-Type -TypeDefinition $enumDef
 
-
-
 function Download-OfficeProPlusBranch {
 <#
 .SYNOPSIS
@@ -76,7 +74,7 @@ Param(
     [bool] $OverWrite = $false,
 
     [Parameter()]
-    [OfficeBranch[]] $Branches = (0, 1, 2, 3)#, 4)
+    [OfficeBranch[]] $Branches = (0, 1, 2, 3)
 )
 
 $numberOfFiles = (($Branches.Count) * ((($Languages.Count + 1)*3) + 5))
