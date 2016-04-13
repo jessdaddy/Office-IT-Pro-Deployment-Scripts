@@ -24,7 +24,6 @@ using System;
 
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
 
-[string]$ProgramName = "Change Channel"
 
 function Download-SCCMOfficeChannelFiles() {
     [CmdletBinding(SupportsShouldProcess=$true)]
@@ -68,7 +67,7 @@ function Download-SCCMOfficeChannelFiles() {
     }
 }
  
-function Create-SCCMOfficeDeployment {
+function Create-SCCMOfficePackages {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -78,8 +77,14 @@ function Create-SCCMOfficeDeployment {
         [Parameter()]
 	    [String]$OfficeFilesPath = $NULL,
 
+	    [Parameter()]
+	    [InstallType]$InstallType = "ScriptInstall",
+
+	    [Parameter()]
+	    [String]$ScriptName = "SCCM-OfficeDeploymentScript.ps1",
+
         [Parameter()]
-        [String]$IncludeSourceFilesInPackage = $true,
+        [bool]$IncludeSourceFilesInPackage = $true,
 
         [Parameter()]
 	    [bool]$MoveOfflineFiles = $false,
@@ -119,7 +124,7 @@ function Create-SCCMOfficeDeployment {
            $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $false
 
            $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
-           $versionExists = CheckIfVersionExists -Version $latestVersion -Channel $Channel
+           $existingPackage = CheckIfPackageExists -Channel $Channel
            $LargeDrv = Get-LargestDrive
 
            $Path = CreateOfficeChannelShare -Path "$LargeDrv\OfficeChannels"
@@ -169,27 +174,32 @@ function Create-SCCMOfficeDeployment {
               Copy-Item -Path $OSSourcePath  -Destination $OCScriptPath -Force
            }
 
-           if (!$versionExists) {
-              LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
-
-              $package = CreateSCCMPackage -Name $packageName -Path $ChannelPath -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits
-
-              [string]$CommandLine = ""
-
-              if ($InstallType -eq "ScriptInstall") {
-                  $SavedProgramName = "ScriptInstall"
-                  $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1"
-              } else {
-                  $SavedProgramName = "SetupInstall"
-                  $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
-              }
-
-              [string]$packageId = $package.PackageId
-
-              CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+           [string]$CommandLine = ""
+           if ($InstallType -eq "ScriptInstall") {
+              $SavedProgramName = "ScriptInstall"
+              $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1"
            } else {
-             Write-Host "Package with Version already exists: $latestVersion"
+              $SavedProgramName = "SetupInstall"
+              $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
            }
+
+           LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
+
+           [string]$packageId = $null
+           if (!($existingPackage)) {
+              $package = CreateSCCMPackage -Name $packageName -Path $ChannelPath -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits
+              $packageId = $package.PackageId
+           } else {
+             $packageId = $existingPackage.PackageId
+             Write-Host "`tPackage Already Exists: $packageName"
+           }
+
+           if ($packageId) {
+              CreateSCCMProgram -Name $SavedProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+           }
+
+           Write-Host
+
          }
        }
 
@@ -447,13 +457,13 @@ Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Of
                $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $ChannelName.ToString() }
                $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
                $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
-               $versionExists = CheckIfVersionExists -Version $latestVersion -Channel $ChannelName
+               $packageExists = CheckIfVersionExists -Version $latestVersion -Channel $ChannelName
 
                $packageName = "Office 365 ProPlus ($ChannelName)"
 
                LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
-               if ($versionExists) {
+               if ($packageExists) {
                     if ($DistributionPointGroupName) {
                         Write-Host "Starting Content Distribution for package: $packageName"
 	                    Start-CMContentDistribution -PackageName $packageName -DistributionPointGroupName $DistributionPointGroupName
@@ -537,12 +547,12 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
               $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $ChannelName.ToString() }
               $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
               $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
-              $versionExists = CheckIfVersionExists -Version $latestVersion -Channel $ChannelName
+              $packageExists = CheckIfVersionExists -Version $latestVersion -Channel $ChannelName
 
               LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
               $packageName = "Office 365 ProPlus ($ChannelName)"
-              if ($versionExists) {
+              if ($packageExists) {
 
                   $package = Get-CMPackage | Where { $_.Name -eq $packageName -and $_.Version -eq $latestVersion }
 
@@ -621,6 +631,35 @@ function CreateMainCabFiles() {
         }
     }
 }
+
+
+function CheckIfPackageExists() {
+    [CmdletBinding()]	
+    Param
+	(
+		[Parameter()]
+		[String]$Channel
+    )
+    Begin
+    {
+        $startLocation = Get-Location
+    }
+    Process {
+       LoadSCCMPrereqs
+
+       $VersionName = "$Channel - $Version"
+
+       $packageName = "Office 365 ProPlus ($Channel)"
+
+       $existingPackage = Get-CMPackage | Where { $_.Name -eq $packageName }
+       if ($existingPackage) {
+         return $existingPackage
+       }
+
+       return $null
+    }
+}
+
 
 function CheckIfVersionExists() {
     [CmdletBinding()]	
@@ -707,15 +746,13 @@ function CreateSCCMPackage() {
 		[Bool]$UpdateOnlyChangedBits = $true
 	) 
 
-    Write-Host "`tPackage: $Name"
-
-    $package = Get-CMPackage | Where { $_.Name -eq $Name -and $_.Version -eq $Version }
+    $package = Get-CMPackage | Where { $_.Name -eq $Name }
     if($package -eq $null -or !$package)
     {
-        Write-Host "`t`tCreating Package: $Name"
+        Write-Host "`tCreating Package: $Name"
         $package = New-CMPackage -Name $Name -Path $path -Version $Version
     } else {
-        Write-Host "`t`tAlready Exists"	
+        Write-Host "`t`tPackage Already Exists: $Name"        
     }
 		
     Write-Host "`t`tSetting Package Properties"
@@ -724,8 +761,6 @@ function CreateSCCMPackage() {
 
 	Set-CMPackage -Id $package.PackageId -Priority Normal -EnableBinaryDeltaReplication $UpdateOnlyChangedBits `
                   -CopyToPackageShareOnDistributionPoint $True -Version $Version 
-
-    Write-Host ""
 
     $package = Get-CMPackage | Where { $_.Name -eq $Name -and $_.Version -eq $Version }
     return $package
@@ -773,21 +808,17 @@ function CreateSCCMProgram() {
 
 	) 
 
-    $program = Get-CMProgram | Where { $_.PackageID -eq $PackageID -and $_.Name -eq $Name }
-
-    Write-Host "`tProgram: $Name"
+    $program = Get-CMProgram | Where { $_.PackageID -eq $PackageID -and $_.ProgramName -eq $Name }
 
     if($program -eq $null -or !$program)
     {
-        Write-Host "`t`tCreating Program..."	        
+        Write-Host "`t`tCreating Program: $Name ..."	        
 	    $program = New-CMProgram -PackageId $PackageID -StandardProgramName $Name -DriveMode RenameWithUnc `
                                  -CommandLine $CommandLine -ProgramRunType OnlyWhenUserIsLoggedOn `
                                  -RunMode RunWithAdministrativeRights -UserInteraction $true -RunType Normal
     } else {
-        Write-Host "`t`tAlready Exists"
+        Write-Host "`t`tProgram Already Exists: $Name"
     }
-
-    Write-Host ""
 }
 
 function CreateOfficeChannelShare() {
