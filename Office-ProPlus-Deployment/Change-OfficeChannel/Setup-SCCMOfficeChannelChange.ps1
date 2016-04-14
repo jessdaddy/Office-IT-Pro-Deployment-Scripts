@@ -82,16 +82,19 @@ function Create-SCCMOfficeChannelPackages {
 	    [bool]$MoveOfflineFiles = $false,
 
 		[Parameter()]
-		[String]$CustomPackageShareName = "OfficeFiles",
+		[String]$CustomPackageShareName = $null,
 
 	    [Parameter()]	
-	    [Bool]$UpdateOnlyChangedBits = $false,
+	    [Bool]$UpdateOnlyChangedBits = $true,
 
 	    [Parameter()]
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$SCCMPSModulePath = $NULL
+	    [String]$SCCMPSModulePath = $NULL,
+
+	    [Parameter()]
+	    [bool]$IncludeSourceFilesInPackage = $false
     )
     Begin
     {
@@ -148,11 +151,13 @@ function Create-SCCMOfficeChannelPackages {
                   Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
                }
            } else {
-               Download-OfficeProPlusChannels -TargetDirectory $LocalPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
+               if ($IncludeSourceFilesInPackage) {
+                   Download-OfficeProPlusChannels -TargetDirectory $LocalPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
 
-               $cabFilePath = "$env:TEMP/ofl.cab"
-               if (!(Test-Path $cabFilePath)) {
-                 Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+                   $cabFilePath = "$env:TEMP/ofl.cab"
+                   if (!(Test-Path $cabFilePath)) {
+                     Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+                   }
                }
            }
 
@@ -167,7 +172,7 @@ function Create-SCCMOfficeChannelPackages {
            if (!$versionExists) {
               LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
-              $package = CreateSCCMPackage -Name $packageName -Path $ChannelPath -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits
+              $package = CreateSCCMPackage -Name $packageName -Path $ChannelPath -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits -CustomPackageShareName $CustomPackageShareName
               [string]$CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel.ps1 -Channel $Channel"
 
               [string]$packageId = $package.PackageId
@@ -508,7 +513,7 @@ function CreateSCCMPackage() {
 		[String]$Channel,
 
 		[Parameter()]
-		[String]$CustomPackageShareName = "OfficeFiles",
+		[String]$CustomPackageShareName = $null,
 
 		[Parameter()]	
 		[Bool]$UpdateOnlyChangedBits = $true
@@ -529,8 +534,13 @@ function CreateSCCMPackage() {
 
     $VersionName = "$Channel - $Version"
 
-	Set-CMPackage -Id $package.PackageId -Priority Normal -EnableBinaryDeltaReplication $UpdateOnlyChangedBits `
-                  -CopyToPackageShareOnDistributionPoint $True -Version $Version 
+    if ($CustomPackageShareName) {
+	    Set-CMPackage -Id $package.PackageId -Priority Normal -EnableBinaryDeltaReplication $UpdateOnlyChangedBits `
+                      -CopyToPackageShareOnDistributionPoint $True -Version $Version -CustomPackageShareName $CustomPackageShareName
+    } else {
+	    Set-CMPackage -Id $package.PackageId -Priority Normal -EnableBinaryDeltaReplication $UpdateOnlyChangedBits `
+                      -CopyToPackageShareOnDistributionPoint $True -Version $Version 
+    }
 
     Write-Host ""
 
