@@ -67,7 +67,7 @@ function Download-SCCMOfficeChannelFiles() {
     }
 }
  
-function Create-SCCMOfficePackages {
+function Create-SCCMOfficePackage {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -76,12 +76,6 @@ function Create-SCCMOfficePackages {
 
         [Parameter()]
 	    [String]$OfficeFilesPath = $NULL,
-
-	    [Parameter()]
-	    [InstallType]$InstallType = "ScriptInstall",
-
-	    [Parameter()]
-	    [String]$ScriptName = "SCCM-OfficeDeploymentScript.ps1",
 
         [Parameter()]
         [bool]$IncludeSourceFilesInPackage = $true,
@@ -108,6 +102,7 @@ function Create-SCCMOfficePackages {
         $startLocation = Get-Location
     }
     Process {
+       try {
        . "$PSScriptRoot\Download-OfficeProPlusChannels.ps1"
 
        $cabFilePath = "$OfficeFilesPath\ofl.cab"
@@ -124,21 +119,22 @@ function Create-SCCMOfficePackages {
            $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $false
 
            $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
-           $existingPackage = CheckIfPackageExists -Channel $Channel
+           $existingPackage = CheckIfPackageExists
            $LargeDrv = Get-LargestDrive
 
-           $Path = CreateOfficeChannelShare -Path "$LargeDrv\OfficeChannels"
+           $Path = CreateOfficeChannelShare -Path "$LargeDrv\OfficeDeployment"
 
            $packageName = "Office 365 ProPlus"
            $ChannelPath = "$Path\$Channel"
-           $LocalPath = "$LargeDrv\OfficeChannels\$Channel"
+           $LocalPath = "$LargeDrv\OfficeDeployment"
+           $LocalChannelPath = "$LargeDrv\OfficeDeployment\SourceFiles"
 
-           [System.IO.Directory]::CreateDirectory($LocalPath) | Out-Null
+           [System.IO.Directory]::CreateDirectory($LocalChannelPath) | Out-Null
                           
            if ($IncludeSourceFilesInPackage) {
                if ($OfficeFilesPath) {
                    $officeFileChannelPath = "$OfficeFilesPath\$ChannelShortName"
-                   $officeFileTargetPath = "$LocalPath"
+                   $officeFileTargetPath = "$LocalChannelPath\$Channel"
 
                    if (!(Test-Path -Path $officeFileChannelPath)) {
                      throw "Channel Folder Missing: $officeFileChannelPath"
@@ -147,9 +143,9 @@ function Create-SCCMOfficePackages {
                    [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
 
                    if ($MoveOfflineFiles) {
-                     Move-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Force
+                       Move-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Force
                    } else {
-                     Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
+                       Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
                    }
 
                    $cabFilePath = "$OfficeFilesPath\ofl.cab"
@@ -157,21 +153,32 @@ function Create-SCCMOfficePackages {
                       Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
                    }
                } else {
-                   Download-OfficeProPlusChannels -TargetDirectory $LocalPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
+                   Download-OfficeProPlusChannels -TargetDirectory $LocalChannelPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
 
                    $cabFilePath = "$env:TEMP/ofl.cab"
                    if (!(Test-Path $cabFilePath)) {
                      Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
                    }
                }
+           } else {
+             if (Test-Path -Path "$LocalChannelPath\Office") {
+                Remove-Item -Path "$LocalChannelPath\Office" -Force -Recurse
+             }
            }
 
            CreateMainCabFiles -LocalPath $LocalPath -ChannelShortName $ChannelShortName -LatestVersion $latestVersion
 
+           $DeploymentFilePath = "$PSSCriptRoot\DeploymentFiles\*.*"
+           if (Test-Path -Path $DeploymentFilePath) {
+             Copy-Item -Path $DeploymentFilePath -Destination "$LocalPath" -Force -Recurse
+           } else {
+             throw "Deployment folder missing: $DeploymentFilePath"
+           }
+
            LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
            if (!($existingPackage)) {
-              $package = CreateSCCMPackage -Name $packageName -Path $ChannelPath -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits -CustomPackageShareName $CustomPackageShareName
+              $package = CreateSCCMPackage -Name $packageName -Path $Path -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits -CustomPackageShareName $CustomPackageShareName
            } else {
              Write-Host "`tPackage Already Exists: $packageName"
            }
@@ -180,7 +187,9 @@ function Create-SCCMOfficePackages {
 
          }
        }
-
+       } catch {
+         throw;
+       }
     }
     End
     {
@@ -193,6 +202,9 @@ function Create-SCCMOfficeDeploymentProgram {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
+        [Parameter()]
+        [OfficeChannel[]] $Channels = @(1,2,3),
+
 	    [Parameter()]
 	    [SCCMDeploymentType]$DeploymentType = "DeployWithScript",
 
@@ -213,25 +225,31 @@ function Create-SCCMOfficeDeploymentProgram {
     }
     Process 
     {
-         LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
+         foreach ($channel in $Channels) {
+             LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
-         $existingPackage = CheckIfPackageExists
+             $existingPackage = CheckIfPackageExists
 
-         [string]$CommandLine = ""
-         [string]$ProgramName = ""
-         if ($DeploymentType -eq "DeployWithScript") {
-             $ProgramName = "DeployWithScript"
-             $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1"
-         } elseif ($DeploymentType -eq "DeployWithConfigurationFile") {
-             $ProgramName = "DeployWithConfigurationFile"
-             $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
-         }
+             [string]$CommandLine = ""
+             [string]$ProgramName = ""
 
-         [string]$packageId = $null
+             if ($DeploymentType -eq "DeployWithScript") {
+                 $ProgramName = "Deploy $channel Channel With Script"
+                 $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
+                                "-NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1 -Channel $channel"
 
-         $packageId = $existingPackage.PackageId
-         if ($packageId) {
-            CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+             } elseif ($DeploymentType -eq "DeployWithConfigurationFile") {
+                 $ProgramName = "Deploy $channel Channel With Configuration File"
+                 $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
+
+             }
+
+             [string]$packageId = $null
+
+             $packageId = $existingPackage.PackageId
+             if ($packageId) {
+                CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+             }
          }
     }
     End
@@ -269,24 +287,26 @@ function Create-SCCMOfficeChannelChangeProgram {
          [string]$CommandLine = ""
          [string]$ProgramName = ""
 
-         $ProgramName = "ChangeChannel"
-         $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel.ps1 -Channel $Channel"
+         foreach ($channel in $Channels) {
+             $ProgramName = "Change Channel to $channel"
+             $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel.ps1 -Channel $Channel"
 
-         $SharePath = $existingPackage.PkgSourcePath
+             $SharePath = $existingPackage.PkgSourcePath
 
-         $OSSourcePath = "$PSScriptRoot\Change-OfficeChannel.ps1"
-         $OCScriptPath = "$SharePath\Change-OfficeChannel.ps1"
+             $OSSourcePath = "$PSScriptRoot\Change-OfficeChannel.ps1"
+             $OCScriptPath = "$SharePath\DeploymentFiles\Change-OfficeChannel.ps1"
 
-         if (!(Test-Path $OSSourcePath)) {
-            throw "Required file missing: $OSSourcePath"
-         } else {
-             if (!(Test-Path $OCScriptPath)) {
-                Copy-Item -Path $OSSourcePath  -Destination $OCScriptPath -Force
-             }
+             if (!(Test-Path $OSSourcePath)) {
+                throw "Required file missing: $OSSourcePath"
+             } else {
+                 if (!(Test-Path $OCScriptPath)) {
+                    Copy-Item -Path $OSSourcePath  -Destination $OCScriptPath -Force
+                 }
 
-             [string]$packageId = $existingPackage.PackageId
-             if ($packageId) {
-                CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+                 [string]$packageId = $existingPackage.PackageId
+                 if ($packageId) {
+                    CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+                 }
              }
          }
     }
@@ -329,12 +349,12 @@ function Create-SCCMOfficeRollBackProgram {
          [string]$ProgramName = ""
 
          $ProgramName = "ChangeChannel"
-         $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel.ps1 -Channel $Channel"
+         $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel.ps1 -Rollback"
 
          $SharePath = $existingPackage.PkgSourcePath
 
          $OSSourcePath = "$PSScriptRoot\Change-OfficeChannel.ps1"
-         $OCScriptPath = "$SharePath\Change-OfficeChannel.ps1"
+         $OCScriptPath = "$SharePath\DeploymentFiles\Change-OfficeChannel.ps1"
 
          if (!(Test-Path $OSSourcePath)) {
             throw "Required file missing: $OSSourcePath"
@@ -357,7 +377,7 @@ function Create-SCCMOfficeRollBackProgram {
 }
 
 
-function Distribute-SCCMOfficeChannelPackages {
+function Distribute-SCCMOfficeChannelPackage {
 <#
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
@@ -457,7 +477,7 @@ Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Of
     }
 }
 
-function Deploy-SCCMOfficeChannelPackage {
+function Deploy-SCCMOfficeChannelPrograms {
 <#
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
@@ -796,10 +816,10 @@ function CreateOfficeChannelShare() {
     Param
 	(
 		[Parameter()]
-		[String]$Name = "OfficeChannels$",
+		[String]$Name = "OfficeDeployment$",
 		
 		[Parameter()]
-		[String]$Path = "$env:SystemDrive\OfficeChannels"
+		[String]$Path = "$env:SystemDrive\OfficeDeployment"
 	) 
 
     IF (!(TEST-PATH $Path)) { 

@@ -1,3 +1,11 @@
+  param(
+    [Parameter()]
+    [string]$Channel = $null,
+
+    [Parameter()]
+    [bool]$SourceFileFolder = $null
+  )
+
 #  Office ProPlus Click-To-Run Deployment Script example
 #
 #  This script demonstrates how utilize the scripts in OfficeDev/Office-IT-Pro-Deployment-Scripts repository together to create
