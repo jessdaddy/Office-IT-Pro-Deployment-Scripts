@@ -62,6 +62,7 @@ Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages
 Description:
 Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add only add the Languages currently in use by the current Office installation
 #>
+
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
     [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -1145,7 +1146,7 @@ function officeGetExcludedApps() {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
 
-        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneNote','Outlook',
+        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneDrive','OneNote','Outlook',
                        'PowerPoint','Publisher','Word'
         #"SharePointDesigner","Visio", 'Project'
     }
@@ -1221,7 +1222,7 @@ function odtGetExcludedApps() {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
 
-        $allExcludeApps = 'Access','Excel','Groove','InfoPath','Lync','OneNote','Outlook',
+        $allExcludeApps = 'Access','Excel','Groove','InfoPath','Lync','OneDrive','OneNote','Outlook',
                        'PowerPoint','Publisher','Word'
         #"SharePointDesigner","Visio", 'Project'
     }
@@ -1377,7 +1378,7 @@ function odtAddUpdates{
         
         $hasUpdatePath = $false
         if($UpdatePath){$hasUpdatePath = $true}else{$hasUpdatePath = $false}
-        if(($hasEnabled -ne $true) -or ($hasUpdatePath -ne $true)){
+        if(($hasEnabled -eq $true) -or ($hasUpdatePath -eq $true)){
            $addUpdates = $true
         }
 
@@ -1391,7 +1392,7 @@ function odtAddUpdates{
 
             #Set the desired values
             if($Enabled){
-                $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
+                $UpdateElement.SetAttribute("Enabled", $Enabled.ToString().ToUpper()) | Out-Null
             } else {
               if ($PSBoundParameters.ContainsKey('Enabled')) {
                  if ($ConfigDoc.Configuration.Updates) {

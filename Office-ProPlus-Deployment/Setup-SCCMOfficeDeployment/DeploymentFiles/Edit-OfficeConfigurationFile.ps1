@@ -53,23 +53,22 @@ namespace Microsoft.Office
 Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
 
 $enum4 = "
-using System;
-
-namespace Microsoft.Office
-{
-    [FlagsAttribute]
-    public enum Channel
-    {
-        Current=0,
-        Deferred=1,
-        Validation=2,
-        FirstReleaseCurrent=3,
-        FirstReleaseDeferred=4
-    }
-}
-"
-Add-Type -TypeDefinition $enum4 -ErrorAction SilentlyContinue
-
+ using System;
+ 
+ namespace Microsoft.Office
+ {
+     [FlagsAttribute]
+     public enum Channel
+     {
+         Current=0,
+         Deferred=1,
+         Validation=2,
+         FirstReleaseCurrent=3,
+         FirstReleaseDeferred=4
+     }
+ }
+ "
+ Add-Type -TypeDefinition $enum4 -ErrorAction SilentlyContinue
 
 $validLanguages = @(
 "English|en-us",
@@ -118,6 +117,7 @@ $validExcludeAppIds = @(
 "Groove",
 "InfoPath",
 "Lync",
+"OneDrive",
 "OneNote",
 "Outlook",
 "PowerPoint",
@@ -1077,7 +1077,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Set the desired values
         if($All){
-             $RemoveElement.SetAttribute("All", "True") | Out-Null
+             $RemoveElement.SetAttribute("All", "TRUE") | Out-Null
         }else{
             [System.XML.XMLElement]$ProductElement = $RemoveElement.Product | ?  ID -eq $ProductId
             if($ProductElement -eq $null){
@@ -1400,7 +1400,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [Microsoft.Office.Branches] $Branch,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [Microsoft.Office.Channel] $Channel,
+        [Microsoft.Office.Channel] $Channel = "Current",
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Deadline
@@ -1439,16 +1439,22 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set the desired values
-        if($Branch -ne $null){
-            $UpdateElement.SetAttribute("Branch", $Branch);
+        if($Branch -ne $null -and $Channel -eq $null){
+            $Channel = ConvertBranchNameToChannelName -BranchName $Branch
+        }
+
+        if($ConfigFile.Configuration.Updates -ne $null){
+            if($ConfigFile.Configuration.Updates.Branch -ne $null){
+                $ConfigFile.Configuration.Updates.RemoveAttribute("Branch")
+            }
         }
 
         if($Channel -ne $null){
-            $UpdateElement.SetAttribute("Channel", $Channel);
+             $UpdateElement.SetAttribute("Channel", $Channel);
         }
 
         if($Enabled){
-            $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
+            $UpdateElement.SetAttribute("Enabled", $Enabled.ToString().ToUpper()) | Out-Null
         } else {
           if ($PSBoundParameters.ContainsKey('Enabled')) {
               $ConfigFile.Configuration.Updates.RemoveAttribute("Enabled")
@@ -1757,7 +1763,7 @@ Here is what the portion of configuration file looks like when modified by this 
                 
             $ConfigFile.Configuration.appendChild($ForceAppShutDownElement) | Out-Null
             $ForceAppShutDownElement.SetAttribute("Name", "FORCEAPPSHUTDOWN") | Out-Null
-            $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown) | Out-Null
+            $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown.ToString().ToUpper()) | Out-Null
         }
 
         if($PackageGUID){
@@ -2031,7 +2037,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [Microsoft.Office.Branches] $Branch,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [Microsoft.Office.Channel] $Channel
+        [Microsoft.Office.Channel] $Channel = "Current"
 
     )
 
@@ -2071,8 +2077,14 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set values as desired
-        if($Branch -ne $null){
-            $ConfigFile.Configuration.Add.SetAttribute("Branch", $Branch);
+        if($Branch -ne $null -and $Channel -eq $null){
+            $Channel = ConvertBranchNameToChannelName -BranchName $Branch
+        }
+
+        if($ConfigFile.Configuration.Add -ne $null){
+            if($ConfigFile.Configuration.Add.Branch -ne $null){
+                $ConfigFile.Configuration.Add.RemoveAttribute("Branch")
+            }
         }
 
         if($Channel -ne $null){
@@ -2174,7 +2186,7 @@ file.
             throw $NoConfigurationElement
         }
         
-        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Branch, Channel
+        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Channel, Branch
     }
 
 }
@@ -2559,7 +2571,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [LogLevel] $Level,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [bool] $AcceptEULA,
+        [bool] $AcceptEULA = $true,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
@@ -2599,7 +2611,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set values
-        if($Level){
+        if($Level -ne $null){
             $DisplayElement.SetAttribute("Level", $Level) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Level')) {
@@ -2607,8 +2619,8 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
-        if((!($Path)) -eq $AcceptEULA){
-            $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA) | Out-Null
+        if($AcceptEULA -ne $null){
+            $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA.ToString().ToUpper()) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('AcceptEULA')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("AcceptEULA")
@@ -3057,4 +3069,182 @@ Function GetScriptRoot() {
      }
      return $scriptPath
  }
+}
+
+function ConvertBranchNameToChannelName {
+    Param(
+       [Parameter()]
+       [string] $BranchName
+    )
+    Process {
+       if ($BranchName.ToLower() -eq "FirstReleaseCurrent".ToLower()) {
+         return "FirstReleaseCurrent"
+       }
+       if ($BranchName.ToLower() -eq "Current".ToLower()) {
+         return "Current"
+       }
+       if ($BranchName.ToLower() -eq "FirstReleaseDeferred".ToLower()) {
+         return "FirstReleaseDeferred"
+       }
+       if ($BranchName.ToLower() -eq "Deferred".ToLower()) {
+         return "Deferred"
+       }
+       if ($BranchName.ToLower() -eq "Business".ToLower()) {
+         return "Deferred"
+       }
+       if ($BranchName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
+         return "FirstReleaseDeferred"
+       }
+    }
+}
+
+function Change-UpdatePathToChannel {
+   [CmdletBinding()]
+   param( 
+     [Parameter()]
+     [string] $UpdatePath,
+     
+     [Parameter()]
+     [Channel] $Channel
+   )
+
+   $newUpdatePath = $UpdatePath
+
+   $branchShortName = "DC"
+   if ($Channel.ToString().ToLower() -eq "current") {
+      $branchShortName = "CC"
+   }
+   if ($Channel.ToString().ToLower() -eq "firstreleasecurrent") {
+      $branchShortName = "FRCC"
+   }
+   if ($Channel.ToString().ToLower() -eq "firstreleasedeferred") {
+      $branchShortName = "FRDC"
+   }
+   if ($Channel.ToString().ToLower() -eq "deferred") {
+      $branchShortName = "DC"
+   }
+
+   $channelNames = @("FRCC", "CC", "FRDC", "DC")
+
+   $madeChange = $false
+   foreach ($channelName in $channelNames) {
+      if ($UpdatePath.ToUpper().EndsWith("\$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName", "\$branchShortName"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().Contains("\$channelName\")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName\\", "\$branchShortName\"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().EndsWith("/$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName", "/$branchShortName"
+         $madeChange = $true
+      }
+      if ($UpdatePath.ToUpper().Contains("/$channelName/")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName\/", "/$branchShortName/"
+         $madeChange = $true
+      }
+   }
+
+   if (!($madeChange)) {
+      if ($newUpdatePath.Contains("/")) {
+         if ($newUpdatePath.EndsWith("/")) {
+           $newUpdatePath += "$branchShortName"
+         } else {
+           $newUpdatePath += "/$branchShortName"
+         }
+      }
+      if ($newUpdatePath.Contains("\")) {
+         if ($newUpdatePath.EndsWith("\")) {
+           $newUpdatePath += "$branchShortName"
+         } else {
+           $newUpdatePath += "\$branchShortName"
+         }
+      }
+   }
+
+   try {
+     $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath
+   } catch {
+     $pathAlive = $false
+   }
+   
+   if ($pathAlive) {
+     return $newUpdatePath
+   } else {
+     return $UpdatePath
+   }
+}
+
+Function Test-UpdateSource() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $UpdateSource = $NULL
+    )
+
+  	$uri = [System.Uri]$UpdateSource
+
+    [bool]$sourceIsAlive = $false
+
+    if($uri.Host){
+	    $sourceIsAlive = Test-Connection -Count 1 -computername $uri.Host -Quiet
+    }else{
+        $sourceIsAlive = Test-Path $uri.LocalPath -ErrorAction SilentlyContinue
+    }
+
+    if ($sourceIsAlive) {
+        $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource
+    }
+
+    return $sourceIsAlive
+}
+
+Function Validate-UpdateSource() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $UpdateSource = $NULL
+    )
+
+    Process {
+    [bool]$validUpdateSource = $false
+    [string]$cabPath = ""
+
+    if ($UpdateSource) {
+        $mainRegPath = Get-OfficeCTRRegPath
+        $configRegPath = $mainRegPath + "\Configuration"
+        $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
+        $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+
+        if ($updateToVersion) {
+            if ($currentplatform.ToLower() -eq "x86") {
+               $cabPath = $UpdateSource + "\Office\Data\v32_" + $updateToVersion + ".cab"
+            }
+            if ($currentplatform.ToLower() -eq "x64") {
+               $cabPath = $UpdateSource + "\Office\Data\v64_" + $updateToVersion + ".cab"
+            }
+        } else {
+            if ($currentplatform.ToLower() -eq "x86") {
+               $cabPath = $UpdateSource + "\Office\Data\v32.cab"
+            }
+            if ($currentplatform.ToLower() -eq "x64") {
+               $cabPath = $UpdateSource + "\Office\Data\v64.cab"
+            }
+        }
+
+        if ($cabPath.ToLower().StartsWith("http")) {
+           $cabPath = $cabPath.Replace("\", "/")
+           $validUpdateSource = Test-URL -url $cabPath
+        } else {
+           $validUpdateSource = Test-Path -Path $cabPath
+        }
+        
+        if (!$validUpdateSource) {
+           throw "Invalid UpdateSource. File Not Found: $cabPath"
+        }
+    }
+
+    return $validUpdateSource
+    }
 }
