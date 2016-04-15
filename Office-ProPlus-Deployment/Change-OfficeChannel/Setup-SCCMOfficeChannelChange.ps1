@@ -124,7 +124,7 @@ function Create-SCCMOfficeChannelPackages {
 
            $Path = CreateOfficeChannelShare -Path "$LargeDrv\OfficeChannels"
 
-           $packageName = "Office 365 ProPlus ($Channel)"
+           $packageName = "Office 365 ProPlus"
            $ChannelPath = "$Path\$Channel"
            $LocalPath = "$LargeDrv\OfficeChannels\$Channel"
 
@@ -173,6 +173,7 @@ function Create-SCCMOfficeChannelPackages {
               LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
               $package = CreateSCCMPackage -Name $packageName -Path $ChannelPath -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits -CustomPackageShareName $CustomPackageShareName
+
               [string]$CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel.ps1 -Channel $Channel"
 
               [string]$packageId = $package.PackageId
