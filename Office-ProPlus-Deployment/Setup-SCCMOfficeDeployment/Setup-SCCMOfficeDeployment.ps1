@@ -491,7 +491,7 @@ Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Of
     }
 }
 
-function Deploy-SCCMOfficePrograms {
+function Deploy-SCCMOfficeProgram {
 <#
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
