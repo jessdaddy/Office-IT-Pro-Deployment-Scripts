@@ -39,6 +39,19 @@ using System;
 "
 Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
 
+$enumBitness = "
+using System;
+       [FlagsAttribute]
+       public enum Bitness
+       {
+          Both = 0,
+          v32 = 1,
+          v64 = 2
+       }
+"
+
+Add-Type -TypeDefinition $enumBitness -ErrorAction SilentlyContinue
+
 
 function Download-SCCMOfficeChannelFiles() {
     [CmdletBinding(SupportsShouldProcess=$true)]
@@ -54,7 +67,10 @@ function Download-SCCMOfficeChannelFiles() {
         [ValidateSet("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
                     "ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
                     "tr-tr","uk-ua")]
-        [string[]] $Languages = ("en-us")
+        [string[]] $Languages = ("en-us"),
+
+        [Parameter()]
+        [Bitness] $Bitness = 0
         
     )
 
@@ -71,7 +87,7 @@ function Download-SCCMOfficeChannelFiles() {
             $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel
             $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
 
-            Download-OfficeProPlusChannels -TargetDirectory $OfficeFilesPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true -Languages $Languages
+            Download-OfficeProPlusChannels -TargetDirectory $OfficeFilesPath  -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true -Languages $Languages -Bitness $Bitness
 
             $cabFilePath = "$env:TEMP/ofl.cab"
             Copy-Item -Path $cabFilePath -Destination "$OfficeFilesPath\ofl.cab" -Force
@@ -168,7 +184,7 @@ function Create-SCCMOfficePackage {
                       Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
                    }
                } else {
-                   Download-OfficeProPlusChannels -TargetDirectory $LocalChannelPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true
+                   Download-OfficeProPlusChannels -TargetDirectory $LocalChannelPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true 
 
                    $cabFilePath = "$env:TEMP/ofl.cab"
                    if (!(Test-Path $cabFilePath)) {
