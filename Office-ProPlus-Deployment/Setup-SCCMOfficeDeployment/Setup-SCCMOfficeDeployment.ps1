@@ -193,7 +193,7 @@ function Create-SCCMOfficePackage {
            LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
            if (!($existingPackage)) {
-              $package = CreateSCCMPackage -Name $packageName -Path $Path -Channel $Channel -Version $latestVersion -UpdateOnlyChangedBits $UpdateOnlyChangedBits -CustomPackageShareName $CustomPackageShareName
+              $package = CreateSCCMPackage -Name $packageName -Path $Path -Channel $Channel -UpdateOnlyChangedBits $UpdateOnlyChangedBits -CustomPackageShareName $CustomPackageShareName
            } else {
              Write-Host "`tPackage Already Exists: $packageName"
            }
@@ -391,7 +391,6 @@ function Create-SCCMOfficeRollBackProgram {
     }
 }
 
-
 function Distribute-SCCMOfficeChannelPackage {
 <#
 .SYNOPSIS
@@ -459,13 +458,13 @@ Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Of
                $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $ChannelName.ToString() }
                $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
                $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
-               $packageExists = CheckIfVersionExists -Version $latestVersion -Channel $ChannelName
-
-               $packageName = "Office 365 ProPlus"
+               $package = CheckIfPackageExists
 
                LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
-               if ($packageExists) {
+               if ($package) {
+                    [string]$packageName = $package.Name
+
                     if ($DistributionPointGroupName) {
                         Write-Host "Starting Content Distribution for package: $packageName"
 	                    Start-CMContentDistribution -PackageName $packageName -DistributionPointGroupName $DistributionPointGroupName
@@ -556,52 +555,59 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
 
                 LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
+                $pType = ""
+
+                Switch ($ProgramType) {
+                    "DeployWithScript" { $pType = "DeployWithScript-$Channel" }
+                    "DeployWithConfigurationFile" { $pType = "DeployWithConfigurationFile-$Channel" }
+                    "ChangeChannel" { $pType = "ChangeChannel-$Channel" }
+                    "RollBack" { $pType = "RollBack" }
+                    "Update" { $pType = "Update" }
+                }
+
+                $Program = Get-CMProgram | Where {$_.Comment -eq $pType }
+                $programName = $Program.ProgramName
+
                 $packageName = "Office 365 ProPlus"
                 if ($package) {
-                    $packageDeploy = Get-CMDeployment | where {$_.PackageId -eq $package.PackageId }
-                    if ($packageDeploy.Count -eq 0) {
-                        try {
-                            $packageId = $package.PackageId
+                   if ($Program) {
+                        $packageDeploy = Get-CMDeployment | where {$_.PackageId -eq $package.PackageId -and $_.ProgramName -eq $programName }
+                        if ($packageDeploy.Count -eq 0) {
+                            try {
+                                $packageId = $package.PackageId
 
-                            $pType = ""
+                                if ($Program) {
+                                    $ProgramName = $Program.ProgramName
 
-                            Switch ($ProgramType) {
-                                "DeployWithScript" { $pType = "DeployWithScript-$Channel" }
-                                "DeployWithConfigurationFile" { $pType = "DeployWithConfigurationFile-$Channel" }
-                                "ChangeChannel" { $pType = "ChangeChannel-$Channel" }
-                                "RollBack" { $pType = "RollBack" }
-                                "Update" { $pType = "Update" }
-                            }
+     	                            Start-CMPackageDeployment -CollectionName "$Collection" -PackageId $packageId -ProgramName "$ProgramName" `
+                                                                -StandardProgram  -DeployPurpose Available -RerunBehavior AlwaysRerunProgram `
+                                                                -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint `
+                                                                -SlowNetworkOption RunProgramFromDistributionPoint `
+                                                                -AllowSharedContent $false
 
-                            $Program = Get-CMProgram | Where {$_.Comment -eq $pType }
+                                    Update-CMDistributionPoint -PackageId $package.PackageId
 
-                            if ($Program) {
-                                $ProgramName = $Program.ProgramName
-
-     	                        Start-CMPackageDeployment -CollectionName "$Collection" -PackageId $packageId -ProgramName "$ProgramName" `
-                                                            -StandardProgram  -DeployPurpose Available -RerunBehavior AlwaysRerunProgram `
-                                                            -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint `
-                                                            -SlowNetworkOption RunProgramFromDistributionPoint `
-                                                            -AllowSharedContent $false
-
-                                Update-CMDistributionPoint -PackageId $package.PackageId
-
-                                Write-Host "Deployment created for: $packageName"
-                            } else {
-                                Write-Host "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName" -ForegroundColor White -BackgroundColor Red
-                            }
-                        } catch {
-                            [string]$ErrorMessage = $_.ErrorDetails 
-                            if ($ErrorMessage.ToLower().Contains("Could not find property PackageID".ToLower())) {
-                                Write-Host 
-                                Write-Host "Package: $packageName"
-                                Write-Host "The package has not finished deploying to the distribution points." -BackgroundColor Red
-                                Write-Host "Please try this command against once the distribution points have been updated" -BackgroundColor Red
-                            } else {
-                                throw
-                            }
-                        }  
-                    }
+                                    Write-Host "Deployment created for: $packageName ($ProgramName)"
+                                } else {
+                                    Write-Host "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName" -ForegroundColor White -BackgroundColor Red
+                                }
+                            } catch {
+                                [string]$ErrorMessage = $_.ErrorDetails 
+                                if ($ErrorMessage.ToLower().Contains("Could not find property PackageID".ToLower())) {
+                                    Write-Host 
+                                    Write-Host "Package: $packageName"
+                                    Write-Host "The package has not finished deploying to the distribution points." -BackgroundColor Red
+                                    Write-Host "Please try this command against once the distribution points have been updated" -BackgroundColor Red
+                                } else {
+                                    throw
+                                }
+                            }  
+                        } else {
+                          Write-Host "Deployment already exists for: $packageName ($ProgramName)"
+                        }
+                   } else {
+                        Write-Host "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName" -ForegroundColor White -BackgroundColor Red
+                   }
                 } else {
                     throw "Package does not exist: $packageName"
                 }
@@ -614,6 +620,7 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
         Set-Location $startLocation 
     }
 }
+
 
 
 function Test-ItemPathUNC() {    [CmdletBinding()]	
