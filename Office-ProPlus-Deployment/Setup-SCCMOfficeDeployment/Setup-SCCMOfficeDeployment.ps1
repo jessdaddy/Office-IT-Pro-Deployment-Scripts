@@ -24,6 +24,21 @@ using System;
 
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
 
+$enum2 = "
+using System;
+ 
+    [FlagsAttribute]
+    public enum SCCMOfficeProgramType
+    {
+        DeployWithScript = 0,
+        DeployWithConfigurationFile = 1,
+        ChangeChannel = 2,
+        RollBack = 3,
+        Update = 4
+    }
+"
+Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
+
 
 function Download-SCCMOfficeChannelFiles() {
     [CmdletBinding(SupportsShouldProcess=$true)]
@@ -236,7 +251,7 @@ function Create-SCCMOfficeDeploymentProgram {
              if ($DeploymentType -eq "DeployWithScript") {
                  $ProgramName = "Deploy $channel Channel With Script"
                  $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
-                                "-NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1 -Channel $channel"
+                                "-NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1 -Channel $channel -SourceFileFolder SourceFiles"
 
              } elseif ($DeploymentType -eq "DeployWithConfigurationFile") {
                  $ProgramName = "Deploy $channel Channel With Configuration File"
@@ -248,7 +263,9 @@ function Create-SCCMOfficeDeploymentProgram {
 
              $packageId = $existingPackage.PackageId
              if ($packageId) {
-                CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+                $comment = $DeploymentType.ToString() + "-" + $channel
+
+                CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
              }
          }
     }
@@ -293,19 +310,21 @@ function Create-SCCMOfficeChannelChangeProgram {
 
              $SharePath = $existingPackage.PkgSourcePath
 
-             $OSSourcePath = "$PSScriptRoot\Change-OfficeChannel.ps1"
-             $OCScriptPath = "$SharePath\DeploymentFiles\Change-OfficeChannel.ps1"
+             $OSSourcePath = "$PSScriptRoot\DeploymentFiles\Change-OfficeChannel.ps1"
+             $OCScriptPath = "$SharePath\Change-OfficeChannel.ps1"
 
              if (!(Test-Path $OSSourcePath)) {
                 throw "Required file missing: $OSSourcePath"
              } else {
-                 if (!(Test-Path $OCScriptPath)) {
-                    Copy-Item -Path $OSSourcePath  -Destination $OCScriptPath -Force
+                 if (!(Test-ItemPathUNC -Path $SharePath -FileName "Change-OfficeChannel.ps1")) {
+                    Copy-ItemUNC -SourcePath $OSSourcePath -TargetPath $SharePath -FileName "Change-OfficeChannel.ps1"
                  }
 
                  [string]$packageId = $existingPackage.PackageId
                  if ($packageId) {
-                    CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+                    $comment = "ChangeChannel-$channel"
+
+                    CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
                  }
              }
          }
@@ -321,12 +340,6 @@ function Create-SCCMOfficeRollBackProgram {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
-	    [Parameter()]
-	    [SCCMProgramType]$ProgramType = "DeployWithScript",
-
-	    [Parameter()]
-	    [String]$ScriptName = "SCCM-OfficeDeploymentScript.ps1",
-
 	    [Parameter()]
 	    [String]$SiteCode = $null,
 
@@ -348,24 +361,26 @@ function Create-SCCMOfficeRollBackProgram {
          [string]$CommandLine = ""
          [string]$ProgramName = ""
 
-         $ProgramName = "ChangeChannel"
+         $ProgramName = "Rollback"
          $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel.ps1 -Rollback"
 
          $SharePath = $existingPackage.PkgSourcePath
 
-         $OSSourcePath = "$PSScriptRoot\Change-OfficeChannel.ps1"
-         $OCScriptPath = "$SharePath\DeploymentFiles\Change-OfficeChannel.ps1"
+         $OSSourcePath = "$PSScriptRoot\DeploymentFiles\Change-OfficeChannel.ps1"
+         $OCScriptPath = "$SharePath\Change-OfficeChannel.ps1"
 
          if (!(Test-Path $OSSourcePath)) {
             throw "Required file missing: $OSSourcePath"
          } else {
-             if (!(Test-Path $OCScriptPath)) {
-                Copy-Item -Path $OSSourcePath  -Destination $OCScriptPath -Force
+             if (!(Test-ItemPathUNC -Path $SharePath -FileName "Change-OfficeChannel.ps1")) {
+                Copy-ItemUNC -SourcePath $OSSourcePath -TargetPath $SharePath -FileName "Change-OfficeChannel.ps1"
              }
 
              [string]$packageId = $existingPackage.PackageId
              if ($packageId) {
-                CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+                $comment = "RollBack"
+
+                CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
              }
          }
     }
@@ -446,7 +461,7 @@ Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Of
                $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
                $packageExists = CheckIfVersionExists -Version $latestVersion -Channel $ChannelName
 
-               $packageName = "Office 365 ProPlus ($ChannelName)"
+               $packageName = "Office 365 ProPlus"
 
                LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
@@ -512,6 +527,9 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
         [Parameter(Mandatory=$true)]
         [OfficeChannel] $Channel,
 
+        [Parameter(Mandatory=$true)]
+        [SCCMOfficeProgramType] $ProgramType,
+        
 	    [Parameter()]
 	    [String]$SiteCode = $null,
 
@@ -530,58 +548,66 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
         $ChannelXml = Get-ChannelXml
 
         foreach ($ChannelName in $ChannelList) {
-          if ($Channel.ToString().ToLower() -eq $ChannelName.ToLower()) {
-              $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $ChannelName.ToString() }
-              $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
-              $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
-              $packageExists = CheckIfVersionExists -Version $latestVersion -Channel $ChannelName
+            if ($Channel.ToString().ToLower() -eq $ChannelName.ToLower()) {
+                $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $ChannelName.ToString() }
+                $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
+                $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
+                $package = CheckIfPackageExists
 
-              LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
+                LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
 
-              $packageName = "Office 365 ProPlus ($ChannelName)"
-              if ($packageExists) {
+                $packageName = "Office 365 ProPlus"
+                if ($package) {
+                    $packageDeploy = Get-CMDeployment | where {$_.PackageId -eq $package.PackageId }
+                    if ($packageDeploy.Count -eq 0) {
+                        try {
+                            $packageId = $package.PackageId
 
-                  $package = Get-CMPackage | Where { $_.Name -eq $packageName -and $_.Version -eq $latestVersion }
+                            $pType = ""
 
-                  $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
-                  if ($packageDeploy.Count -eq 0) {
+                            Switch ($ProgramType) {
+                                "DeployWithScript" { $pType = "DeployWithScript-$Channel" }
+                                "DeployWithConfigurationFile" { $pType = "DeployWithConfigurationFile-$Channel" }
+                                "ChangeChannel" { $pType = "ChangeChannel-$Channel" }
+                                "RollBack" { $pType = "RollBack" }
+                                "Update" { $pType = "Update" }
+                            }
 
-                    try {
-                        $packageId = $package.PackageId
+                            $Program = Get-CMProgram | Where {$_.Comment -eq $pType }
 
-     	                Start-CMPackageDeployment -CollectionName "$Collection" -PackageId $packageId -ProgramName "$ProgramName" `
-                                                  -StandardProgram  -DeployPurpose Available -RerunBehavior AlwaysRerunProgram `
-                                                  -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint `
-                                                  -SlowNetworkOption RunProgramFromDistributionPoint `
-                                                  -AllowSharedContent $false
+                            if ($Program) {
+                                $ProgramName = $Program.ProgramName
 
-                        Update-CMDistributionPoint -PackageId $package.PackageId
+     	                        Start-CMPackageDeployment -CollectionName "$Collection" -PackageId $packageId -ProgramName "$ProgramName" `
+                                                            -StandardProgram  -DeployPurpose Available -RerunBehavior AlwaysRerunProgram `
+                                                            -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint `
+                                                            -SlowNetworkOption RunProgramFromDistributionPoint `
+                                                            -AllowSharedContent $false
 
-                        Write-Host "Package Deployment created for: $packageName"
+                                Update-CMDistributionPoint -PackageId $package.PackageId
 
-                        RemovePreviousSCCMPackages -Name $packageName -Version $latestVersion
-                    } catch {
-                        [string]$ErrorMessage = $_.ErrorDetails 
-                        if ($ErrorMessage.ToLower().Contains("Could not find property PackageID".ToLower())) {
-                            Write-Host 
-                            Write-Host "Package: $packageName"
-                            Write-Host "The package has not finished deploying to the distribution points." -BackgroundColor Red
-                            Write-Host "Please try this command against once the distribution points have been updated" -BackgroundColor Red
-                        } else {
-                            throw
-                        }
-                    }  
-                  } else {
-                    Write-Host "Package Deployment Already Exists for: $packageName"
-                     RemovePreviousSCCMPackages -Name $packageName -Version $latestVersion
-                  }
-
-
-              } else {
-                 throw "Package does not exist: $packageName"
-              }
-          }
+                                Write-Host "Deployment created for: $packageName"
+                            } else {
+                                Write-Host "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName" -ForegroundColor White -BackgroundColor Red
+                            }
+                        } catch {
+                            [string]$ErrorMessage = $_.ErrorDetails 
+                            if ($ErrorMessage.ToLower().Contains("Could not find property PackageID".ToLower())) {
+                                Write-Host 
+                                Write-Host "Package: $packageName"
+                                Write-Host "The package has not finished deploying to the distribution points." -BackgroundColor Red
+                                Write-Host "Please try this command against once the distribution points have been updated" -BackgroundColor Red
+                            } else {
+                                throw
+                            }
+                        }  
+                    }
+                } else {
+                    throw "Package does not exist: $packageName"
+                }
+            }
         }
+        
     }
     End {
         Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
@@ -590,8 +616,35 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
 }
 
 
+function Test-ItemPathUNC() {    [CmdletBinding()]	
+    Param
+	(	    [Parameter(Mandatory=$true)]
+	    [String]$Path,	    [Parameter(Mandatory=$true)]
+	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       try {           New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $Path | Out-Null           $target = $drvLetter + ":\" + $FileName           $result = Test-Path -Path $target            return $result       } finally {         Remove-PSDrive $drvLetter       }    }}
 
+function Copy-ItemUNC() {    [CmdletBinding()]	
+    Param
+	(	    [Parameter(Mandatory=$true)]
+	    [String]$SourcePath,	    [Parameter(Mandatory=$true)]
+	    [String]$TargetPath,	    [Parameter(Mandatory=$true)]
+	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       try {          $target = $drvLetter + ":\"          New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $TargetPath | Out-Null          Copy-Item -Path $SourcePath -Destination $target -Force       } finally {         Remove-PSDrive $drvLetter       }    }}
 
+function FindAvailable() {
+   $drives = Get-PSDrive | select Name
+
+   for($n=90;$n -gt 68;$n--) {
+      $letter= [char]$n
+      $exists = $drives | where { $_ -eq $letter }
+      if ($exists) {
+        if ($exists.Count -eq 0) {
+            return $letter
+        }
+      } else {
+        return $letter
+      }
+   }
+   return $null
+}
 
 function CreateMainCabFiles() {
     [CmdletBinding()]	
@@ -793,6 +846,9 @@ function CreateSCCMProgram() {
 		[Parameter(Mandatory=$True)]
 		[String]$Name,
 		
+		[Parameter(Mandatory=$True)]
+		[String]$Comment = $null,
+
 		[Parameter()]
 		[String[]] $RequiredPlatformNames = @()
 
@@ -805,9 +861,13 @@ function CreateSCCMProgram() {
         Write-Host "`t`tCreating Program: $Name ..."	        
 	    $program = New-CMProgram -PackageId $PackageID -StandardProgramName $Name -DriveMode RenameWithUnc `
                                  -CommandLine $CommandLine -ProgramRunType OnlyWhenUserIsLoggedOn `
-                                 -RunMode RunWithAdministrativeRights -UserInteraction $true -RunType Normal
+                                 -RunMode RunWithAdministrativeRights -UserInteraction $true -RunType Normal 
     } else {
         Write-Host "`t`tProgram Already Exists: $Name"
+    }
+
+    if ($program) {
+        Set-CMProgram -InputObject $program -Comment $Comment -StandardProgramName $Name -StandardProgram
     }
 }
 
