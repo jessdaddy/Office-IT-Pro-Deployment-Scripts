@@ -1,3 +1,4 @@
+try {
 $enum3 = "
 using System;
 
@@ -15,6 +16,7 @@ namespace Microsoft.Office
 }
 "
 Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
+} catch {}
 
 $enum4 = "
  using System;

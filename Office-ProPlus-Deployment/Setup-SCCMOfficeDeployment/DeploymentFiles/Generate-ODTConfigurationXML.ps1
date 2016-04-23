@@ -1,3 +1,4 @@
+try {
 Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
    public enum OfficeLanguages
    {
@@ -7,6 +8,7 @@ Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
       AllInUseLanguages
    }
 "@
+} catch {}
 
 Function Generate-ODTConfigurationXml {
 <#

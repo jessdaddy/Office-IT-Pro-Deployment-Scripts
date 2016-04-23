@@ -1,3 +1,4 @@
+try {
 $enum = "
 using System;
  
@@ -9,7 +10,9 @@ using System;
     }
 "
 Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
+} catch { }
 
+try {
 $enumDef = "
 using System;
        [FlagsAttribute]
@@ -21,9 +24,10 @@ using System;
           Deferred = 3
        }
 "
-
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
+} catch { }
 
+try {
 $enum2 = "
 using System;
  
@@ -38,7 +42,9 @@ using System;
     }
 "
 Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
+} catch { }
 
+try {
 $enumBitness = "
 using System;
        [FlagsAttribute]
@@ -49,9 +55,8 @@ using System;
           v64 = 2
        }
 "
-
 Add-Type -TypeDefinition $enumBitness -ErrorAction SilentlyContinue
-
+} catch { }
 
 function Download-SCCMOfficeChannelFiles() {
     [CmdletBinding(SupportsShouldProcess=$true)]
@@ -75,7 +80,11 @@ function Download-SCCMOfficeChannelFiles() {
     )
 
     Process {
-       . "$PSScriptRoot\Download-OfficeProPlusChannels.ps1"
+       if (Test-Path "$PSScriptRoot\Download-OfficeProPlusChannels.ps1") {
+         . "$PSScriptRoot\Download-OfficeProPlusChannels.ps1"
+       } else {
+         throw "Dependency file missing: $PSScriptRoot\Download-OfficeProPlusChannels.ps1"
+       }
 
        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
        $ChannelXml = Get-ChannelXml -FolderPath $OfficeFilesPath -OverWrite $true
@@ -134,7 +143,16 @@ function Create-SCCMOfficePackage {
     }
     Process {
        try {
-       . "$PSScriptRoot\Download-OfficeProPlusChannels.ps1"
+
+       $downloadAvailable = $false
+       if (Test-Path "$PSScriptRoot\Download-OfficeProPlusChannels.ps1") {
+         . "$PSScriptRoot\Download-OfficeProPlusChannels.ps1"
+         $downloadAvailable = $true
+       } else {
+         if (($IncludeSourceFilesInPackage) -and !($OfficeFilesPath)) {
+            throw "Dependency file missing: $PSScriptRoot\Download-OfficeProPlusChannels.ps1"
+         }
+       }
 
        $cabFilePath = "$OfficeFilesPath\ofl.cab"
        if (Test-Path $cabFilePath) {
@@ -184,11 +202,13 @@ function Create-SCCMOfficePackage {
                       Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
                    }
                } else {
-                   Download-OfficeProPlusChannels -TargetDirectory $LocalChannelPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true 
+                   if ($downloadAvailable) {
+                       Download-OfficeProPlusChannels -TargetDirectory $LocalChannelPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true 
 
-                   $cabFilePath = "$env:TEMP/ofl.cab"
-                   if (!(Test-Path $cabFilePath)) {
-                     Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+                       $cabFilePath = "$env:TEMP/ofl.cab"
+                       if (!(Test-Path $cabFilePath)) {
+                         Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+                       }
                    }
                }
            } else {

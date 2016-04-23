@@ -1,3 +1,4 @@
+try {
 Add-Type  -ErrorAction SilentlyContinue -TypeDefinition @"
    public enum OfficeCTRVersion
    {
@@ -5,7 +6,9 @@ Add-Type  -ErrorAction SilentlyContinue -TypeDefinition @"
       Office2016
    }
 "@
+} catch {}
 
+try {
 $enum = "
 using System;
  
@@ -24,7 +27,9 @@ namespace Microsoft.Office
 }
 "
 Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
+} catch {}
 
+try {
 $enum2 = "
 using System;
  
@@ -36,6 +41,7 @@ using System;
     }
 "
 Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
+} catch {}
 
 function Install-OfficeClickToRun {
     [CmdletBinding()]
