@@ -1,4 +1,5 @@
-﻿$enumDef = "
+﻿try {
+$enumDef = "
 using System;
        [FlagsAttribute]
        public enum Bitness
@@ -8,9 +9,10 @@ using System;
           v64 = 2
        }
 "
+Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
+} catch { }
 
-Add-Type -TypeDefinition $enumDef
-
+try {
 $enumDef = "
 using System;
        [FlagsAttribute]
@@ -22,8 +24,8 @@ using System;
           Deferred = 3
        }
 "
-
-Add-Type -TypeDefinition $enumDef
+Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
+} catch { }
 
 function ConvertChannelNameToShortName {
     Param(
