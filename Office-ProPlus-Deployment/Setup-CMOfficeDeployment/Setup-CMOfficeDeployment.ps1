@@ -286,6 +286,9 @@ function Create-CMOfficeDeploymentProgram {
              LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
              $existingPackage = CheckIfPackageExists
+             if (!($existingPackage)) {
+                throw "You must run the Create-CMOfficePackage function before running this function"
+             }
 
              [string]$CommandLine = ""
              [string]$ProgramName = ""
@@ -350,6 +353,9 @@ function Create-CMOfficeChannelChangeProgram {
          LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
          $existingPackage = CheckIfPackageExists
+         if (!($existingPackage)) {
+            throw "You must run the Create-CMOfficePackage function before running this function"
+         }
 
          [string]$CommandLine = ""
          [string]$ProgramName = ""
@@ -415,6 +421,9 @@ function Create-CMOfficeRollBackProgram {
          LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
          $existingPackage = CheckIfPackageExists
+         if (!($existingPackage)) {
+            throw "You must run the Create-CMOfficePackage function before running this function"
+         }
 
          [string]$CommandLine = ""
          [string]$ProgramName = ""
@@ -526,6 +535,10 @@ Setup-CMOfficeProPlusPackage -Path \\CM-CM\OfficeDeployment -PackageName "Office
                $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
                $package = CheckIfPackageExists
 
+               if (!($package)) {
+                  throw "You must run the Create-CMOfficePackage function before running this function"
+               }
+
                LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
                if ($package) {
@@ -626,6 +639,10 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
                 $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
                 $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
                 $package = CheckIfPackageExists
+
+                if (!($package)) {
+                    throw "You must run the Create-CMOfficePackage function before running this function"
+                }
 
                 LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
