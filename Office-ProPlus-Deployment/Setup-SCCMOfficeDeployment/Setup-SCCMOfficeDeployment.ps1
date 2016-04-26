@@ -3,7 +3,7 @@ $enum = "
 using System;
  
     [FlagsAttribute]
-    public enum SCCMDeploymentType
+    public enum CMDeploymentType
     {
         DeployWithScript = 0,
         DeployWithConfigurationFile = 1
@@ -32,7 +32,7 @@ $enum2 = "
 using System;
  
     [FlagsAttribute]
-    public enum SCCMOfficeProgramType
+    public enum CMOfficeProgramType
     {
         DeployWithScript = 0,
         DeployWithConfigurationFile = 1,
@@ -58,7 +58,7 @@ using System;
 Add-Type -TypeDefinition $enumBitness -ErrorAction SilentlyContinue
 } catch { }
 
-function Download-SCCMOfficeChannelFiles() {
+function Download-CMOfficeChannelFiles() {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -93,7 +93,7 @@ function Download-SCCMOfficeChannelFiles() {
          if ($Channels -contains $Channel) {
 
             $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
-            $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel
+            $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel
             $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
 
             Download-OfficeProPlusChannels -TargetDirectory $OfficeFilesPath  -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true -Languages $Languages -Bitness $Bitness
@@ -101,13 +101,13 @@ function Download-SCCMOfficeChannelFiles() {
             $cabFilePath = "$env:TEMP/ofl.cab"
             Copy-Item -Path $cabFilePath -Destination "$OfficeFilesPath\ofl.cab" -Force
 
-            $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $true 
+            $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $true 
          }
        }
     }
 }
  
-function Create-SCCMOfficePackage {
+function Create-CMOfficePackage {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -133,7 +133,7 @@ function Create-SCCMOfficePackage {
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$SCCMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL
     )
     Begin
     {
@@ -143,6 +143,8 @@ function Create-SCCMOfficePackage {
     }
     Process {
        try {
+
+       Check-AdminAccess
 
        $downloadAvailable = $false
        if (Test-Path "$PSScriptRoot\Download-OfficeProPlusChannels.ps1") {
@@ -165,7 +167,7 @@ function Create-SCCMOfficePackage {
        foreach ($Channel in $ChannelList) {
          if ($Channels -contains $Channel) {
            $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
-           $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $false
+           $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $false
 
            $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
            $existingPackage = CheckIfPackageExists
@@ -226,10 +228,10 @@ function Create-SCCMOfficePackage {
              throw "Deployment folder missing: $DeploymentFilePath"
            }
 
-           LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
+           LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
            if (!($existingPackage)) {
-              $package = CreateSCCMPackage -Name $packageName -Path $Path -Channel $Channel -UpdateOnlyChangedBits $UpdateOnlyChangedBits -CustomPackageShareName $CustomPackageShareName
+              $package = CreateCMPackage -Name $packageName -Path $Path -Channel $Channel -UpdateOnlyChangedBits $UpdateOnlyChangedBits -CustomPackageShareName $CustomPackageShareName
            } else {
              Write-Host "`tPackage Already Exists: $packageName"
            }
@@ -249,7 +251,7 @@ function Create-SCCMOfficePackage {
     }
 }
 
-function Create-SCCMOfficeDeploymentProgram {
+function Create-CMOfficeDeploymentProgram {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -257,16 +259,16 @@ function Create-SCCMOfficeDeploymentProgram {
         [OfficeChannel[]] $Channels = @(1,2,3),
 
 	    [Parameter()]
-	    [SCCMDeploymentType]$DeploymentType = "DeployWithScript",
+	    [CMDeploymentType]$DeploymentType = "DeployWithScript",
 
 	    [Parameter()]
-	    [String]$ScriptName = "SCCM-OfficeDeploymentScript.ps1",
+	    [String]$ScriptName = "CM-OfficeDeploymentScript.ps1",
 
 	    [Parameter()]
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$SCCMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL
     )
     Begin
     {
@@ -276,8 +278,12 @@ function Create-SCCMOfficeDeploymentProgram {
     }
     Process 
     {
+       try {
+
+         Check-AdminAccess
+
          foreach ($channel in $Channels) {
-             LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
+             LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
              $existingPackage = CheckIfPackageExists
 
@@ -287,7 +293,7 @@ function Create-SCCMOfficeDeploymentProgram {
              if ($DeploymentType -eq "DeployWithScript") {
                  $ProgramName = "Deploy $channel Channel With Script"
                  $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
-                                "-NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1 -Channel $channel -SourceFileFolder SourceFiles"
+                                "-NoProfile -WindowStyle Hidden -File .\CM-OfficeDeploymentScript.ps1 -Channel $channel -SourceFileFolder SourceFiles"
 
              } elseif ($DeploymentType -eq "DeployWithConfigurationFile") {
                  $ProgramName = "Deploy $channel Channel With Configuration File"
@@ -301,9 +307,13 @@ function Create-SCCMOfficeDeploymentProgram {
              if ($packageId) {
                 $comment = $DeploymentType.ToString() + "-" + $channel
 
-                CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
+                CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
              }
          }
+
+       } catch {
+         throw;
+       }
     }
     End
     {
@@ -312,7 +322,7 @@ function Create-SCCMOfficeDeploymentProgram {
     }
 }
 
-function Create-SCCMOfficeChannelChangeProgram {
+function Create-CMOfficeChannelChangeProgram {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -323,7 +333,7 @@ function Create-SCCMOfficeChannelChangeProgram {
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$SCCMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL
     )
     Begin
     {
@@ -333,7 +343,11 @@ function Create-SCCMOfficeChannelChangeProgram {
     }
     Process 
     {
-         LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
+       try {
+
+         Check-AdminAccess
+
+         LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
          $existingPackage = CheckIfPackageExists
 
@@ -360,10 +374,14 @@ function Create-SCCMOfficeChannelChangeProgram {
                  if ($packageId) {
                     $comment = "ChangeChannel-$channel"
 
-                    CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
+                    CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
                  }
              }
          }
+
+       } catch {
+         throw;
+       }
     }
     End
     {
@@ -372,7 +390,7 @@ function Create-SCCMOfficeChannelChangeProgram {
     }
 }
 
-function Create-SCCMOfficeRollBackProgram {
+function Create-CMOfficeRollBackProgram {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -380,7 +398,7 @@ function Create-SCCMOfficeRollBackProgram {
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$SCCMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL
     )
     Begin
     {
@@ -390,7 +408,11 @@ function Create-SCCMOfficeRollBackProgram {
     }
     Process 
     {
-         LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
+       try {
+
+         Check-AdminAccess
+
+         LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
          $existingPackage = CheckIfPackageExists
 
@@ -416,9 +438,13 @@ function Create-SCCMOfficeRollBackProgram {
              if ($packageId) {
                 $comment = "RollBack"
 
-                CreateSCCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
+                CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
              }
          }
+
+       } catch {
+         throw;
+       }
     }
     End
     {
@@ -427,10 +453,10 @@ function Create-SCCMOfficeRollBackProgram {
     }
 }
 
-function Distribute-SCCMOfficePackage {
+function Distribute-CMOfficePackage {
 <#
 .SYNOPSIS
-Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
 
 .DESCRIPTION
 
@@ -447,14 +473,14 @@ The update branch to be used with the deployment. Current options are "Business,
 .PARAMETER $SiteCode
 The 3 Letter Site ID.
 
-.PARAMETER SCCMPSModulePath
-Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if SCCM is installed in a non standard path.
+.PARAMETER CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
 
 .PARAMETER distributionPoint
 Sets which distribution points will be used, and distributes the package.
 
 .Example
-Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Office ProPlus Deployment" -ProgramName "Office2016Setup.exe" -distributionPoint SCCM-CM.CONTOSO.COM -source \\SCCM-CM\updates -branch Current
+Setup-CMOfficeProPlusPackage -Path \\CM-CM\OfficeDeployment -PackageName "Office ProPlus Deployment" -ProgramName "Office2016Setup.exe" -distributionPoint CM-CM.CONTOSO.COM -source \\CM-CM\updates -branch Current
 #>
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
@@ -475,7 +501,7 @@ Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Of
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$SCCMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL
 
     )
     Begin
@@ -486,17 +512,21 @@ Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Of
     }
     Process
     {
+       try {
+
+         Check-AdminAccess
+
         $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
         $ChannelXml = Get-ChannelXml
 
         foreach ($ChannelName in $ChannelList) {
            if ($Channels -contains $ChannelName) {
                $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $ChannelName.ToString() }
-               $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
+               $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
                $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
                $package = CheckIfPackageExists
 
-               LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
+               LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
                if ($package) {
                     [string]$packageName = $package.Name
@@ -515,10 +545,14 @@ Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Of
         }
 
         Write-Host 
-        Write-Host "NOTE: In order to deploy the package you must run the function 'Deploy-SCCMOfficeChannelPackage'." -BackgroundColor Red
+        Write-Host "NOTE: In order to deploy the package you must run the function 'Deploy-CMOfficeChannelPackage'." -BackgroundColor Red
         Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor Red
         Write-Host "      otherwise the deployments will fail. The clients will continue to fail until the " -BackgroundColor Red
         Write-Host "      content distribution is complete." -BackgroundColor Red
+
+       } catch {
+         throw;
+       }
     }
     End
     {
@@ -527,31 +561,31 @@ Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Of
     }
 }
 
-function Deploy-SCCMOfficeProgram {
+function Deploy-CMOfficeProgram {
 <#
 .SYNOPSIS
-Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
 
 .DESCRIPTION
 
 .PARAMETER Collection
-The target SCCM Collection
+The target CM Collection
 
 .PARAMETER PackageName
-The Name of the SCCM package create by the Setup-SCCMOfficeProPlusPackage function
+The Name of the CM package create by the Setup-CMOfficeProPlusPackage function
 
 .PARAMETER ProgramName
-The Name of the SCCM program create by the Setup-SCCMOfficeProPlusPackage function
+The Name of the CM program create by the Setup-CMOfficeProPlusPackage function
 
 .PARAMETER UpdateOnlyChangedBits
 Determines whether or not the EnableBinaryDeltaReplication enabled or not
 
-.PARAMETER SCCMPSModulePath
-Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if SCCM is installed in a non standard path.
+.PARAMETER CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
 
 .Example
-Deploy-SCCMOfficeProPlusPackage -Collection "CollectionName"
-Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
+Deploy-CMOfficeProPlusPackage -Collection "CollectionName"
+Deploys the Package created by the Setup-CMOfficeProPlusPackage function
 #>
     [CmdletBinding()]	
     Param
@@ -563,13 +597,13 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
         [OfficeChannel] $Channel,
 
         [Parameter(Mandatory=$true)]
-        [SCCMOfficeProgramType] $ProgramType,
+        [CMOfficeProgramType] $ProgramType,
         
 	    [Parameter()]
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$SCCMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL
 	) 
     Begin
     {
@@ -579,17 +613,21 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
     }
     Process
     {
+       try {
+
+         Check-AdminAccess
+
         $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
         $ChannelXml = Get-ChannelXml
 
         foreach ($ChannelName in $ChannelList) {
             if ($Channel.ToString().ToLower() -eq $ChannelName.ToLower()) {
                 $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $ChannelName.ToString() }
-                $latestVersion = Get-BranchLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
+                $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
                 $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
                 $package = CheckIfPackageExists
 
-                LoadSCCMPrereqs -SiteCode $SiteCode -SCCMPSModulePath $SCCMPSModulePath
+                LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
                 $pType = ""
 
@@ -649,7 +687,9 @@ Deploys the Package created by the Setup-SCCMOfficeProPlusPackage function
                 }
             }
         }
-        
+       } catch {
+         throw;
+       }
     }
     End {
         Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
@@ -729,7 +769,7 @@ function CheckIfPackageExists() {
         $startLocation = Get-Location
     }
     Process {
-       LoadSCCMPrereqs
+       LoadCMPrereqs
 
        $packageName = "Office 365 ProPlus"
 
@@ -757,7 +797,7 @@ function CheckIfVersionExists() {
         $startLocation = Get-Location
     }
     Process {
-       LoadSCCMPrereqs
+       LoadCMPrereqs
 
        $VersionName = "$Channel - $Version"
 
@@ -772,7 +812,7 @@ function CheckIfVersionExists() {
     }
 }
 
-function LoadSCCMPrereqs() {
+function LoadCMPrereqs() {
     [CmdletBinding()]	
     Param
 	(
@@ -780,7 +820,7 @@ function LoadSCCMPrereqs() {
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$SCCMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL
     )
     Begin
     {
@@ -790,10 +830,10 @@ function LoadSCCMPrereqs() {
     }
     Process {
 
-        $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
+        $CMModulePath = GetCMPSModulePath -CMPSModulePath $CMPSModulePath 
     
-        if ($sccmModulePath) {
-            Import-Module $sccmModulePath
+        if ($CMModulePath) {
+            Import-Module $CMModulePath
 
             if (!$SiteCode) {
                $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
@@ -804,7 +844,7 @@ function LoadSCCMPrereqs() {
     }
 }
 
-function CreateSCCMPackage() {
+function CreateCMPackage() {
     [CmdletBinding()]	
     Param
 	(
@@ -852,7 +892,7 @@ function CreateSCCMPackage() {
     return $package
 }
 
-function RemovePreviousSCCMPackages() {
+function RemovePreviousCMPackages() {
     [CmdletBinding()]	
     Param
 	(
@@ -876,7 +916,7 @@ function RemovePreviousSCCMPackages() {
 }
 
 
-function CreateSCCMProgram() {
+function CreateCMProgram() {
     [CmdletBinding()]	
     Param
 	(
@@ -1174,31 +1214,31 @@ function Create-FileShare() {
      }
 }
 
-function GetSCCMPSModulePath() {
+function GetCMPSModulePath() {
     [CmdletBinding()]	
     Param
 	(
 		[Parameter()]
-		[String]$SCCMPSModulePath = $NULL
+		[String]$CMPSModulePath = $NULL
 	)
 
     [bool]$pathExists = $false
 
-    if ($SCCMPSModulePath) {
-       if ($SCCMPSModulePath.ToLower().EndsWith(".psd1")) {
-         $sccmModulePath = $SCCMPSModulePath
-         $pathExists = Test-Path -Path $sccmModulePath
+    if ($CMPSModulePath) {
+       if ($CMPSModulePath.ToLower().EndsWith(".psd1")) {
+         $CMModulePath = $CMPSModulePath
+         $pathExists = Test-Path -Path $CMModulePath
        }
     }
 
     if (!$pathExists) {
         $uiInstallDir = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Setup" -Name "UI Installation Directory").'UI Installation Directory'
-        $sccmModulePath = Join-Path $uiInstallDir "bin\ConfigurationManager.psd1"
+        $CMModulePath = Join-Path $uiInstallDir "bin\ConfigurationManager.psd1"
 
-        $pathExists = Test-Path -Path $sccmModulePath
+        $pathExists = Test-Path -Path $CMModulePath
         if (!$pathExists) {
-            $sccmModulePath = "$env:ProgramFiles\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
-            $pathExists = Test-Path -Path $sccmModulePath
+            $CMModulePath = "$env:ProgramFiles\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
+            $pathExists = Test-Path -Path $CMModulePath
         }
     }
 
@@ -1210,28 +1250,28 @@ function GetSCCMPSModulePath() {
            $dirInfo = ([System.IO.DirectoryInfo]$uiAdminPath).Parent.FullName
        }
       
-       $sccmModulePath = $dirInfo + "\ConfigurationManager.psd1"
-       $pathExists = Test-Path -Path $sccmModulePath
+       $CMModulePath = $dirInfo + "\ConfigurationManager.psd1"
+       $pathExists = Test-Path -Path $CMModulePath
     }
 
     if (!$pathExists) {
-       $sccmModulePath = "${env:ProgramFiles(x86)}\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
-       $pathExists = Test-Path -Path $sccmModulePath
+       $CMModulePath = "${env:ProgramFiles(x86)}\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
+       $pathExists = Test-Path -Path $CMModulePath
     }
 
     if (!$pathExists) {
-       $sccmModulePath = "${env:ProgramFiles(x86)}\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
-       $pathExists = Test-Path -Path $sccmModulePath
+       $CMModulePath = "${env:ProgramFiles(x86)}\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
+       $pathExists = Test-Path -Path $CMModulePath
     }
 
     if (!$pathExists) {
-       throw "Cannot find the ConfigurationManager.psd1 file. Please use the -SCCMPSModulePath parameter to specify the location of the PowerShell Module"
+       throw "Cannot find the ConfigurationManager.psd1 file. Please use the -CMPSModulePath parameter to specify the location of the PowerShell Module"
     }
 
-    return $sccmModulePath
+    return $CMModulePath
 }
 
-# Specify one of SCCM servers and Site code is returned automatically 
+# Specify one of CM servers and Site code is returned automatically 
 function Get-Site([string[]]$computerName = $env:COMPUTERNAME) {
     Get-WmiObject -ComputerName $ComputerName -Namespace "root\SMS" -Class "SMS_ProviderLocation" | foreach-object{ 
         if ($_.ProviderForLocalSite -eq $true){$SiteCode=$_.sitecode} 
@@ -1326,7 +1366,7 @@ function Get-ChannelUrl() {
 
 }
 
-function Get-BranchLatestVersion() {
+function Get-ChannelLatestVersion() {
    [CmdletBinding()]
    param( 
       [Parameter(Mandatory=$true)]
@@ -1350,19 +1390,24 @@ function Get-BranchLatestVersion() {
 
        if (!($OverWrite)) {
           if ($FolderPath) {
-              $CABFilePath = "$FolderPath\$channelShortName\v64.cab"
+              $CABFilePath = "$FolderPath\$channelShortName\v32.cab"
+
+              if (!(Test-Path -Path $CABFilePath)) {
+                 $CABFilePath = "$FolderPath\$channelShortName\v64.cab"
+              }
+
               if (Test-Path -Path $CABFilePath) {
                  $downloadFile = $false
               } else {
-                throw "File missing $FolderPath\$channelShortName\v64.cab"
+                throw "File missing $FolderPath\$channelShortName\v64.cab or $FolderPath\$channelShortName\v64.cab"
               }
           }
        }
 
        if ($downloadFile) {
            $webclient = New-Object System.Net.WebClient
-           $CABFilePath = "$env:TEMP/v64.cab"
-           $XMLDownloadURL = "$ChannelUrl/Office/Data/v64.cab"
+           $CABFilePath = "$env:TEMP/v32.cab"
+           $XMLDownloadURL = "$ChannelUrl/Office/Data/v32.cab"
            $webclient.DownloadFile($XMLDownloadURL,$CABFilePath)
 
            if ($FolderPath) {
@@ -1370,7 +1415,7 @@ function Get-BranchLatestVersion() {
 
              $channelShortName = ConvertChannelNameToShortName -ChannelName $Channel 
 
-             $targetFile = "$FolderPath\$channelShortName\v64.cab"
+             $targetFile = "$FolderPath\$channelShortName\v32.cab"
              Copy-Item -Path $CABFilePath -Destination $targetFile -Force
            }
        }
@@ -1434,10 +1479,10 @@ function ConvertChannelNameToShortName {
     }
 }
 
-function Setup-SCCMOfficeDeploymentPackageOLD {
+function Setup-CMOfficeDeploymentPackageOLD {
 <#
 .SYNOPSIS
-Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
 
 .DESCRIPTION
 
@@ -1454,14 +1499,14 @@ The update branch to be used with the deployment. Current options are "Business,
 .PARAMETER $SiteCode
 The 3 Letter Site ID.
 
-.PARAMETER SCCMPSModulePath
-Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if SCCM is installed in a non standard path.
+.PARAMETER CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
 
 .PARAMETER distributionPoint
 Sets which distribution points will be used, and distributes the package.
 
 .Example
-Setup-SCCMOfficeProPlusPackage -Path \\SCCM-CM\OfficeDeployment -PackageName "Office ProPlus Deployment" -ProgramName "Office2016Setup.exe" -distributionPoint SCCM-CM.CONTOSO.COM -source \\SCCM-CM\updates -branch Current
+Setup-CMOfficeProPlusPackage -Path \\CM-CM\OfficeDeployment -PackageName "Office ProPlus Deployment" -ProgramName "Office2016Setup.exe" -distributionPoint CM-CM.CONTOSO.COM -source \\CM-CM\updates -branch Current
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true)]
@@ -1477,7 +1522,7 @@ Param
 	[InstallType]$InstallType = "ScriptInstall",
 
 	[Parameter()]
-	[String]$ScriptName = "SCCM-OfficeDeploymentScript.ps1",
+	[String]$ScriptName = "CM-OfficeDeploymentScript.ps1",
 
 	[Parameter()]
 	[String]$Path = $null,
@@ -1504,7 +1549,7 @@ Param
 	[uint16]$DeploymentExpiryDurationInDays = 15,
 
 	[Parameter()]
-	[String]$SCCMPSModulePath = $NULL,
+	[String]$CMPSModulePath = $NULL,
 
 	[Parameter()]
 	[String]$Source = $null
@@ -1550,15 +1595,15 @@ Process
 	Set-Location $startLocation
     Set-Location $PSScriptRoot
 
-    Write-Host "Loading SCCM Module"
+    Write-Host "Loading CM Module"
     Write-Host ""
 
     #HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SMS\Setup
 
-    $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
+    $CMModulePath = GetCMPSModulePath -CMPSModulePath $CMPSModulePath 
     
-    if ($sccmModulePath) {
-        Import-Module $sccmModulePath
+    if ($CMModulePath) {
+        Import-Module $CMModulePath
 
         if (!$SiteCode) {
            $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
@@ -1572,18 +1617,18 @@ Process
         
 	    Set-Location "$SiteCode`:"	
 
-        $package = CreateSCCMPackage -Name $SavedPackageName -Path $path -UpdateOnlyChangedBits $UpdateOnlyChangedBits
+        $package = CreateCMPackage -Name $SavedPackageName -Path $path -UpdateOnlyChangedBits $UpdateOnlyChangedBits
         [string]$CommandLine = ""
 
         if ($InstallType -eq "ScriptInstall") {
             $SavedProgramName = "ScriptInstall"
-            $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\SCCM-OfficeDeploymentScript.ps1"
+            $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\CM-OfficeDeploymentScript.ps1"
         } else {
             $SavedProgramName = "SetupInstall"
             $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
         }
 
-        CreateSCCMProgram -Name $SavedProgramName -PackageName $SavedPackageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
+        CreateCMProgram -Name $SavedProgramName -PackageName $SavedPackageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
 
         Write-Host "Starting Content Distribution"	
 
@@ -1596,7 +1641,7 @@ Process
         }
 
         Write-Host 
-        Write-Host "NOTE: In order to deploy the package you must run the function 'Deploy-SCCMOfficeUpdates'." -BackgroundColor Red
+        Write-Host "NOTE: In order to deploy the package you must run the function 'Deploy-CMOfficeUpdates'." -BackgroundColor Red
         Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor Red
         Write-Host "      otherwise the deployments will fail. The clients will continue to fail until the " -BackgroundColor Red
         Write-Host "      content distribution is complete." -BackgroundColor Red
@@ -1610,4 +1655,8 @@ End
     Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
     Set-Location $startLocation    
 }
+}
+
+function Check-AdminAccess() {
+If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`    [Security.Principal.WindowsBuiltInRole] “Administrator”)){    throw “You do not have Administrator rights to run this script!`nPlease re-run this script as an Administrator!”}
 }
