@@ -209,7 +209,7 @@ function Create-CMOfficePackage {
 
                        $cabFilePath = "$env:TEMP/ofl.cab"
                        if (!(Test-Path $cabFilePath)) {
-                         Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+                         Copy-Item -Path "$LocalPath\ofl.cab" -Destination $cabFilePath -Force
                        }
                    }
                }
@@ -461,6 +461,126 @@ function Create-CMOfficeRollBackProgram {
         Set-Location $startLocation    
     }
 }
+
+function Create-CMOfficeUpdateProgram {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param
+    (
+        [Parameter()]
+        [bool] $UseScheduledTask = $true,
+
+        [Parameter()]
+        [bool] $WaitForUpdateToFinish = $true,
+
+        [Parameter()]
+        [bool] $EnableUpdateAnywhere = $true,
+
+        [Parameter()]
+        [bool] $ForceAppShutdown = $false,
+
+        [Parameter()]
+        [bool] $UpdatePromptUser = $false,
+
+        [Parameter()]
+        [bool] $DisplayLevel = $false,
+
+        [Parameter()]
+        [string] $UpdateToVersion = $NULL,
+
+	    [Parameter()]
+	    [String]$SiteCode = $null,
+
+	    [Parameter()]
+	    [String]$CMPSModulePath = $NULL
+    )
+    Begin
+    {
+        $currentExecutionPolicy = Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        $startLocation = Get-Location
+    }
+    Process 
+    {
+       try {
+
+         Check-AdminAccess
+
+         LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
+
+         $existingPackage = CheckIfPackageExists
+         if (!($existingPackage)) {
+            throw "You must run the Create-CMOfficePackage function before running this function"
+         }
+
+         [string]$CommandLine = ""
+         [string]$ProgramName = ""
+
+         if ($UseScheduledTask) {
+           $ProgramName = "Update Office 365 With Scheduled Task"
+         } else {
+           $ProgramName = "Update Office 365 With ConfigMgr"
+         }
+
+         if ($UseScheduledTask) {
+            $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Create-Office365AnywhereTask.ps1"
+         } else {
+            $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Update-Office365Anywhere.ps1"
+         }
+
+         $CommandLine += " -WaitForUpdateToFinish " + (Convert-Bool -value $WaitForUpdateToFinish) + ` 
+                         " -EnableUpdateAnywhere " + (Convert-Bool -value $EnableUpdateAnywhere) + ` 
+                         " -ForceAppShutdown " + (Convert-Bool -value $ForceAppShutdown) + ` 
+                         " -UpdatePromptUser " + (Convert-Bool -value $UpdatePromptUser) + ` 
+                         " -DisplayLevel " + (Convert-Bool -value $DisplayLevel)
+
+         if ($UpdateToVersion) {
+             $CommandLine += "-UpdateToVersion " + $UpdateToVersion
+         }
+
+         $SharePath = $existingPackage.PkgSourcePath
+
+         $OSSourcePath = "$PSScriptRoot\DeploymentFiles\Update-Office365Anywhere.ps1"
+         $OCScriptPath = "$SharePath\Update-Office365Anywhere.ps1"
+
+         $OSSourcePathTask = "$PSScriptRoot\DeploymentFiles\Create-Office365AnywhereTask.ps1"
+         $OCScriptPathTask = "$SharePath\Create-Office365AnywhereTask.ps1"
+
+         if (!(Test-Path $OSSourcePath)) {
+            throw "Required file missing: $OSSourcePath"
+         } else {
+             if (!(Test-ItemPathUNC -Path $SharePath -FileName "Update-Office365Anywhere.ps1")) {
+                Copy-ItemUNC -SourcePath $OSSourcePath -TargetPath $SharePath -FileName "Update-Office365Anywhere.ps1"
+             }
+
+             if ($UseScheduledTask) {
+               if (!(Test-ItemPathUNC -Path $SharePath -FileName "Create-Office365AnywhereTask.ps1")) {
+                  Copy-ItemUNC -SourcePath $OSSourcePathTask  -TargetPath $SharePath -FileName "Create-Office365AnywhereTask.ps1"
+               }
+             }
+
+             [string]$packageId = $existingPackage.PackageId
+             if ($packageId) {
+                if ($UseScheduledTask) {
+                   $comment = "UpdateWithTask"
+                } else {
+                   $comment = "UpdateWithCM"
+                }
+
+                CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
+             }
+         }
+
+       } catch {
+         throw;
+       }
+    }
+    End
+    {
+        Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
+        Set-Location $startLocation    
+    }
+}
+
 
 function Distribute-CMOfficePackage {
 <#
@@ -714,7 +834,17 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
     }
 }
 
+Function Convert-Bool() {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param
+    (
+        [Parameter(Mandatory=$true)]
+        [bool] $value
+    )
 
+    $newValue = "$" + $value.ToString()
+    return $newValue 
+}
 
 function Test-ItemPathUNC() {    [CmdletBinding()]	
     Param
