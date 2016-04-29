@@ -27,12 +27,12 @@ Process {
    }
  }
 
- $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
-
-#Importing all required functions
+ #Importing all required functions
 . $scriptPath\Generate-ODTConfigurationXML.ps1
 . $scriptPath\Edit-OfficeConfigurationFile.ps1
 . $scriptPath\Install-OfficeClickToRun.ps1
+
+$UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
 
 $targetFilePath = "$env:temp\configuration.xml"
 
@@ -47,7 +47,6 @@ if (Test-Path -Path "$UpdateURLPath\Office\Data") {
 }
 
 Install-OfficeClickToRun -TargetFilePath $targetFilePath
-
 
 # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
 }

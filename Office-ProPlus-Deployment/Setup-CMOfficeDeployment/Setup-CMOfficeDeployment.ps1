@@ -38,7 +38,8 @@ using System;
         DeployWithConfigurationFile = 1,
         ChangeChannel = 2,
         RollBack = 3,
-        Update = 4
+        UpdateWithConfigMgr = 4,
+        UpdateWithTask = 5
     }
 "
 Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
@@ -115,13 +116,10 @@ function Create-CMOfficePackage {
         [OfficeChannel[]] $Channels = @(1,2,3),
 
         [Parameter()]
-	    [String]$OfficeFilesPath = $NULL,
+	    [String]$OfficeSourceFilesPath = $NULL,
 
         [Parameter()]
-        [bool]$IncludeSourceFilesInPackage = $true,
-
-        [Parameter()]
-	    [bool]$MoveOfflineFiles = $false,
+	    [bool]$MoveSourceFiles = $false,
 
 		[Parameter()]
 		[String]$CustomPackageShareName = $null,
@@ -146,23 +144,13 @@ function Create-CMOfficePackage {
 
        Check-AdminAccess
 
-       $downloadAvailable = $false
-       if (Test-Path "$PSScriptRoot\Download-OfficeProPlusChannels.ps1") {
-         . "$PSScriptRoot\Download-OfficeProPlusChannels.ps1"
-         $downloadAvailable = $true
-       } else {
-         if (($IncludeSourceFilesInPackage) -and !($OfficeFilesPath)) {
-            throw "Dependency file missing: $PSScriptRoot\Download-OfficeProPlusChannels.ps1"
-         }
-       }
-
-       $cabFilePath = "$OfficeFilesPath\ofl.cab"
+       $cabFilePath = "$OfficeSourceFilesPath\ofl.cab"
        if (Test-Path $cabFilePath) {
             Copy-Item -Path $cabFilePath -Destination "$PSScriptRoot\ofl.cab" -Force
        }
 
        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
-       $ChannelXml = Get-ChannelXml -FolderPath $OfficeFilesPath -OverWrite $false
+       $ChannelXml = Get-ChannelXml -FolderPath $OfficeSourceFilesPath -OverWrite $false
 
        foreach ($Channel in $ChannelList) {
          if ($Channels -contains $Channel) {
@@ -182,41 +170,35 @@ function Create-CMOfficePackage {
 
            [System.IO.Directory]::CreateDirectory($LocalChannelPath) | Out-Null
                           
-           if ($IncludeSourceFilesInPackage) {
-               if ($OfficeFilesPath) {
-                   $officeFileChannelPath = "$OfficeFilesPath\$ChannelShortName"
-                   $officeFileTargetPath = "$LocalChannelPath\$Channel"
+           if ($OfficeSourceFilesPath) {
+                $officeFileChannelPath = "$OfficeSourceFilesPath\$ChannelShortName"
+                $officeFileTargetPath = "$LocalChannelPath\$Channel"
 
-                   if (!(Test-Path -Path $officeFileChannelPath)) {
-                     throw "Channel Folder Missing: $officeFileChannelPath"
-                   }
+                if (!(Test-Path -Path $officeFileChannelPath)) {
+                    throw "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy"
+                }
 
-                   [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
+                [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
 
-                   if ($MoveOfflineFiles) {
-                       Move-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Force
-                   } else {
-                       Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
-                   }
+                if ($MoveSourceFiles) {
+                    Move-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Force
+                } else {
+                    Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
+                }
 
-                   $cabFilePath = "$OfficeFilesPath\ofl.cab"
-                   if (Test-Path $cabFilePath) {
-                      Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
-                   }
-               } else {
-                   if ($downloadAvailable) {
-                       Download-OfficeProPlusChannels -TargetDirectory $LocalChannelPath -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true 
-
-                       $cabFilePath = "$env:TEMP/ofl.cab"
-                       if (!(Test-Path $cabFilePath)) {
-                         Copy-Item -Path "$LocalPath\ofl.cab" -Destination $cabFilePath -Force
-                       }
-                   }
-               }
+                $cabFilePath = "$OfficeSourceFilesPath\ofl.cab"
+                if (Test-Path $cabFilePath) {
+                    Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+                }
            } else {
-             if (Test-Path -Path "$LocalChannelPath\Office") {
-                Remove-Item -Path "$LocalChannelPath\Office" -Force -Recurse
-             }
+              if (Test-Path -Path "$LocalChannelPath\Office") {
+                 Remove-Item -Path "$LocalChannelPath\Office" -Force -Recurse
+              }
+           }
+
+           $cabFilePath = "$env:TEMP/ofl.cab"
+           if (!(Test-Path $cabFilePath)) {
+                Copy-Item -Path "$LocalPath\ofl.cab" -Destination $cabFilePath -Force
            }
 
            CreateMainCabFiles -LocalPath $LocalPath -ChannelShortName $ChannelShortName -LatestVersion $latestVersion
@@ -233,8 +215,136 @@ function Create-CMOfficePackage {
            if (!($existingPackage)) {
               $package = CreateCMPackage -Name $packageName -Path $Path -Channel $Channel -UpdateOnlyChangedBits $UpdateOnlyChangedBits -CustomPackageShareName $CustomPackageShareName
            } else {
-             Write-Host "`tPackage Already Exists: $packageName"
+              Write-Host "`tPackage Already Exists: $packageName"
            }
+
+           Write-Host
+
+         }
+       }
+       } catch {
+         throw;
+       }
+    }
+    End
+    {
+        Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
+        Set-Location $startLocation    
+    }
+}
+
+function Update-CMOfficePackage {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param
+    (
+        [Parameter()]
+        [OfficeChannel[]] $Channels = @(1,2,3),
+
+        [Parameter()]
+	    [String]$OfficeSourceFilesPath = $NULL,
+
+        [Parameter()]
+	    [bool]$MoveSourceFiles = $false,
+
+	    [Parameter()]
+	    [String]$SiteCode = $null,
+
+	    [Parameter()]
+	    [String]$CMPSModulePath = $NULL
+    )
+    Begin
+    {
+        $currentExecutionPolicy = Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        $startLocation = Get-Location
+    }
+    Process {
+       try {
+
+       Check-AdminAccess
+
+       $cabFilePath = "$OfficeSourceFilesPath\ofl.cab"
+       if (Test-Path $cabFilePath) {
+            Copy-Item -Path $cabFilePath -Destination "$PSScriptRoot\ofl.cab" -Force
+       }
+
+       $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
+       $ChannelXml = Get-ChannelXml -FolderPath $OfficeSourceFilesPath -OverWrite $false
+
+       foreach ($Channel in $ChannelList) {
+         if ($Channels -contains $Channel) {
+           $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
+           $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $false
+
+           $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
+           $existingPackage = CheckIfPackageExists
+           if (!($existingPackage)) {
+              throw "No Package Exists to Update. Please run the Create-CMOfficePackage function first to create the package."
+           }
+
+           $packagePath = $existingPackage.PkgSourcePath
+           if ($packagePath.StartsWith("\\")) {
+               $shareName = $packagePath.Split("\")[3]
+           }
+
+           $existingShare = Get-Fileshare -Name $shareName
+           if (!($existingShare)) {
+              throw "No Package Exists to Update. Please run the Create-CMOfficePackage function first to create the package."
+           }
+
+           $packageName = $existingPackage.Name
+
+           Write-Host "Updating Package: $packageName"
+
+           $Path = $existingPackage.PkgSourcePath
+
+           $packageName = "Office 365 ProPlus"
+           $ChannelPath = "$Path\$Channel"
+           $LocalPath = $existingShare.Path
+           $LocalChannelPath = $existingShare.Path + "\SourceFiles"
+
+           [System.IO.Directory]::CreateDirectory($LocalChannelPath) | Out-Null
+                          
+           if ($OfficeSourceFilesPath) {
+                Write-Host "`tUpdating Source Files..."
+
+                $officeFileChannelPath = "$OfficeSourceFilesPath\$ChannelShortName"
+                $officeFileTargetPath = "$LocalChannelPath\$Channel"
+
+                if (!(Test-Path -Path $officeFileChannelPath)) {
+                    throw "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy"
+                }
+
+                [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
+
+                if ($MoveSourceFiles) {
+                    Move-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Force
+                } else {
+                    Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
+                }
+
+                $cabFilePath = "$OfficeSourceFilesPath\ofl.cab"
+                if (Test-Path $cabFilePath) {
+                    Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+                }
+           }
+
+           $cabFilePath = "$env:TEMP/ofl.cab"
+           if (!(Test-Path $cabFilePath)) {
+                Copy-Item -Path "$LocalPath\ofl.cab" -Destination $cabFilePath -Force
+           }
+
+           CreateMainCabFiles -LocalPath $LocalPath -ChannelShortName $ChannelShortName -LatestVersion $latestVersion
+
+           $DeploymentFilePath = "$PSSCriptRoot\DeploymentFiles\*.*"
+           if (Test-Path -Path $DeploymentFilePath) {
+             Write-Host "`tUpdating Deployment Files..."
+             Copy-Item -Path $DeploymentFilePath -Destination "$LocalPath" -Force -Recurse
+           } else {
+             throw "Deployment folder missing: $DeploymentFilePath"
+           }
+
+           LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
            Write-Host
 
@@ -467,9 +577,6 @@ function Create-CMOfficeUpdateProgram {
     Param
     (
         [Parameter()]
-        [bool] $UseScheduledTask = $true,
-
-        [Parameter()]
         [bool] $WaitForUpdateToFinish = $true,
 
         [Parameter()]
@@ -486,6 +593,15 @@ function Create-CMOfficeUpdateProgram {
 
         [Parameter()]
         [string] $UpdateToVersion = $NULL,
+
+        [Parameter()]
+        [string] $LogPath = $NULL,
+
+        [Parameter()]
+        [string] $LogName = $NULL,
+        
+        [Parameter()]
+        [bool] $ValidateUpdateSourceFiles = $true,
 
 	    [Parameter()]
 	    [String]$SiteCode = $null,
@@ -512,20 +628,120 @@ function Create-CMOfficeUpdateProgram {
             throw "You must run the Create-CMOfficePackage function before running this function"
          }
 
-         [string]$CommandLine = ""
-         [string]$ProgramName = ""
+         [string]$ProgramName = "Update Office 365 With ConfigMgr"
+         [string]$CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Update-Office365Anywhere.ps1"
 
-         if ($UseScheduledTask) {
-           $ProgramName = "Update Office 365 With Scheduled Task"
-         } else {
-           $ProgramName = "Update Office 365 With ConfigMgr"
+         $CommandLine += " -WaitForUpdateToFinish " + (Convert-Bool -value $WaitForUpdateToFinish) + ` 
+                         " -EnableUpdateAnywhere " + (Convert-Bool -value $EnableUpdateAnywhere) + ` 
+                         " -ForceAppShutdown " + (Convert-Bool -value $ForceAppShutdown) + ` 
+                         " -UpdatePromptUser " + (Convert-Bool -value $UpdatePromptUser) + ` 
+                         " -DisplayLevel " + (Convert-Bool -value $DisplayLevel)
+
+         if ($UpdateToVersion) {
+             $CommandLine += "-UpdateToVersion " + $UpdateToVersion
          }
 
-         if ($UseScheduledTask) {
-            $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Create-Office365AnywhereTask.ps1"
+         $SharePath = $existingPackage.PkgSourcePath
+
+         $OSSourcePath = "$PSScriptRoot\DeploymentFiles\Update-Office365Anywhere.ps1"
+         $OCScriptPath = "$SharePath\Update-Office365Anywhere.ps1"
+
+         if (!(Test-Path $OSSourcePath)) {
+            throw "Required file missing: $OSSourcePath"
          } else {
-            $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Update-Office365Anywhere.ps1"
+             if (!(Test-ItemPathUNC -Path $SharePath -FileName "Update-Office365Anywhere.ps1")) {
+                Copy-ItemUNC -SourcePath $OSSourcePath -TargetPath $SharePath -FileName "Update-Office365Anywhere.ps1"
+             }
+
+             [string]$packageId = $existingPackage.PackageId
+             if ($packageId) {
+                $comment = "UpdateWithConfigMgr"
+
+                CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
+             }
          }
+
+       } catch {
+         throw;
+       }
+    }
+    End
+    {
+        Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
+        Set-Location $startLocation    
+    }
+}
+
+function Create-CMOfficeUpdateAsTaskProgram {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param
+    (
+        [Parameter()]
+        [bool] $WaitForUpdateToFinish = $true,
+
+        [Parameter()]
+        [bool] $EnableUpdateAnywhere = $true,
+
+        [Parameter()]
+        [bool] $ForceAppShutdown = $false,
+
+        [Parameter()]
+        [bool] $UpdatePromptUser = $false,
+
+        [Parameter()]
+        [bool] $DisplayLevel = $false,
+
+        [Parameter()]
+        [string] $UpdateToVersion = $NULL,
+
+        [Parameter()]
+        [bool] $UseRandomStartTime = $true,
+
+        [Parameter()]
+        [string] $RandomTimeStart = "08:00",
+
+        [Parameter()]
+        [string] $RandomTimeEnd = "17:00",
+
+        [Parameter()]
+        [string] $StartTime = "12:00",
+
+        [Parameter()]
+        [string] $LogPath = $NULL,
+
+        [Parameter()]
+        [string] $LogName = $NULL,
+        
+        [Parameter()]
+        [bool] $ValidateUpdateSourceFiles = $true,
+
+	    [Parameter()]
+	    [String]$SiteCode = $null,
+
+	    [Parameter()]
+	    [String]$CMPSModulePath = $NULL
+    )
+    Begin
+    {
+        $currentExecutionPolicy = Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        $startLocation = Get-Location
+    }
+    Process 
+    {
+       try {
+
+         Check-AdminAccess
+
+         LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
+
+         $existingPackage = CheckIfPackageExists
+         if (!($existingPackage)) {
+            throw "You must run the Create-CMOfficePackage function before running this function"
+         }
+
+         [string]$CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Create-Office365AnywhereTask.ps1"
+         [string]$ProgramName = "Update Office 365 With Scheduled Task"
 
          $CommandLine += " -WaitForUpdateToFinish " + (Convert-Bool -value $WaitForUpdateToFinish) + ` 
                          " -EnableUpdateAnywhere " + (Convert-Bool -value $EnableUpdateAnywhere) + ` 
@@ -560,11 +776,7 @@ function Create-CMOfficeUpdateProgram {
 
              [string]$packageId = $existingPackage.PackageId
              if ($packageId) {
-                if ($UseScheduledTask) {
-                   $comment = "UpdateWithTask"
-                } else {
-                   $comment = "UpdateWithCM"
-                }
+                $comment = "UpdateWithTask"
 
                 CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
              }
@@ -580,7 +792,6 @@ function Create-CMOfficeUpdateProgram {
         Set-Location $startLocation    
     }
 }
-
 
 function Distribute-CMOfficePackage {
 <#
@@ -748,7 +959,7 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
     {
        try {
 
-         Check-AdminAccess
+        Check-AdminAccess
 
         $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
         $ChannelXml = Get-ChannelXml
@@ -773,7 +984,8 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
                     "DeployWithConfigurationFile" { $pType = "DeployWithConfigurationFile-$Channel" }
                     "ChangeChannel" { $pType = "ChangeChannel-$Channel" }
                     "RollBack" { $pType = "RollBack" }
-                    "Update" { $pType = "Update" }
+                    "UpdateWithConfigMgr" { $pType = "UpdateWithConfigMgr" }
+                    "UpdateWithTask" { $pType = "UpdateWithTask" }
                 }
 
                 $Program = Get-CMProgram | Where {$_.Comment -eq $pType }
@@ -834,6 +1046,7 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
     }
 }
 
+
 Function Convert-Bool() {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
@@ -849,8 +1062,8 @@ Function Convert-Bool() {
 function Test-ItemPathUNC() {    [CmdletBinding()]	
     Param
 	(	    [Parameter(Mandatory=$true)]
-	    [String]$Path,	    [Parameter(Mandatory=$true)]
-	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       try {           New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $Path | Out-Null           $target = $drvLetter + ":\" + $FileName           $result = Test-Path -Path $target            return $result       } finally {         Remove-PSDrive $drvLetter       }    }}
+	    [String]$Path,	    [Parameter()]
+	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       try {           New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $Path -ErrorAction Stop | Out-Null           if ($FileName) {             $target = $drvLetter + ":\" + $FileName           } else {             $target = $drvLetter + ":\"            }           $result = Test-Path -Path $target            return $result       } catch {         return $false       } finally {         Remove-PSDrive $drvLetter -ErrorAction SilentlyContinue       }    }}
 
 function Copy-ItemUNC() {    [CmdletBinding()]	
     Param
@@ -1361,6 +1574,23 @@ function Create-FileShare() {
      }
 }
 
+function Get-Fileshare() {
+    [CmdletBinding()]	
+    Param
+	(
+		[Parameter()]
+		[String]$Name = ""
+	)
+
+    $share = Get-WmiObject Win32_Share | where { $_.Name -eq $Name }
+
+    if ($share) {
+        return $share;
+    }
+
+    return $null
+}
+ 
 function GetCMPSModulePath() {
     [CmdletBinding()]	
     Param

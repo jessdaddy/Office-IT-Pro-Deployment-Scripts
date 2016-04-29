@@ -120,6 +120,36 @@ Function StartProcess {
     }
 }
 
+function Test-ItemPathUNC() {    [CmdletBinding()]	
+    Param
+	(	    [Parameter(Mandatory=$true)]
+	    [String]$Path,	    [Parameter()]
+	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       try {           New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $Path -ErrorAction Stop | Out-Null           if ($FileName) {             $target = $drvLetter + ":\" + $FileName           } else {             $target = $drvLetter + ":\"            }           $result = Test-Path -Path $target            return $result       } catch {         return $false       } finally {         Remove-PSDrive $drvLetter -ErrorAction SilentlyContinue       }    }}
+
+function Copy-ItemUNC() {    [CmdletBinding()]	
+    Param
+	(	    [Parameter(Mandatory=$true)]
+	    [String]$SourcePath,	    [Parameter(Mandatory=$true)]
+	    [String]$TargetPath,	    [Parameter(Mandatory=$true)]
+	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       try {          $target = $drvLetter + ":\"          New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $TargetPath | Out-Null          Copy-Item -Path $SourcePath -Destination $target -Force       } finally {         Remove-PSDrive $drvLetter       }    }}
+
+function FindAvailable() {
+   $drives = Get-PSDrive | select Name
+
+   for($n=90;$n -gt 68;$n--) {
+      $letter= [char]$n
+      $exists = $drives | where { $_ -eq $letter }
+      if ($exists) {
+        if ($exists.Count -eq 0) {
+            return $letter
+        }
+      } else {
+        return $letter
+      }
+   }
+   return $null
+}
+
 Function Get-OfficeVersion {
 <#
 .Synopsis
@@ -1181,8 +1211,14 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
             [bool]$scriptPathIsUpdateSource = $false
             if ($UseScriptLocationAsUpdateSource) {
               if ($scriptPath) {
-                  $localUpdatePath = Change-UpdatePathToChannel -UpdatePath $scriptPath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+                  if (Test-ItemPathUNC -Path "$scriptPath\SourceFiles") {
+                     $localUpdatePath = Change-UpdatePathToChannel -UpdatePath "$scriptPath\SourceFiles" -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles                     
+                  } else {
+                     $localUpdatePath = Change-UpdatePathToChannel -UpdatePath $scriptPath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+                  }
+
                   [bool]$localIsAlive = Test-UpdateSource -UpdateSource $localUpdatePath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+
                   if ($localIsAlive) {
                       $scriptPathIsUpdateSource = $true
                       $currentUpdateSource = $localUpdatePath
@@ -1348,7 +1384,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
     }
 }
 
-Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles -UseScriptLocationAsUpdateSource $UseScriptLocationAsUpdateSource
+#Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles -UseScriptLocationAsUpdateSource $UseScriptLocationAsUpdateSource
 
 
 
