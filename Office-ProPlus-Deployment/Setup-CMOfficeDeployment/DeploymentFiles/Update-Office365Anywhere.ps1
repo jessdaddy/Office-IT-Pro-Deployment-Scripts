@@ -1295,7 +1295,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                    $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $currentUpdateSource -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
                }
 
-               if ($channelUpdateSource -ne $currentUpdateSource) {
+               if (($channelUpdateSource -ne $currentUpdateSource) -or $scriptPathIsUpdateSource) {
                    if ($scriptPathIsUpdateSource) {
                        if ($GPOUpdateSource) {
                           New-ItemProperty -Path "HKLM:\$GPORegPath2" -Name "updatepath" -Value $localUpdatePath -PropertyType String -Force -ErrorAction Stop | Out-Null

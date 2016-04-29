@@ -42,6 +42,7 @@ Param
 
     [Parameter()]
     [bool] $UseScriptLocationAsUpdateSource = $false
+    
 )
 
 Function GetScriptRoot() {
@@ -148,10 +149,7 @@ Function Create-Office365AnywhereTask {
         [string] $LogName = $NULL,
         
         [Parameter()]
-        [bool] $ValidateUpdateSourceFiles = $true,
-
-        [Parameter()]
-        [bool] $UseScriptLocationAsUpdateSource = $false
+        [bool] $ValidateUpdateSourceFiles = $true
     )
 
     Begin {
@@ -185,10 +183,19 @@ Function Create-Office365AnywhereTask {
        " -EnableUpdateAnywhere " + (Convert-Bool -value $EnableUpdateAnywhere) + ` 
        " -ForceAppShutdown " + (Convert-Bool -value $ForceAppShutdown) + ` 
        " -UpdatePromptUser " + (Convert-Bool -value $UpdatePromptUser) + ` 
-       " -DisplayLevel " + (Convert-Bool -value $DisplayLevel)
+       " -DisplayLevel " + (Convert-Bool -value $DisplayLevel) + ` 
+       " -ValidateUpdateSourceFiles " + (Convert-Bool -value $ValidateUpdateSourceFiles)
 
        if ($UpdateToVersion) {
-          $exePath += "-UpdateToVersion " + $UpdateToVersion
+          $exePath += " -UpdateToVersion " + $UpdateToVersion
+       }
+
+       if ($LogPath) {
+          $exePath += " -LogPath " + $LogPath
+       }
+
+       if ($LogName) {
+          $exePath += " -LogName " + $LogName
        }
 
        $runAsUser = "NT AUTHORITY\SYSTEM"
@@ -263,8 +270,7 @@ Create-Office365AnywhereTask `
 -StartTime $StartTime `
 -LogPath $LogPath `
 -LogName $LogName `
--ValidateUpdateSourceFiles $ValidateUpdateSourceFiles `
--UseScriptLocationAsUpdateSource $UseScriptLocationAsUpdateSource
+-ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
 
 $scriptRoot = GetScriptRoot
 
