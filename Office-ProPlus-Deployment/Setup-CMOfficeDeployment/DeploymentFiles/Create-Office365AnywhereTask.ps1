@@ -8,7 +8,7 @@ Param
     [bool] $EnableUpdateAnywhere = $true,
 
     [Parameter()]
-    [bool] $ForceAppShutdown = $false,
+    [bool] $ForceAppShutdown = $true,
 
     [Parameter()]
     [bool] $UpdatePromptUser = $false,
@@ -17,8 +17,46 @@ Param
     [bool] $DisplayLevel = $false,
 
     [Parameter()]
-    [string] $UpdateToVersion = $NULL
+    [string] $UpdateToVersion = $NULL,
+
+    [Parameter()]
+    [bool] $UseRandomStartTime = $true,
+
+    [Parameter()]
+    [string] $RandomTimeStart = "08:00",
+
+    [Parameter()]
+    [string] $RandomTimeEnd = "17:00",
+
+    [Parameter()]
+    [string] $StartTime = "12:00",
+
+    [Parameter()]
+    [string] $LogPath = $NULL,
+
+    [Parameter()]
+    [string] $LogName = $NULL,
+        
+    [Parameter()]
+    [bool] $ValidateUpdateSourceFiles = $true,
+
+    [Parameter()]
+    [bool] $UseScriptLocationAsUpdateSource = $false
 )
+
+Function GetScriptRoot() {
+ process {
+     [string]$scriptPath = "."
+
+     if ($PSScriptRoot) {
+       $scriptPath = $PSScriptRoot
+     } else {
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+     }
+
+     return $scriptPath
+ }
+}
 
 Function Generate-StartTime() {
     [CmdletBinding(SupportsShouldProcess=$true)]
@@ -80,7 +118,7 @@ Function Create-Office365AnywhereTask {
         [bool] $EnableUpdateAnywhere = $true,
 
         [Parameter()]
-        [bool] $ForceAppShutdown = $false,
+        [bool] $ForceAppShutdown = $true,
 
         [Parameter()]
         [bool] $UpdatePromptUser = $false,
@@ -101,7 +139,19 @@ Function Create-Office365AnywhereTask {
         [string] $RandomTimeEnd = "17:00",
 
         [Parameter()]
-        [string] $StartTime = "12:00"
+        [string] $StartTime = "12:00",
+
+        [Parameter()]
+        [string] $LogPath = $NULL,
+
+        [Parameter()]
+        [string] $LogName = $NULL,
+        
+        [Parameter()]
+        [bool] $ValidateUpdateSourceFiles = $true,
+
+        [Parameter()]
+        [bool] $UseScriptLocationAsUpdateSource = $false
     )
 
     Begin {
@@ -119,7 +169,7 @@ Function Create-Office365AnywhereTask {
        } else {
            $taskStartTime = $StartTime
        }
-       $taskStartTime
+
        $outputPath = "$env:temp\updateAnywhereTask.xml"
 
        if (Test-Path -Path "$scriptRoot\Update-Office365Anywhere.ps1") {
@@ -130,7 +180,7 @@ Function Create-Office365AnywhereTask {
            Copy-Item -Path "$scriptRoot\DeploymentFiles\Update-Office365Anywhere.ps1" -Destination "$env:Windir\Temp\Update-Office365Anywhere.ps1" -Force
        }
 
-       $exePath = "PowerShell -File $env:windir\Temp\Update-Office365Anywhere.ps1" + `
+       $exePath = "PowerShell -Command $env:windir\Temp\Update-Office365Anywhere.ps1" + `
        " -WaitForUpdateToFinish " + (Convert-Bool -value $WaitForUpdateToFinish) + ` 
        " -EnableUpdateAnywhere " + (Convert-Bool -value $EnableUpdateAnywhere) + ` 
        " -ForceAppShutdown " + (Convert-Bool -value $ForceAppShutdown) + ` 
@@ -141,7 +191,12 @@ Function Create-Office365AnywhereTask {
           $exePath += "-UpdateToVersion " + $UpdateToVersion
        }
 
-       schtasks /create /tn $TaskName /tr `"$exePath`" /sc WEEKLY /st $taskStartTime /f /D TUE /RU "NT AUTHORITY\SYSTEM" /RL Highest | Out-null
+       $runAsUser = "NT AUTHORITY\SYSTEM"
+       if (($UpdatePromptUser) -or ($DisplayLevel) -or (!($ForceAppShutdown))) {
+          $runAsUser = "BUILTIN\Users"
+       }
+
+       schtasks /create /tn $TaskName /tr `"$exePath`" /sc WEEKLY /st $taskStartTime /f /D TUE /RU $runAsUser /RL Highest | Out-null
        schtasks /query /tn $TaskName /xml > $outputPath  | Out-null
 
        [xml]$xml = Get-Content -Path $outputPath
@@ -195,4 +250,34 @@ Function GetScriptRoot() {
  }
 }
 
-Create-Office365AnywhereTask -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion
+Create-Office365AnywhereTask `
+-WaitForUpdateToFinish $WaitForUpdateToFinish `
+-EnableUpdateAnywhere $EnableUpdateAnywhere `
+-ForceAppShutdown $ForceAppShutdown `
+-UpdatePromptUser $UpdatePromptUser `
+-DisplayLevel $DisplayLevel `
+-UpdateToVersion $UpdateToVersion `
+-UseRandomStartTime $UseRandomStartTime `
+-RandomTimeStart $RandomTimeStart `
+-RandomTimeEnd $RandomTimeEnd `
+-StartTime $StartTime `
+-LogPath $LogPath `
+-LogName $LogName `
+-ValidateUpdateSourceFiles $ValidateUpdateSourceFiles `
+-UseScriptLocationAsUpdateSource $UseScriptLocationAsUpdateSource
+
+$scriptRoot = GetScriptRoot
+
+if (Test-Path -Path "$scriptRoot\Update-Office365Anywhere.ps1") {
+
+& $scriptRoot\Update-Office365Anywhere.ps1 -WaitForUpdateToFinish $WaitForUpdateToFinish `
+    -EnableUpdateAnywhere $EnableUpdateAnywhere `
+    -ForceAppShutdown $ForceAppShutdown `
+    -UpdatePromptUser $UpdatePromptUser `
+    -DisplayLevel $DisplayLevel `
+    -UpdateToVersion $UpdateToVersion `
+    -LogPath $LogPath `
+    -LogName $LogName `
+    -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles `
+    -UseScriptLocationAsUpdateSource $UseScriptLocationAsUpdateSource
+}

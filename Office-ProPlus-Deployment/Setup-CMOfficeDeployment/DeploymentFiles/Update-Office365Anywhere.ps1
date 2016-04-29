@@ -7,7 +7,7 @@ Param(
     [bool] $EnableUpdateAnywhere = $true,
 
     [Parameter()]
-    [bool] $ForceAppShutdown = $false,
+    [bool] $ForceAppShutdown = $true,
     
     [Parameter()]
     [bool] $UpdatePromptUser = $false,
@@ -16,13 +16,19 @@ Param(
     [bool] $DisplayLevel = $false,
 
     [Parameter()]
+    [string] $UpdateToVersion = $NULL,
+
+    [Parameter()]
     [string] $LogPath = $null,
 
     [Parameter()]
     [string] $LogName = $null,
 
     [Parameter()]
-    [bool] $ValidateUpdateSourceFiles = $true
+    [bool] $ValidateUpdateSourceFiles = $true,
+
+    [Parameter()]
+    [bool] $UseScriptLocationAsUpdateSource = $false
 
 )
 
@@ -114,46 +120,6 @@ Function StartProcess {
     }
 }
 
-Function Get-OfficeCDNUrl() {
-    $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
-    if (!($CDNBaseUrl)) {
-       $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
-    }
-    if (!($CDNBaseUrl)) {
-        Push-Location
-        $path15 = 'HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\ProductReleaseIDs\Active\stream'
-        $path16 = 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\ProductReleaseIDs\Active\stream'
-        if (Test-Path -Path $path16) { Set-Location $path16 }
-        if (Test-Path -Path $path15) { Set-Location $path15 }
-
-        $items = Get-Item . | Select-Object -ExpandProperty property
-        $properties = $items | ForEach-Object {
-           New-Object psobject -Property @{"property"=$_; "Value" = (Get-ItemProperty -Path . -Name $_).$_}
-        }
-
-        $value = $properties | Select Value
-        $firstItem = $value[0]
-        [string] $cdnPath = $firstItem.Value
-
-        $CDNBaseUrl = Select-String -InputObject $cdnPath -Pattern "http://officecdn.microsoft.com/.*/.{8}-.{4}-.{4}-.{4}-.{12}" -AllMatches | % { $_.Matches } | % { $_.Value }
-        Pop-Location
-    }
-    return $CDNBaseUrl
-}
-
-Function Get-OfficeCTRRegPath() {
-    $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun'
-    $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun'
-    if (Test-Path "HKLM:\$path16") {
-        return $path16
-    }
-    else {
-        if (Test-Path "HKLM:\$path15") {
-            return $path15
-        }
-    }
-}
-
 Function Get-OfficeVersion {
 <#
 .Synopsis
@@ -222,7 +188,6 @@ begin {
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
-
 
 process {
 
@@ -461,106 +426,6 @@ process {
 
 }
 
-Function Test-UpdateSource() {
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true)]
-        [string] $UpdateSource = $NULL,
-
-        [Parameter()]
-        [bool] $ValidateUpdateSourceFiles = $true
-    )
-
-  	$uri = [System.Uri]$UpdateSource
-
-    [bool]$sourceIsAlive = $false
-
-    if($uri.Host){
-	    $sourceIsAlive = Test-Connection -Count 1 -computername $uri.Host -Quiet
-    }else{
-        $sourceIsAlive = Test-Path $uri.LocalPath -ErrorAction SilentlyContinue
-    }
-
-    if ($ValidateUpdateSourceFiles) {
-       if ($sourceIsAlive) {
-           $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource
-       }
-    }
-
-    return $sourceIsAlive
-}
-
-Function Validate-UpdateSource() {
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true)]
-        [string] $UpdateSource = $NULL
-    )
-
-    [bool]$validUpdateSource = $true
-    [string]$cabPath = ""
-
-    if ($UpdateSource) {
-        $mainRegPath = Get-OfficeCTRRegPath
-        $configRegPath = $mainRegPath + "\Configuration"
-        $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
-        $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
-        $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
-
-        $mainCab = "$UpdateSource\Office\Data\v32.cab"
-        $bitness = "32"
-        if ($currentplatform -eq "x64") {
-            $mainCab = "$UpdateSource\Office\Data\v64.cab"
-            $bitness = "64"
-        }
-
-        if (!($updateToVersion)) {
-           $cabXml = Get-CabVersion -FilePath $mainCab
-           $updateToVersion = $cabXml.Version.Available.Build
-        }
-
-        [xml]$xml = Get-ChannelXml -Bitness $bitness
-        $languages = Get-InstalledLanguages
-
-        $checkFiles = $xml.UpdateFiles.File | Where {   $_.language -eq "0" }
-        foreach ($language in $languages) {
-           $checkFiles += $xml.UpdateFiles.File | Where { $_.language -eq $language.LCID}
-        }
-
-        foreach ($checkFile in $checkFiles) {
-           $fileName = $checkFile.name -replace "%version%", $updateToVersion
-           $relativePath = $checkFile.relativePath -replace "%version%", $updateToVersion
-
-           $fullPath = "$UpdateSource$relativePath$fileName"
-           if ($fullPath.ToLower().StartsWith("http")) {
-              $fullPath = $fullPath -replace "\\", "/"
-           } else {
-              $fullPath = $fullPath -replace "/", "\"
-           }
-           
-           $updateFileExists = $false
-           if ($fullPath.ToLower().StartsWith("http")) {
-               $updateFileExists = Test-URL -url $fullPath
-           } else {
-               $updateFileExists = Test-Path -Path $fullPath
-           }
-
-           if (!($updateFileExists)) {
-              $fileExists = $missingFiles.Contains($fullPath)
-              if (!($fileExists)) {
-                 $missingFiles.Add($fullPath)
-                 Write-Host "Source File Missing: $fullPath"
-                 Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
-              }     
-              $validUpdateSource = $false
-           }
-        }
-
-    }
-    
-    return $validUpdateSource
-}
-
 Function Get-InstalledLanguages() {
     [CmdletBinding()]
     Param(
@@ -787,6 +652,46 @@ Function Wait-ForOfficeCTRUpadate() {
     }
 }
 
+Function Get-OfficeCDNUrl() {
+    $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+    if (!($CDNBaseUrl)) {
+       $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+    }
+    if (!($CDNBaseUrl)) {
+        Push-Location
+        $path15 = 'HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\ProductReleaseIDs\Active\stream'
+        $path16 = 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\ProductReleaseIDs\Active\stream'
+        if (Test-Path -Path $path16) { Set-Location $path16 }
+        if (Test-Path -Path $path15) { Set-Location $path15 }
+
+        $items = Get-Item . | Select-Object -ExpandProperty property
+        $properties = $items | ForEach-Object {
+           New-Object psobject -Property @{"property"=$_; "Value" = (Get-ItemProperty -Path . -Name $_).$_}
+        }
+
+        $value = $properties | Select Value
+        $firstItem = $value[0]
+        [string] $cdnPath = $firstItem.Value
+
+        $CDNBaseUrl = Select-String -InputObject $cdnPath -Pattern "http://officecdn.microsoft.com/.*/.{8}-.{4}-.{4}-.{4}-.{12}" -AllMatches | % { $_.Matches } | % { $_.Value }
+        Pop-Location
+    }
+    return $CDNBaseUrl
+}
+
+Function Get-OfficeCTRRegPath() {
+    $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun'
+    $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun'
+    if (Test-Path "HKLM:\$path16") {
+        return $path16
+    }
+    else {
+        if (Test-Path "HKLM:\$path15") {
+            return $path15
+        }
+    }
+}
+
 function Test-URL {
    param( 
       [string]$url = $NULL
@@ -945,6 +850,106 @@ function Change-UpdatePathToChannel {
    }
 }
 
+Function Test-UpdateSource() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $UpdateSource = $NULL,
+
+        [Parameter()]
+        [bool] $ValidateUpdateSourceFiles = $true
+    )
+
+  	$uri = [System.Uri]$UpdateSource
+
+    [bool]$sourceIsAlive = $false
+
+    if($uri.Host){
+	    $sourceIsAlive = Test-Connection -Count 1 -computername $uri.Host -Quiet
+    }else{
+        $sourceIsAlive = Test-Path $uri.LocalPath -ErrorAction SilentlyContinue
+    }
+
+    if ($ValidateUpdateSourceFiles) {
+       if ($sourceIsAlive) {
+           $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource
+       }
+    }
+
+    return $sourceIsAlive
+}
+
+Function Validate-UpdateSource() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $UpdateSource = $NULL
+    )
+
+    [bool]$validUpdateSource = $true
+    [string]$cabPath = ""
+
+    if ($UpdateSource) {
+        $mainRegPath = Get-OfficeCTRRegPath
+        $configRegPath = $mainRegPath + "\Configuration"
+        $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
+        $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+        $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
+
+        $mainCab = "$UpdateSource\Office\Data\v32.cab"
+        $bitness = "32"
+        if ($currentplatform -eq "x64") {
+            $mainCab = "$UpdateSource\Office\Data\v64.cab"
+            $bitness = "64"
+        }
+
+        if (!($updateToVersion)) {
+           $cabXml = Get-CabVersion -FilePath $mainCab
+           $updateToVersion = $cabXml.Version.Available.Build
+        }
+
+        [xml]$xml = Get-ChannelXml -Bitness $bitness
+        $languages = Get-InstalledLanguages
+
+        $checkFiles = $xml.UpdateFiles.File | Where {   $_.language -eq "0" }
+        foreach ($language in $languages) {
+           $checkFiles += $xml.UpdateFiles.File | Where { $_.language -eq $language.LCID}
+        }
+
+        foreach ($checkFile in $checkFiles) {
+           $fileName = $checkFile.name -replace "%version%", $updateToVersion
+           $relativePath = $checkFile.relativePath -replace "%version%", $updateToVersion
+
+           $fullPath = "$UpdateSource$relativePath$fileName"
+           if ($fullPath.ToLower().StartsWith("http")) {
+              $fullPath = $fullPath -replace "\\", "/"
+           } else {
+              $fullPath = $fullPath -replace "/", "\"
+           }
+           
+           $updateFileExists = $false
+           if ($fullPath.ToLower().StartsWith("http")) {
+               $updateFileExists = Test-URL -url $fullPath
+           } else {
+               $updateFileExists = Test-Path -Path $fullPath
+           }
+
+           if (!($updateFileExists)) {
+              $fileExists = $missingFiles.Contains($fullPath)
+              if (!($fileExists)) {
+                 $missingFiles.Add($fullPath)
+                 Write-Host "Source File Missing: $fullPath"
+                 Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
+              }     
+              $validUpdateSource = $false
+           }
+        }
+
+    }
+    
+    return $validUpdateSource
+}
+
 function Detect-Channel {
    param( 
 
@@ -1016,6 +1021,20 @@ function Get-ChannelXml {
        return $channelXml
    }
 
+}
+
+Function GetScriptRoot() {
+ process {
+     [string]$scriptPath = "."
+
+     if ($PSScriptRoot) {
+       $scriptPath = $PSScriptRoot
+     } else {
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+     }
+
+     return $scriptPath
+ }
 }
 
 Function Update-Office365Anywhere() {
@@ -1101,7 +1120,10 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
         [string] $LogName = $NULL,
         
         [Parameter()]
-        [bool] $ValidateUpdateSourceFiles = $true
+        [bool] $ValidateUpdateSourceFiles = $true,
+
+        [Parameter()]
+        [bool] $UseScriptLocationAsUpdateSource = $false
     )
 
     Process {
@@ -1113,6 +1135,8 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
             $configRegPath = $mainRegPath + "\Configuration"
             $GPORegPath = "HKLM:\Software\Policies\Microsoft\Office\16.0\common\officeupdate"
             $GPORegPath2 = "Software\Policies\Microsoft\Office\16.0\common\officeupdate"
+
+            $scriptPath = GetScriptRoot
 
             $GPOUpdateSource = $true
             $currentUpdateSource = (Get-ItemProperty $GPORegPath -Name updatepath -ErrorAction SilentlyContinue).updatepath
@@ -1151,6 +1175,19 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
 
             if ($UpdateToVersion) {
               $oc2rcParams += " updatetoversion=$UpdateToVersion"
+            }
+
+            [string]$localUpdatePath = ""
+            [bool]$scriptPathIsUpdateSource = $false
+            if ($UseScriptLocationAsUpdateSource) {
+              if ($scriptPath) {
+                  $localUpdatePath = Change-UpdatePathToChannel -UpdatePath $scriptPath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+                  [bool]$localIsAlive = Test-UpdateSource -UpdateSource $localUpdatePath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+                  if ($localIsAlive) {
+                      $scriptPathIsUpdateSource = $true
+                      $currentUpdateSource = $localUpdatePath
+                  }
+              }  
             }
 
             $UpdateSource = "http"
@@ -1243,10 +1280,12 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
             }
 
             if ($isAlive) {
-               if ($GPOUpdateSource) {
-                 $currentUpdateSource = (Get-ItemProperty $GPORegPath -Name updatepath -ErrorAction SilentlyContinue).updatepath
-               } else {
-                 $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+               if (!($scriptPathIsUpdateSource)) {
+                   if ($GPOUpdateSource) {
+                     $currentUpdateSource = (Get-ItemProperty $GPORegPath -Name updatepath -ErrorAction SilentlyContinue).updatepath
+                   } else {
+                     $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+                   }
                }
 
                if($currentUpdateSource.ToLower().StartsWith("http")){
@@ -1257,13 +1296,23 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                }
 
                if ($channelUpdateSource -ne $currentUpdateSource) {
-                   if ($GPOUpdateSource) {
+                   if ($scriptPathIsUpdateSource) {
+                       if ($GPOUpdateSource) {
+                          New-ItemProperty -Path "HKLM:\$GPORegPath2" -Name "updatepath" -Value $localUpdatePath -PropertyType String -Force -ErrorAction Stop | Out-Null
+                       } else {
+                          New-ItemProperty -Path "HKLM:\$configRegPath" -Name "UpdateUrl" -Value $localUpdatePath -PropertyType String -Force -ErrorAction Stop | Out-Null
+                       }
+                       $channelUpdateSource = $localUpdatePath
+
+                       Remove-ItemProperty HKLM:\$configRegPath -Name SaveUpdateUrl -Force -ErrorAction SilentlyContinue
+                       $saveUpdateSource = $null
+                   } elseif ($GPOUpdateSource) {
                        New-ItemProperty -Path "HKLM:\$GPORegPath2" -Name "updatepath" -Value $channelUpdateSource -PropertyType String -Force -ErrorAction Stop | Out-Null
+                       $channelUpdateSource = $channelUpdateSource
                    } else {
                        New-ItemProperty -Path "HKLM:\$configRegPath" -Name "UpdateUrl" -Value $channelUpdateSource -PropertyType String -Force -ErrorAction Stop | Out-Null
+                       $channelUpdateSource = $channelUpdateSource
                    }
-                  
-                   $channelUpdateSource = $channelUpdateSource
                }
 
                Write-Host "Starting Update process"
@@ -1283,7 +1332,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                    } else {
                        New-ItemProperty -Path "HKLM:\$configRegPath" -Name "UpdateUrl" -Value $saveUpdateSource -PropertyType String -Force -ErrorAction Stop | Out-Null
                    }
-                   Remove-ItemProperty HKLM:\$configRegPath -Name SaveUpdateUrl -Force
+                   Remove-ItemProperty HKLM:\$configRegPath -Name SaveUpdateUrl -Force -ErrorAction SilentlyContinue
                }
 
             } else {
@@ -1299,7 +1348,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
     }
 }
 
-Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles -UseScriptLocationAsUpdateSource $UseScriptLocationAsUpdateSource
 
 
 

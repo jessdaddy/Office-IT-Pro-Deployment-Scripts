@@ -44,6 +44,20 @@ Param
     [bool] $UseScriptLocationAsUpdateSource = $false
 )
 
+Function GetScriptRoot() {
+ process {
+     [string]$scriptPath = "."
+
+     if ($PSScriptRoot) {
+       $scriptPath = $PSScriptRoot
+     } else {
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+     }
+
+     return $scriptPath
+ }
+}
+
 Function Generate-StartTime() {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
@@ -158,6 +172,14 @@ Function Create-Office365AnywhereTask {
 
        $outputPath = "$env:temp\updateAnywhereTask.xml"
 
+       if (Test-Path -Path "$scriptRoot\Update-Office365Anywhere.ps1") {
+           Copy-Item -Path "$scriptRoot\Update-Office365Anywhere.ps1" -Destination "$env:Windir\Temp\Update-Office365Anywhere.ps1" -Force
+       }
+
+       if (Test-Path -Path "$scriptRoot\DeploymentFiles\Update-Office365Anywhere.ps1") {
+           Copy-Item -Path "$scriptRoot\DeploymentFiles\Update-Office365Anywhere.ps1" -Destination "$env:Windir\Temp\Update-Office365Anywhere.ps1" -Force
+       }
+
        $exePath = "PowerShell -Command $env:windir\Temp\Update-Office365Anywhere.ps1" + `
        " -WaitForUpdateToFinish " + (Convert-Bool -value $WaitForUpdateToFinish) + ` 
        " -EnableUpdateAnywhere " + (Convert-Bool -value $EnableUpdateAnywhere) + ` 
@@ -243,3 +265,19 @@ Create-Office365AnywhereTask `
 -LogName $LogName `
 -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles `
 -UseScriptLocationAsUpdateSource $UseScriptLocationAsUpdateSource
+
+$scriptRoot = GetScriptRoot
+
+if (Test-Path -Path "$scriptRoot\Update-Office365Anywhere.ps1") {
+
+& $scriptRoot\Update-Office365Anywhere.ps1 -WaitForUpdateToFinish $WaitForUpdateToFinish `
+    -EnableUpdateAnywhere $EnableUpdateAnywhere `
+    -ForceAppShutdown $ForceAppShutdown `
+    -UpdatePromptUser $UpdatePromptUser `
+    -DisplayLevel $DisplayLevel `
+    -UpdateToVersion $UpdateToVersion `
+    -LogPath $LogPath `
+    -LogName $LogName `
+    -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles `
+    -UseScriptLocationAsUpdateSource $UseScriptLocationAsUpdateSource
+}
