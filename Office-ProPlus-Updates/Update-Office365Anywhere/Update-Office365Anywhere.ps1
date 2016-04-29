@@ -7,7 +7,7 @@ Param(
     [bool] $EnableUpdateAnywhere = $true,
 
     [Parameter()]
-    [bool] $ForceAppShutdown = $false,
+    [bool] $ForceAppShutdown = $true,
     
     [Parameter()]
     [bool] $UpdatePromptUser = $false,
@@ -16,13 +16,19 @@ Param(
     [bool] $DisplayLevel = $false,
 
     [Parameter()]
+    [string] $UpdateToVersion = $NULL,
+
+    [Parameter()]
     [string] $LogPath = $null,
 
     [Parameter()]
     [string] $LogName = $null,
 
     [Parameter()]
-    [bool] $ValidateUpdateSourceFiles = $true
+    [bool] $ValidateUpdateSourceFiles = $true,
+
+    [Parameter()]
+    [bool] $UseScriptLocationAsUpdateSource = $false
 
 )
 
@@ -1018,6 +1024,20 @@ function Get-ChannelXml {
 
 }
 
+Function GetScriptRoot() {
+ process {
+     [string]$scriptPath = "."
+
+     if ($PSScriptRoot) {
+       $scriptPath = $PSScriptRoot
+     } else {
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+     }
+
+     return $scriptPath
+ }
+}
+
 Function Update-Office365Anywhere() {
 <#
 .Synopsis
@@ -1101,7 +1121,10 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
         [string] $LogName = $NULL,
         
         [Parameter()]
-        [bool] $ValidateUpdateSourceFiles = $true
+        [bool] $ValidateUpdateSourceFiles = $true,
+
+        [Parameter()]
+        [bool] $UseScriptLocationAsUpdateSource = $false
     )
 
     Process {
@@ -1113,6 +1136,8 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
             $configRegPath = $mainRegPath + "\Configuration"
             $GPORegPath = "HKLM:\Software\Policies\Microsoft\Office\16.0\common\officeupdate"
             $GPORegPath2 = "Software\Policies\Microsoft\Office\16.0\common\officeupdate"
+
+            $scriptPath = GetScriptRoot
 
             $GPOUpdateSource = $true
             $currentUpdateSource = (Get-ItemProperty $GPORegPath -Name updatepath -ErrorAction SilentlyContinue).updatepath
@@ -1151,6 +1176,19 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
 
             if ($UpdateToVersion) {
               $oc2rcParams += " updatetoversion=$UpdateToVersion"
+            }
+
+            [string]$localUpdatePath = ""
+            [bool]$scriptPathIsUpdateSource = $false
+            if ($UseScriptLocationAsUpdateSource) {
+              if ($scriptPath) {
+                  $localUpdatePath = Change-UpdatePathToChannel -UpdatePath $scriptPath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+                  [bool]$localIsAlive = Test-UpdateSource -UpdateSource $localUpdatePath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+                  if ($localIsAlive) {
+                      $scriptPathIsUpdateSource = $true
+                      $currentUpdateSource = $localUpdatePath
+                  }
+              }  
             }
 
             $UpdateSource = "http"
@@ -1243,10 +1281,12 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
             }
 
             if ($isAlive) {
-               if ($GPOUpdateSource) {
-                 $currentUpdateSource = (Get-ItemProperty $GPORegPath -Name updatepath -ErrorAction SilentlyContinue).updatepath
-               } else {
-                 $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+               if (!($scriptPathIsUpdateSource)) {
+                   if ($GPOUpdateSource) {
+                     $currentUpdateSource = (Get-ItemProperty $GPORegPath -Name updatepath -ErrorAction SilentlyContinue).updatepath
+                   } else {
+                     $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+                   }
                }
 
                if($currentUpdateSource.ToLower().StartsWith("http")){
@@ -1257,13 +1297,20 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                }
 
                if ($channelUpdateSource -ne $currentUpdateSource) {
-                   if ($GPOUpdateSource) {
+                   if ($scriptPathIsUpdateSource) {
+                       if ($GPOUpdateSource) {
+                          New-ItemProperty -Path "HKLM:\$GPORegPath2" -Name "updatepath" -Value $localUpdatePath -PropertyType String -Force -ErrorAction Stop | Out-Null
+                       } else {
+                          New-ItemProperty -Path "HKLM:\$configRegPath" -Name "UpdateUrl" -Value $localUpdatePath -PropertyType String -Force -ErrorAction Stop | Out-Null
+                       }
+                       $channelUpdateSource = $localUpdatePath
+                   } elseif ($GPOUpdateSource) {
                        New-ItemProperty -Path "HKLM:\$GPORegPath2" -Name "updatepath" -Value $channelUpdateSource -PropertyType String -Force -ErrorAction Stop | Out-Null
+                       $channelUpdateSource = $channelUpdateSource
                    } else {
                        New-ItemProperty -Path "HKLM:\$configRegPath" -Name "UpdateUrl" -Value $channelUpdateSource -PropertyType String -Force -ErrorAction Stop | Out-Null
+                       $channelUpdateSource = $channelUpdateSource
                    }
-                  
-                   $channelUpdateSource = $channelUpdateSource
                }
 
                Write-Host "Starting Update process"
@@ -1299,7 +1346,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
     }
 }
 
-Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles -UseScriptLocationAsUpdateSource $UseScriptLocationAsUpdateSource
 
 
 

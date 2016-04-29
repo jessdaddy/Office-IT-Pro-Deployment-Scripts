@@ -29,7 +29,19 @@ Param
     [string] $RandomTimeEnd = "17:00",
 
     [Parameter()]
-    [string] $StartTime = "12:00"
+    [string] $StartTime = "12:00",
+
+    [Parameter()]
+    [string] $LogPath = $NULL,
+
+    [Parameter()]
+    [string] $LogName = $NULL,
+        
+    [Parameter()]
+    [bool] $ValidateUpdateSourceFiles = $true,
+
+    [Parameter()]
+    [bool] $UseScriptLocationAsUpdateSource = $false
 )
 
 Function Generate-StartTime() {
@@ -113,7 +125,19 @@ Function Create-Office365AnywhereTask {
         [string] $RandomTimeEnd = "17:00",
 
         [Parameter()]
-        [string] $StartTime = "12:00"
+        [string] $StartTime = "12:00",
+
+        [Parameter()]
+        [string] $LogPath = $NULL,
+
+        [Parameter()]
+        [string] $LogName = $NULL,
+        
+        [Parameter()]
+        [bool] $ValidateUpdateSourceFiles = $true,
+
+        [Parameter()]
+        [bool] $UseScriptLocationAsUpdateSource = $false
     )
 
     Begin {
@@ -204,4 +228,18 @@ Function GetScriptRoot() {
  }
 }
 
-Create-Office365AnywhereTask -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -UseRandomStartTime $UseRandomStartTime -RandomTimeStart $RandomTimeStart -RandomTimeEnd $RandomTimeEnd -StartTime $StartTime
+Create-Office365AnywhereTask `
+-WaitForUpdateToFinish $WaitForUpdateToFinish `
+-EnableUpdateAnywhere $EnableUpdateAnywhere `
+-ForceAppShutdown $ForceAppShutdown `
+-UpdatePromptUser $UpdatePromptUser `
+-DisplayLevel $DisplayLevel `
+-UpdateToVersion $UpdateToVersion `
+-UseRandomStartTime $UseRandomStartTime `
+-RandomTimeStart $RandomTimeStart `
+-RandomTimeEnd $RandomTimeEnd `
+-StartTime $StartTime `
+-LogPath $LogPath `
+-LogName $LogName `
+-ValidateUpdateSourceFiles $ValidateUpdateSourceFiles `
+-UseScriptLocationAsUpdateSource $UseScriptLocationAsUpdateSource
