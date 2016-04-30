@@ -460,21 +460,23 @@ Function Get-InstalledLanguages() {
        $returnLangs = @()
        $mainRegPath = Get-OfficeCTRRegPath
 
-       $activeConfig = Get-ItemProperty -Path "hklm:\$mainRegPath\ProductReleaseIDs"
-       $activeId = $activeConfig.ActiveConfiguration
-       $languages = Get-ChildItem -Path "hklm:\$mainRegPath\ProductReleaseIDs\$activeId\culture"
+       if ($mainRegPath) {
+           $activeConfig = Get-ItemProperty -Path "hklm:\$mainRegPath\ProductReleaseIDs"
+           $activeId = $activeConfig.ActiveConfiguration
+           $languages = Get-ChildItem -Path "hklm:\$mainRegPath\ProductReleaseIDs\$activeId\culture"
 
-       foreach ($language in $languages) {
-          $lang = Get-ItemProperty -Path  $language.pspath
-          $keyName = $lang.PSChildName
-          if ($keyName.Contains(".")) {
-              $keyName = $keyName.Split(".")[0]
-          }
+           foreach ($language in $languages) {
+              $lang = Get-ItemProperty -Path  $language.pspath
+              $keyName = $lang.PSChildName
+              if ($keyName.Contains(".")) {
+                  $keyName = $keyName.Split(".")[0]
+              }
 
-          if ($keyName.ToLower() -ne "x-none") {
-             $culture = New-Object system.globalization.cultureinfo($keyName)
-             $returnLangs += $culture
-          }
+              if ($keyName.ToLower() -ne "x-none") {
+                 $culture = New-Object system.globalization.cultureinfo($keyName)
+                 $returnLangs += $culture
+              }
+           }
        }
 
        return $returnLangs
@@ -755,7 +757,9 @@ Function Validate-UpdateSource() {
 
         if (!($updateToVersion)) {
            $cabXml = Get-CabVersion -FilePath $mainCab
-           $updateToVersion = $cabXml.Version.Available.Build
+           if ($cabXml) {
+               $updateToVersion = $cabXml.Version.Available.Build
+           }
         }
 
         [xml]$xml = Get-ChannelXml -Bitness $bitness
@@ -829,6 +833,7 @@ function Get-CabVersion {
    process {
        $cabPath = $FilePath
        $fileName = Split-Path -Path $cabPath -Leaf
+       $XMLFilePath = ""
 
        if ($cabPath.ToLower().StartsWith("http")) {
            $webclient = New-Object System.Net.WebClient
@@ -836,15 +841,25 @@ function Get-CabVersion {
            $XMLDownloadURL= $FilePath
            $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
        } else {
-         $XMLFilePath = $cabPath
+         if ($cabPath.StartsWith("\\")) {
+             if (Test-ItemPathUNC -Path $cabPath) {
+                 $XMLFilePath = $cabPath
+             }
+         } else {
+             if (Test-Path -Path $cabPath) {
+                 $XMLFilePath = $cabPath
+             }
+         }
        }
 
-       $tmpName = "VersionDescriptor.xml"
-       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
-       $tmpName = $env:TEMP + "\VersionDescriptor.xml"
-       [xml]$versionXml = Get-Content $tmpName
-
-       return $versionXml
+       if ($XMLFilePath) {
+           $tmpName = "VersionDescriptor.xml"
+           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+           $tmpName = $env:TEMP + "\VersionDescriptor.xml"
+           [xml]$versionXml = Get-Content $tmpName
+           return $versionXml
+       }
+       return $null
    }
 }
 
