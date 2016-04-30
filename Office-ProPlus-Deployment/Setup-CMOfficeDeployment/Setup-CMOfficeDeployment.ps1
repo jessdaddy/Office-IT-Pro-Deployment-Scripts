@@ -318,9 +318,9 @@ function Update-CMOfficePackage {
                 [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
 
                 if ($MoveSourceFiles) {
-                    Move-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Force
+                    Move-Item -Path $officeFileChannelPath -Destination $LocalChannelPath -Force
                 } else {
-                    Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
+                    Copy-Item -Path $officeFileChannelPath -Destination $LocalChannelPath -Recurse -Force
                 }
 
                 $cabFilePath = "$OfficeSourceFilesPath\ofl.cab"
@@ -1062,17 +1062,32 @@ function CreateMainCabFiles() {
         [String] $LatestVersion
 	) 
     Process {
-        $versionFile32 = "$LocalPath\$ChannelShortName\Office\Data\v32_$LatestVersion.cab"
-        $v32File = "$LocalPath\$ChannelShortName\Office\Data\v32.cab"
-        $versionFile64 = "$LocalPath\$ChannelShortName\Office\Data\v64_$LatestVersion.cab"
-        $v64File = "$LocalPath\$ChannelShortName\Office\Data\v64.cab"
+        $versionFile321 = "$LocalPath\$ChannelShortName\Office\Data\v32_$LatestVersion.cab"
+        $v32File1 = "$LocalPath\$ChannelShortName\Office\Data\v32.cab"
 
-        if (Test-Path -Path $versionFile32) {
-            Copy-Item -Path $versionFile32 -Destination $v32File -Force
+        $versionFile641 = "$LocalPath\$ChannelShortName\Office\Data\v64_$LatestVersion.cab"
+        $v64File1 = "$LocalPath\$ChannelShortName\Office\Data\v64.cab"
+
+        $versionFile322 = "$LocalPath\SourceFiles\$ChannelShortName\Office\Data\v32_$LatestVersion.cab"
+        $v32File2 = "$LocalPath\SourceFiles\$ChannelShortName\Office\Data\v32.cab"
+
+        $versionFile642 = "$LocalPath\SourceFiles\$ChannelShortName\Office\Data\v64_$LatestVersion.cab"
+        $v64File2 = "$LocalPath\SourceFiles\$ChannelShortName\Office\Data\v64.cab"
+
+        if (Test-Path -Path $versionFile321) {
+            Copy-Item -Path $versionFile321 -Destination $v32File1 -Force
         }
 
-        if (Test-Path -Path $versionFile64) {
-            Copy-Item -Path $versionFile64 -Destination $v64File -Force
+        if (Test-Path -Path $versionFile641) {
+            Copy-Item -Path $versionFile641 -Destination $v64File1 -Force
+        }
+
+        if (Test-Path -Path $versionFile322) {
+            Copy-Item -Path $versionFile322 -Destination $v32File2 -Force
+        }
+
+        if (Test-Path -Path $versionFile642) {
+            Copy-Item -Path $versionFile642 -Destination $v64File2 -Force
         }
     }
 }

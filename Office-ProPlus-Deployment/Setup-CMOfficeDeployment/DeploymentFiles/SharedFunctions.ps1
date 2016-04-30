@@ -119,7 +119,7 @@ function Test-ItemPathUNC() {    [CmdletBinding()]
     Param
 	(	    [Parameter(Mandatory=$true)]
 	    [String]$Path,	    [Parameter()]
-	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       $Network = New-Object -ComObject "Wscript.Network"       try {           if (!($drvLetter.EndsWith(":"))) {               $drvLetter += ":"           }           $Network.MapNetworkDrive($drvLetter, $Path)            #New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $Path -ErrorAction Stop | Out-Null           if ($FileName) {             $target = $drvLetter + "\" + $FileName           } else {             $target = $drvLetter + "\"            }           $result = Test-Path -Path $target            return $result       } catch {         return $false       } finally {         #Remove-PSDrive $drvLetter -ErrorAction SilentlyContinue         try {            $Network.RemoveNetworkDrive($drvLetter)         } catch { }       }    }}
+	    [String]$FileName = $null    )    Process {       $pathExists = $false       if ($FileName) {         $filePath = "$Path\$FileName"         $pathExists = [System.IO.File]::Exists($filePath)       } else {         $pathExists = [System.IO.Directory]::Exists($Path)         if (!($pathExists)) {            $pathExists = [System.IO.File]::Exists($Path)         }       }       return $pathExists;    }}
 
 function Copy-ItemUNC() {    [CmdletBinding()]	
     Param
@@ -144,6 +144,26 @@ function FindAvailable() {
       }
    }
    return $null
+}
+
+function Get-XMLLanguages() {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    param(
+       	[Parameter(Mandatory=$true)]
+	    [String]$Path
+    )
+    Process {
+      [string[]]$languages = @()
+      [xml]$configXml = Get-Content $Path
+      if ($configXml.Configuration.Add) {
+         foreach ($product in $configXml.Configuration.Add.Product) {
+             foreach ($language in $product.Language) {
+                $languages += $language.ID
+             }
+         }
+      }
+      return $languages
+    }
 }
 
 Function Get-OfficeVersion {
@@ -461,22 +481,24 @@ Function Get-InstalledLanguages() {
        $mainRegPath = Get-OfficeCTRRegPath
 
        if ($mainRegPath) {
-           $activeConfig = Get-ItemProperty -Path "hklm:\$mainRegPath\ProductReleaseIDs"
-           $activeId = $activeConfig.ActiveConfiguration
-           $languages = Get-ChildItem -Path "hklm:\$mainRegPath\ProductReleaseIDs\$activeId\culture"
+          if (Test-Path -Path "hklm:\$mainRegPath\ProductReleaseIDs") {
+               $activeConfig = Get-ItemProperty -Path "hklm:\$mainRegPath\ProductReleaseIDs"
+               $activeId = $activeConfig.ActiveConfiguration
+               $languages = Get-ChildItem -Path "hklm:\$mainRegPath\ProductReleaseIDs\$activeId\culture"
 
-           foreach ($language in $languages) {
-              $lang = Get-ItemProperty -Path  $language.pspath
-              $keyName = $lang.PSChildName
-              if ($keyName.Contains(".")) {
-                  $keyName = $keyName.Split(".")[0]
-              }
+               foreach ($language in $languages) {
+                  $lang = Get-ItemProperty -Path  $language.pspath
+                  $keyName = $lang.PSChildName
+                  if ($keyName.Contains(".")) {
+                      $keyName = $keyName.Split(".")[0]
+                  }
 
-              if ($keyName.ToLower() -ne "x-none") {
-                 $culture = New-Object system.globalization.cultureinfo($keyName)
-                 $returnLangs += $culture
-              }
-           }
+                  if ($keyName.ToLower() -ne "x-none") {
+                     $culture = New-Object system.globalization.cultureinfo($keyName)
+                     $returnLangs += $culture
+                  }
+               }
+          }
        }
 
        return $returnLangs
@@ -565,16 +587,18 @@ function Change-UpdatePathToChannel {
    $newUpdatePath = $UpdatePath
    $newUpdateLong = $UpdatePath
 
-   if ($Channel) {
-      $detectedChannel = $Channel
-   } else {
-      $detectedChannel = Detect-Channel
+   if (!($Channel)) {
+      $detectedChannel = Detect-Channel 
    }
 
    if ($detectedChannel) {
        $branchName = $detectedChannel.branch
    } else {
-       $branchName = "Deferred"
+      if ($Channel) {
+         $branchName = $Channel
+      } else {
+         $branchName = "Deferred"
+      }
    }
 
    $branchShortName = "DC"
@@ -678,15 +702,20 @@ function Change-UpdatePathToChannel {
 
    try {
      $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+   } catch {
+     $pathAlive = $false
+   }
+
      if (!($pathAlive)) {
-        $pathAlive = Test-UpdateSource -UpdateSource $newUpdateLong -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+        try {
+           $pathAlive = Test-UpdateSource -UpdateSource $newUpdateLong -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+        } catch {
+            $pathAlive = $false
+        }
         if ($pathAlive) {
            $newUpdatePath = $newUpdateLong
         }
      }
-   } catch {
-     $pathAlive = $false
-   }
    
    if ($pathAlive) {
      return $newUpdatePath
@@ -702,7 +731,10 @@ Function Test-UpdateSource() {
         [string] $UpdateSource = $NULL,
 
         [Parameter()]
-        [bool] $ValidateUpdateSourceFiles = $true
+        [bool] $ValidateUpdateSourceFiles = $true,
+
+        [Parameter()]
+        [string[]] $OfficeLanguages = $null
     )
 
   	$uri = [System.Uri]$UpdateSource
@@ -717,7 +749,7 @@ Function Test-UpdateSource() {
 
     if ($ValidateUpdateSourceFiles) {
        if ($sourceIsAlive) {
-           $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource
+           $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages
        }
     }
 
@@ -731,7 +763,10 @@ Function Validate-UpdateSource() {
         [string] $UpdateSource = $NULL,
 
         [Parameter()]
-        [string] $Bitness = "x86"
+        [string] $Bitness = "x86",
+
+        [Parameter()]
+        [string[]] $OfficeLanguages = $null
     )
 
     [bool]$validUpdateSource = $true
@@ -763,7 +798,11 @@ Function Validate-UpdateSource() {
         }
 
         [xml]$xml = Get-ChannelXml -Bitness $bitness
-        $languages = Get-InstalledLanguages
+        if ($OfficeLanguages) {
+          $languages = $OfficeLanguages
+        } else {
+          $languages = Get-InstalledLanguages
+        }
 
         $checkFiles = $xml.UpdateFiles.File | Where {   $_.language -eq "0" }
         foreach ($language in $languages) {
