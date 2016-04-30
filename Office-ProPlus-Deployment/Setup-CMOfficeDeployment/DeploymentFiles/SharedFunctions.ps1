@@ -485,13 +485,13 @@ Function Get-OfficeCDNUrl() {
        $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
     }
     if (!($CDNBaseUrl)) {
-        Push-Location
+        $OfficeRegPath = ""
         $path15 = 'HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\ProductReleaseIDs\Active\stream'
         $path16 = 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\ProductReleaseIDs\Active\stream'
-        if (Test-Path -Path $path16) { Set-Location $path16 }
-        if (Test-Path -Path $path15) { Set-Location $path15 }
+        if (Test-Path -Path $path16) { $OfficeRegPath = $path16 }
+        if (Test-Path -Path $path15) { $OfficeRegPath = $path15 }
 
-        $items = Get-Item . | Select-Object -ExpandProperty property
+        $items = Get-Item -Path $OfficeRegPath | Select-Object -ExpandProperty property
         $properties = $items | ForEach-Object {
            New-Object psobject -Property @{"property"=$_; "Value" = (Get-ItemProperty -Path . -Name $_).$_}
         }
@@ -501,7 +501,6 @@ Function Get-OfficeCDNUrl() {
         [string] $cdnPath = $firstItem.Value
 
         $CDNBaseUrl = Select-String -InputObject $cdnPath -Pattern "http://officecdn.microsoft.com/.*/.{8}-.{4}-.{4}-.{4}-.{12}" -AllMatches | % { $_.Matches } | % { $_.Value }
-        Pop-Location
     }
     return $CDNBaseUrl
 }
