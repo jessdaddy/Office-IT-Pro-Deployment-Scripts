@@ -116,6 +116,9 @@ function Create-CMOfficePackage {
         [OfficeChannel[]] $Channels = @(1,2,3),
 
         [Parameter()]
+	    [Bitness]$Bitness = "v32",
+
+        [Parameter()]
 	    [String]$OfficeSourceFilesPath = $NULL,
 
         [Parameter()]
@@ -368,6 +371,9 @@ function Create-CMOfficeDeploymentProgram {
         [Parameter()]
         [OfficeChannel[]] $Channels = @(1,2,3),
 
+        [Parameter()]
+	    [Bitness]$Bitness = "v32",
+
 	    [Parameter()]
 	    [CMDeploymentType]$DeploymentType = "DeployWithScript",
 
@@ -392,6 +398,15 @@ function Create-CMOfficeDeploymentProgram {
 
          Check-AdminAccess
 
+         $platforms = @()
+
+         if ($Bitness -eq "Both") {
+            $platforms += "32"
+            $platforms += "64"
+         } else {
+            $platforms += $Bitness.ToString().Replace("v", "")
+         }
+
          foreach ($channel in $Channels) {
              LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
@@ -400,27 +415,29 @@ function Create-CMOfficeDeploymentProgram {
                 throw "You must run the Create-CMOfficePackage function before running this function"
              }
 
-             [string]$CommandLine = ""
-             [string]$ProgramName = ""
+             foreach ($platform in $platforms) {
+                 [string]$CommandLine = ""
+                 [string]$ProgramName = ""
 
-             if ($DeploymentType -eq "DeployWithScript") {
-                 $ProgramName = "Deploy $channel Channel With Script"
-                 $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
-                                "-NoProfile -WindowStyle Hidden -File .\CM-OfficeDeploymentScript.ps1 -Channel $channel -SourceFileFolder SourceFiles"
+                 if ($DeploymentType -eq "DeployWithScript") {
+                     $ProgramName = "Deploy $channel Channel With Script - $platform-Bit"
+                     $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
+                                    "-NoProfile -WindowStyle Hidden -Command .\CM-OfficeDeploymentScript.ps1 -Channel $channel -SourceFileFolder SourceFiles -Bitness $platform"
 
-             } elseif ($DeploymentType -eq "DeployWithConfigurationFile") {
-                 $ProgramName = "Deploy $channel Channel With Configuration File"
-                 $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
+                 } elseif ($DeploymentType -eq "DeployWithConfigurationFile") {
+                     $ProgramName = "Deploy $channel Channel With Configuration File - $platform-Bit"
+                     $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
 
-             }
+                 }
 
-             [string]$packageId = $null
+                 [string]$packageId = $null
 
-             $packageId = $existingPackage.PackageId
-             if ($packageId) {
-                $comment = $DeploymentType.ToString() + "-" + $channel
+                 $packageId = $existingPackage.PackageId
+                 if ($packageId) {
+                    $comment = $DeploymentType.ToString() + "-" + $channel + "-" + $platform
 
-                CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
+                    CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
+                 }
              }
          }
 
@@ -1270,7 +1287,7 @@ function CreateCMProgram() {
 
 	) 
 
-    $program = Get-CMProgram | Where { $_.PackageID -eq $PackageID -and $_.ProgramName -eq $Name }
+    $program = Get-CMProgram | Where { $_.PackageID -eq $PackageID -and $_.Comment -eq $Comment }
 
     if($program -eq $null -or !$program)
     {
