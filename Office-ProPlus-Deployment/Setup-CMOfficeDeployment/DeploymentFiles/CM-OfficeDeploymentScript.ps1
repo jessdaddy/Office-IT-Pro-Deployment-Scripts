@@ -43,7 +43,7 @@ $targetFilePath = "$env:temp\configuration.xml"
 
 Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Set-ODTDisplay -Level None -AcceptEULA $true 
 
-if (Test-ItemPathUNC -Path "$UpdateURLPath\Office\Data") {
+if (Test-UpdateSource -Path "$UpdateURLPath\Office\Data") {
    Set-ODTAdd -TargetFilePath $targetFilePath -SourcePath $UpdateURLPath
 }
 

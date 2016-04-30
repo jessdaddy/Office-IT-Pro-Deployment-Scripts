@@ -1047,49 +1047,6 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
 }
 
 
-Function Convert-Bool() {
-    [CmdletBinding(SupportsShouldProcess=$true)]
-    Param
-    (
-        [Parameter(Mandatory=$true)]
-        [bool] $value
-    )
-
-    $newValue = "$" + $value.ToString()
-    return $newValue 
-}
-
-function Test-ItemPathUNC() {    [CmdletBinding()]	
-    Param
-	(	    [Parameter(Mandatory=$true)]
-	    [String]$Path,	    [Parameter()]
-	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       $Network = New-Object -ComObject "Wscript.Network"       try {           if (!($drvLetter.EndsWith(":"))) {               $drvLetter += ":"           }           $Network.MapNetworkDrive($drvLetter, $Path)            #New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $Path -ErrorAction Stop | Out-Null           if ($FileName) {             $target = $drvLetter + "\" + $FileName           } else {             $target = $drvLetter + "\"            }           $result = Test-Path -Path $target            return $result       } catch {         return $false       } finally {         #Remove-PSDrive $drvLetter -ErrorAction SilentlyContinue         $Network.RemoveNetworkDrive($drvLetter)       }    }}
-
-function Copy-ItemUNC() {    [CmdletBinding()]	
-    Param
-	(	    [Parameter(Mandatory=$true)]
-	    [String]$SourcePath,	    [Parameter(Mandatory=$true)]
-	    [String]$TargetPath,	    [Parameter(Mandatory=$true)]
-	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       $Network = New-Object -ComObject "Wscript.Network"       try {           if (!($drvLetter.EndsWith(":"))) {               $drvLetter += ":"           }           $target = $drvLetter + "\"           $Network.MapNetworkDrive($drvLetter, $TargetPath)                                 #New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $TargetPath | Out-Null           Copy-Item -Path $SourcePath -Destination $target -Force       } finally {         #Remove-PSDrive $drvLetter         $Network.RemoveNetworkDrive($drvLetter)       }    }}
-
-function FindAvailable() {
-   #$drives = Get-PSDrive | select Name
-   $drives = Get-WmiObject -Class Win32_LogicalDisk | select DeviceID
-
-   for($n=90;$n -gt 68;$n--) {
-      $letter= [char]$n + ":"
-      $exists = $drives | where { $_.DeviceID -eq $letter }
-      if ($exists) {
-        if ($exists.Count -eq 0) {
-            return $letter
-        }
-      } else {
-        return $letter
-      }
-   }
-   return $null
-}
-
 
 function CreateMainCabFiles() {
     [CmdletBinding()]	
@@ -1277,7 +1234,6 @@ function RemovePreviousCMPackages() {
     }
 }
 
-
 function CreateCMProgram() {
     [CmdletBinding()]	
     Param
@@ -1356,7 +1312,6 @@ function CreateOfficeChannelShare() {
     $sharePath = "\\$env:COMPUTERNAME\$Name"
     return $sharePath
 }
-
 
 function CreateOfficeUpdateShare() {
     [CmdletBinding()]	
@@ -1487,111 +1442,6 @@ function CreateUpdateXmlFile([string]$Path, [string]$ConfigFileName, [string]$Bi
 	$testGroupConfigContent.Save($testGroupFilePath)
     return $ConfigFileName
 }
-
-function Create-FileShare() {
-    [CmdletBinding()]	
-    Param
-	(
-		[Parameter()]
-		[String]$Name = "",
-		
-		[Parameter()]
-		[String]$Path = ""
-	)
-
-    $description = "$name"
-
-    $Method = "Create"
-    $sd = ([WMIClass] "Win32_SecurityDescriptor").CreateInstance()
-
-    #AccessMasks:
-    #2032127 = Full Control
-    #1245631 = Change
-    #1179817 = Read
-
-    $userName = "$env:USERDOMAIN\$env:USERNAME"
-
-    #Share with the user
-    $ACE = ([WMIClass] "Win32_ACE").CreateInstance()
-    $Trustee = ([WMIClass] "Win32_Trustee").CreateInstance()
-    $Trustee.Name = $userName
-    $Trustee.Domain = $NULL
-    #original example assigned this, but I found it worked better if I left it empty
-    #$Trustee.SID = ([wmi]"win32_userAccount.Domain='york.edu',Name='$name'").sid   
-    $ace.AccessMask = 2032127
-    $ace.AceFlags = 3 #Should almost always be three. Really. don't change it.
-    $ace.AceType = 0 # 0 = allow, 1 = deny
-    $ACE.Trustee = $Trustee 
-    $sd.DACL += $ACE.psObject.baseobject 
-
-    #Share with Domain Admins
-    $ACE = ([WMIClass] "Win32_ACE").CreateInstance()
-    $Trustee = ([WMIClass] "Win32_Trustee").CreateInstance()
-    $Trustee.Name = "Domain Admins"
-    $Trustee.Domain = $Null
-    #$Trustee.SID = ([wmi]"win32_userAccount.Domain='york.edu',Name='$name'").sid   
-    $ace.AccessMask = 2032127
-    $ace.AceFlags = 3
-    $ace.AceType = 0
-    $ACE.Trustee = $Trustee 
-    $sd.DACL += $ACE.psObject.baseobject    
-    
-     #Share with the user
-    $ACE = ([WMIClass] "Win32_ACE").CreateInstance()
-    $Trustee = ([WMIClass] "Win32_Trustee").CreateInstance()
-    $Trustee.Name = "Everyone"
-    $Trustee.Domain = $Null
-    #original example assigned this, but I found it worked better if I left it empty
-    #$Trustee.SID = ([wmi]"win32_userAccount.Domain='york.edu',Name='$name'").sid   
-    $ace.AccessMask = 1179817 
-    $ace.AceFlags = 3 #Should almost always be three. Really. don't change it.
-    $ace.AceType = 0 # 0 = allow, 1 = deny
-    $ACE.Trustee = $Trustee 
-    $sd.DACL += $ACE.psObject.baseobject    
-
-    $mc = [WmiClass]"Win32_Share"
-    $InParams = $mc.psbase.GetMethodParameters($Method)
-    $InParams.Access = $sd
-    $InParams.Description = $description
-    $InParams.MaximumAllowed = $Null
-    $InParams.Name = $name
-    $InParams.Password = $Null
-    $InParams.Path = $path
-    $InParams.Type = [uint32]0
-
-    $R = $mc.PSBase.InvokeMethod($Method, $InParams, $Null)
-    switch ($($R.ReturnValue))
-     {
-          0 { break}
-          2 {Write-Host "Share:$name Path:$path Result:Access Denied" -foregroundcolor red -backgroundcolor yellow;break}
-          8 {Write-Host "Share:$name Path:$path Result:Unknown Failure" -foregroundcolor red -backgroundcolor yellow;break}
-          9 {Write-Host "Share:$name Path:$path Result:Invalid Name" -foregroundcolor red -backgroundcolor yellow;break}
-          10 {Write-Host "Share:$name Path:$path Result:Invalid Level" -foregroundcolor red -backgroundcolor yellow;break}
-          21 {Write-Host "Share:$name Path:$path Result:Invalid Parameter" -foregroundcolor red -backgroundcolor yellow;break}
-          22 {Write-Host "Share:$name Path:$path Result:Duplicate Share" -foregroundcolor red -backgroundcolor yellow;break}
-          23 {Write-Host "Share:$name Path:$path Result:Reedirected Path" -foregroundcolor red -backgroundcolor yellow;break}
-          24 {Write-Host "Share:$name Path:$path Result:Unknown Device or Directory" -foregroundcolor red -backgroundcolor yellow;break}
-          25 {Write-Host "Share:$name Path:$path Result:Network Name Not Found" -foregroundcolor red -backgroundcolor yellow;break}
-          default {Write-Host "Share:$name Path:$path Result:*** Unknown Error ***" -foregroundcolor red -backgroundcolor yellow;break}
-     }
-}
-
-function Get-Fileshare() {
-    [CmdletBinding()]	
-    Param
-	(
-		[Parameter()]
-		[String]$Name = ""
-	)
-
-    $share = Get-WmiObject Win32_Share | where { $_.Name -eq $Name }
-
-    if ($share) {
-        return $share;
-    }
-
-    return $null
-}
  
 function GetCMPSModulePath() {
     [CmdletBinding()]	
@@ -1650,7 +1500,6 @@ function GetCMPSModulePath() {
     return $CMModulePath
 }
 
-# Specify one of CM servers and Site code is returned automatically 
 function Get-Site([string[]]$computerName = $env:COMPUTERNAME) {
     Get-WmiObject -ComputerName $ComputerName -Namespace "root\SMS" -Class "SMS_ProviderLocation" | foreach-object{ 
         if ($_.ProviderForLocalSite -eq $true){$SiteCode=$_.sitecode} 
@@ -1679,363 +1528,27 @@ function DownloadBits() {
     }
 }
 
-function Get-ChannelXml() {
-    [CmdletBinding()]	
-    Param
-	(
-	    [Parameter()]
-	    [string]$FolderPath = $null,
+Function GetScriptRoot() {
+ process {
+     [string]$scriptPath = "."
 
-	    [Parameter()]
-	    [bool]$OverWrite = $false
-	)
+     if ($PSScriptRoot) {
+       $scriptPath = $PSScriptRoot
+     } else {
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+     }
 
-   process {
-       $cabPath = "$PSScriptRoot\ofl.cab"
-       [bool]$downloadFile = $true
-
-       if (!($OverWrite)) {
-          if ($FolderPath) {
-              $XMLFilePath = "$FolderPath\ofl.cab"
-              if (Test-Path -Path $XMLFilePath) {
-                 $downloadFile = $false
-              } else {
-                throw "File missing $FolderPath\ofl.cab"
-              }
-          }
-       }
-
-       if ($downloadFile) {
-           $webclient = New-Object System.Net.WebClient
-           $XMLFilePath = "$env:TEMP/ofl.cab"
-           $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
-           $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
-
-           if ($FolderPath) {
-             [System.IO.Directory]::CreateDirectory($FolderPath) | Out-Null
-             $targetFile = "$FolderPath\ofl.cab"
-             Copy-Item -Path $XMLFilePath -Destination $targetFile -Force
-           }
-       }
-
-       $tmpName = "o365client_64bit.xml"
-       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
-       $tmpName = $env:TEMP + "\o365client_64bit.xml"
-       
-       [xml]$channelXml = Get-Content $tmpName
-
-       return $channelXml
-   }
-
+     return $scriptPath
+ }
 }
 
-function Get-ChannelUrl() {
-   [CmdletBinding()]
-   param( 
-      [Parameter(Mandatory=$true)]
-      [Channel]$Channel
-   )
+$scriptPath = GetScriptRoot
 
-   Process {
-      $channelXml = Get-ChannelXml
-
-      $currentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
-      return $currentChannel
-   }
-
-}
-
-function Get-ChannelLatestVersion() {
-   [CmdletBinding()]
-   param( 
-      [Parameter(Mandatory=$true)]
-      [string]$ChannelUrl,
-
-      [Parameter(Mandatory=$true)]
-      [string]$Channel,
-
-	  [Parameter()]
-	  [string]$FolderPath = $null,
-
-	  [Parameter()]
-	  [bool]$OverWrite = $false
-   )
-
-   process {
-
-       [bool]$downloadFile = $true
-
-       $channelShortName = ConvertChannelNameToShortName -ChannelName $Channel
-
-       if (!($OverWrite)) {
-          if ($FolderPath) {
-              $CABFilePath = "$FolderPath\$channelShortName\v32.cab"
-
-              if (!(Test-Path -Path $CABFilePath)) {
-                 $CABFilePath = "$FolderPath\$channelShortName\v64.cab"
-              }
-
-              if (Test-Path -Path $CABFilePath) {
-                 $downloadFile = $false
-              } else {
-                throw "File missing $FolderPath\$channelShortName\v64.cab or $FolderPath\$channelShortName\v64.cab"
-              }
-          }
-       }
-
-       if ($downloadFile) {
-           $webclient = New-Object System.Net.WebClient
-           $CABFilePath = "$env:TEMP/v32.cab"
-           $XMLDownloadURL = "$ChannelUrl/Office/Data/v32.cab"
-           $webclient.DownloadFile($XMLDownloadURL,$CABFilePath)
-
-           if ($FolderPath) {
-             [System.IO.Directory]::CreateDirectory($FolderPath) | Out-Null
-
-             $channelShortName = ConvertChannelNameToShortName -ChannelName $Channel 
-
-             $targetFile = "$FolderPath\$channelShortName\v32.cab"
-             Copy-Item -Path $CABFilePath -Destination $targetFile -Force
-           }
-       }
-
-       $tmpName = "VersionDescriptor.xml"
-       expand $CABFilePath $env:TEMP -f:$tmpName | Out-Null
-       $tmpName = $env:TEMP + "\VersionDescriptor.xml"
-       [xml]$versionXml = Get-Content $tmpName
-
-       return $versionXml.Version.Available.Build
-   }
-}
-
-function Get-LargestDrive() {
-   [CmdletBinding()]
-   param( 
-   )
-   process {
-      $drives = Get-Partition | where {$_.DriveLetter}
-      $driveInfoList = @()
-
-      foreach ($drive in $drives) {
-          $driveLetter = $drive.DriveLetter
-          $deviceFilter = "DeviceID='" + $driveLetter + ":'" 
- 
-          $driveInfo = Get-WmiObject Win32_LogicalDisk -ComputerName "." -Filter $deviceFilter
-          $driveInfoList += $driveInfo
-      }
-
-      $SortList = Sort-Object -InputObject $driveInfoList -Property FreeSpace
-
-      $FreeSpaceDrive = $SortList[0]
-      return $FreeSpaceDrive.DeviceID
-   }
-}
-
-function ConvertChannelNameToShortName {
-    Param(
-       [Parameter()]
-       [string] $ChannelName
-    )
-    Process {
-       if ($ChannelName.ToLower() -eq "FirstReleaseCurrent".ToLower()) {
-         return "FRCC"
-       }
-       if ($ChannelName.ToLower() -eq "Current".ToLower()) {
-         return "CC"
-       }
-       if ($ChannelName.ToLower() -eq "FirstReleaseDeferred".ToLower()) {
-         return "FRDC"
-       }
-       if ($ChannelName.ToLower() -eq "Deferred".ToLower()) {
-         return "DC"
-       }
-       if ($ChannelName.ToLower() -eq "Business".ToLower()) {
-         return "DC"
-       }
-       if ($ChannelName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
-         return "FRDC"
-       }
+$shareFunctionsPath = "$scriptPath\SharedFunctions.ps1"
+if ($scriptPath.StartsWith("\\")) {
+} else {
+    if (!(Test-Path -Path $shareFunctionsPath)) {
+        throw "Missing Dependency File SharedFunctions.ps1"    
     }
 }
-
-function Setup-CMOfficeDeploymentPackageOLD {
-<#
-.SYNOPSIS
-Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
-
-.DESCRIPTION
-
-.PARAMETER path
-The UNC Path where the downloaded bits will be stored for installation to the target machines.
-
-.PARAMETER Source
-The UNC Path where the downloaded branch bits are stored. Required if source parameter is specified.
-
-.PARAMETER Branch
-
-The update branch to be used with the deployment. Current options are "Business, Current, FirstReleaseBusiness, FirstReleaseCurrent".
-
-.PARAMETER $SiteCode
-The 3 Letter Site ID.
-
-.PARAMETER CMPSModulePath
-Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
-
-.PARAMETER distributionPoint
-Sets which distribution points will be used, and distributes the package.
-
-.Example
-Setup-CMOfficeProPlusPackage -Path \\CM-CM\OfficeDeployment -PackageName "Office ProPlus Deployment" -ProgramName "Office2016Setup.exe" -distributionPoint CM-CM.CONTOSO.COM -source \\CM-CM\updates -branch Current
-#>
-
-[CmdletBinding(SupportsShouldProcess=$true)]
-Param
-(
-	[Parameter(Mandatory=$True)]
-	[String]$Collection,
-
-	[Parameter()]
-	[OfficeBranch]$Branch = $null,
-
-	[Parameter()]
-	[InstallType]$InstallType = "ScriptInstall",
-
-	[Parameter()]
-	[String]$ScriptName = "CM-OfficeDeploymentScript.ps1",
-
-	[Parameter()]
-	[String]$Path = $null,
-
-	[Parameter()]
-	[String]$SiteCode = $null,
-	
-	[Parameter()]
-	[String]$PackageName = $null,
-
-	[Parameter()]	
-	[Bool]$UpdateOnlyChangedBits = $false,
-
-	[Parameter()]
-	[String[]] $RequiredPlatformNames = @("All x86 Windows 7 Client", "All x86 Windows 8 Client", "All x86 Windows 8.1 Client", "All Windows 10 Professional/Enterprise and higher (32-bit) Client","All x64 Windows 7 Client", "All x64 Windows 8 Client", "All x64 Windows 8.1 Client", "All Windows 10 Professional/Enterprise and higher (64-bit) Client"),
-	
-	[Parameter()]
-	[string]$DistributionPoint,
-
-	[Parameter()]
-	[string]$DistributionPointGroupName,
-
-	[Parameter()]
-	[uint16]$DeploymentExpiryDurationInDays = 15,
-
-	[Parameter()]
-	[String]$CMPSModulePath = $NULL,
-
-	[Parameter()]
-	[String]$Source = $null
-
-
-)
-Begin
-{
-    $currentExecutionPolicy = Get-ExecutionPolicy
-	Set-ExecutionPolicy Unrestricted -Scope Process -Force  
-    $startLocation = Get-Location
-}
-Process
-{
-    Write-Host
-    Write-Host 'Configuring System Center Configuration Manager to Deploy Office ProPlus' -BackgroundColor DarkBlue
-    Write-Host
-
-    if ($PackageName) {
-       $SavedPackageName = $PackageName
-    }
-
-    if ($ProgramName) {
-       $SavedProgramName = $ProgramName
-    }
-
-    if (!$Path) {
-         $Path = CreateOfficeUpdateShare
-    }
-
-    if ($Branch) {
-        $OfficeFolder = "$Path\Office"
-
-        if (Test-Path $OfficeFolder) {
-           Remove-Item $OfficeFolder -Recurse -Force
-        }
-
-        $TempPath = $Source + "\" + $Branch + "\*"
-        Copy-Item $TempPath $Path -Recurse
-    }
-
-    Set-Location $PSScriptRoot
-	Set-Location $startLocation
-    Set-Location $PSScriptRoot
-
-    Write-Host "Loading CM Module"
-    Write-Host ""
-
-    #HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SMS\Setup
-
-    $CMModulePath = GetCMPSModulePath -CMPSModulePath $CMPSModulePath 
-    
-    if ($CMModulePath) {
-        Import-Module $CMModulePath
-
-        if (!$SiteCode) {
-           $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
-        }
-
-        $SourceDirectory = "$PSScriptRoot\DeploymentFiles"
-
-        if (Test-Path -Path $SourceDirectory) {
-           Copy-Item "$SourceDirectory\*.*" $Path
-        }
-        
-	    Set-Location "$SiteCode`:"	
-
-        $package = CreateCMPackage -Name $SavedPackageName -Path $path -UpdateOnlyChangedBits $UpdateOnlyChangedBits
-        [string]$CommandLine = ""
-
-        if ($InstallType -eq "ScriptInstall") {
-            $SavedProgramName = "ScriptInstall"
-            $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\CM-OfficeDeploymentScript.ps1"
-        } else {
-            $SavedProgramName = "SetupInstall"
-            $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
-        }
-
-        CreateCMProgram -Name $SavedProgramName -PackageName $SavedPackageName -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames
-
-        Write-Host "Starting Content Distribution"	
-
-        if ($DistributionPointGroupName) {
-	        Start-CMContentDistribution -PackageName $SavedPackageName -DistributionPointGroupName $DistributionPointGroupName
-        }
-
-        if ($DistributionPoint) {
-            Start-CMContentDistribution -PackageName $SavedPackageName -DistributionPointName $DistributionPoint
-        }
-
-        Write-Host 
-        Write-Host "NOTE: In order to deploy the package you must run the function 'Deploy-CMOfficeUpdates'." -BackgroundColor Red
-        Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor Red
-        Write-Host "      otherwise the deployments will fail. The clients will continue to fail until the " -BackgroundColor Red
-        Write-Host "      content distribution is complete." -BackgroundColor Red
-
-    } else {
-        throw [System.IO.FileNotFoundException] "Could Not find file ConfigurationManager.psd1"
-    }
-}
-End
-{
-    Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
-    Set-Location $startLocation    
-}
-}
-
-function Check-AdminAccess() {
-If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`    [Security.Principal.WindowsBuiltInRole] “Administrator”)){    throw “You do not have Administrator rights to run this script!`nPlease re-run this script as an Administrator!”}
-}
+. $shareFunctionsPath
