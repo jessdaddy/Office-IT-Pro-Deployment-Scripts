@@ -1063,21 +1063,22 @@ function Test-ItemPathUNC() {    [CmdletBinding()]
     Param
 	(	    [Parameter(Mandatory=$true)]
 	    [String]$Path,	    [Parameter()]
-	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       try {           New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $Path -ErrorAction Stop | Out-Null           if ($FileName) {             $target = $drvLetter + ":\" + $FileName           } else {             $target = $drvLetter + ":\"            }           $result = Test-Path -Path $target            return $result       } catch {         return $false       } finally {         Remove-PSDrive $drvLetter -ErrorAction SilentlyContinue       }    }}
+	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       $Network = New-Object -ComObject "Wscript.Network"       try {           if (!($drvLetter.EndsWith(":"))) {               $drvLetter += ":"           }           $Network.MapNetworkDrive($drvLetter, $Path)            #New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $Path -ErrorAction Stop | Out-Null           if ($FileName) {             $target = $drvLetter + "\" + $FileName           } else {             $target = $drvLetter + "\"            }           $result = Test-Path -Path $target            return $result       } catch {         return $false       } finally {         #Remove-PSDrive $drvLetter -ErrorAction SilentlyContinue         $Network.RemoveNetworkDrive($drvLetter)       }    }}
 
 function Copy-ItemUNC() {    [CmdletBinding()]	
     Param
 	(	    [Parameter(Mandatory=$true)]
 	    [String]$SourcePath,	    [Parameter(Mandatory=$true)]
 	    [String]$TargetPath,	    [Parameter(Mandatory=$true)]
-	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       try {          $target = $drvLetter + ":\"          New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $TargetPath | Out-Null          Copy-Item -Path $SourcePath -Destination $target -Force       } finally {         Remove-PSDrive $drvLetter       }    }}
+	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       $Network = New-Object -ComObject "Wscript.Network"       try {           if (!($drvLetter.EndsWith(":"))) {               $drvLetter += ":"           }           $target = $drvLetter + "\"           $Network.MapNetworkDrive($drvLetter, $TargetPath)                                 #New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $TargetPath | Out-Null           Copy-Item -Path $SourcePath -Destination $target -Force       } finally {         #Remove-PSDrive $drvLetter         $Network.RemoveNetworkDrive($drvLetter)       }    }}
 
 function FindAvailable() {
-   $drives = Get-PSDrive | select Name
+   #$drives = Get-PSDrive | select Name
+   $drives = Get-WmiObject -Class Win32_LogicalDisk | select DeviceID
 
    for($n=90;$n -gt 68;$n--) {
-      $letter= [char]$n
-      $exists = $drives | where { $_ -eq $letter }
+      $letter= [char]$n + ":"
+      $exists = $drives | where { $_.DeviceID -eq $letter }
       if ($exists) {
         if ($exists.Count -eq 0) {
             return $letter
@@ -1088,6 +1089,7 @@ function FindAvailable() {
    }
    return $null
 }
+
 
 function CreateMainCabFiles() {
     [CmdletBinding()]	

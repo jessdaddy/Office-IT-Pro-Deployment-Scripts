@@ -22,7 +22,7 @@ Process {
 
  $UpdateURLPath = $scriptPath
  if ($SourceFileFolder) {
-   if (Test-Path -Path "$UpdateURLPath\$SourceFileFolder") {
+   if (Test-ItemPathUNC -Path "$UpdateURLPath\$SourceFileFolder") {
       $UpdateURLPath = "$UpdateURLPath\$SourceFileFolder"
    }
  }
@@ -31,6 +31,7 @@ Process {
 . $scriptPath\Generate-ODTConfigurationXML.ps1
 . $scriptPath\Edit-OfficeConfigurationFile.ps1
 . $scriptPath\Install-OfficeClickToRun.ps1
+. $scriptPath\SharedFunctions.ps1
 
 $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
 
@@ -42,11 +43,11 @@ $targetFilePath = "$env:temp\configuration.xml"
 
 Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Set-ODTDisplay -Level None -AcceptEULA $true 
 
-if (Test-Path -Path "$UpdateURLPath\Office\Data") {
+if (Test-ItemPathUNC -Path "$UpdateURLPath\Office\Data") {
    Set-ODTAdd -TargetFilePath $targetFilePath -SourcePath $UpdateURLPath
 }
 
-Install-OfficeClickToRun -TargetFilePath $targetFilePath
+#Install-OfficeClickToRun -TargetFilePath $targetFilePath
 
 # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
 }
