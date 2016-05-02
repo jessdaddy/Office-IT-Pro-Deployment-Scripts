@@ -59,6 +59,33 @@ using System;
 Add-Type -TypeDefinition $enumBitness -ErrorAction SilentlyContinue
 } catch { }
 
+try {
+$enumBitnessOptions = "
+using System;
+       [FlagsAttribute]
+       public enum BitnessOptions
+       {
+          v32 = 1,
+          v64 = 2
+       }
+"
+Add-Type -TypeDefinition $enumBitnessOptions -ErrorAction SilentlyContinue
+} catch { }
+
+try {
+$deploymentPurpose = "
+using System;
+       [FlagsAttribute]
+       public enum DeploymentPurpose
+       {
+          Default= 0,
+          Required = 1,
+          Available = 2
+       }
+"
+Add-Type -TypeDefinition $deploymentPurpose -ErrorAction SilentlyContinue
+} catch { }
+
 function Download-CMOfficeChannelFiles() {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
@@ -957,6 +984,9 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
         [Parameter(Mandatory=$true)]
         [OfficeChannel] $Channel,
 
+        [Parameter()]
+	    [BitnessOptions]$Bitness = "v32",
+
         [Parameter(Mandatory=$true)]
         [CMOfficeProgramType] $ProgramType,
         
@@ -964,7 +994,10 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$CMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL,
+
+    	[Parameter()]
+	    [DeploymentPurpose]$DeploymentPurpose = "Default"
 	) 
     Begin
     {
@@ -977,6 +1010,8 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
        try {
 
         Check-AdminAccess
+
+        $strBitness = $Bitness.ToString() -Replace "v", ""
 
         $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
         $ChannelXml = Get-ChannelXml
@@ -997,12 +1032,41 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
                 $pType = ""
 
                 Switch ($ProgramType) {
-                    "DeployWithScript" { $pType = "DeployWithScript-$Channel" }
-                    "DeployWithConfigurationFile" { $pType = "DeployWithConfigurationFile-$Channel" }
-                    "ChangeChannel" { $pType = "ChangeChannel-$Channel" }
-                    "RollBack" { $pType = "RollBack" }
-                    "UpdateWithConfigMgr" { $pType = "UpdateWithConfigMgr" }
-                    "UpdateWithTask" { $pType = "UpdateWithTask" }
+                    "DeployWithScript" { 
+                         $pType = "DeployWithScript-$Channel-$strBitness"; 
+                         if ($DeploymentPurpose -eq "Default") {
+                             $DeploymentPurpose = "Required";
+                         }
+                    }
+                    "DeployWithConfigurationFile" { 
+                         $pType = "DeployWithConfigurationFile-$Channel-$strBitness"; 
+                         if ($DeploymentPurpose -eq "Default") {
+                           $DeploymentPurpose = "Required" 
+                         } 
+                    }
+                    "ChangeChannel" { 
+                         $pType = "ChangeChannel-$Channel"; 
+                         if ($DeploymentPurpose -eq "Default") {
+                             $DeploymentPurpose = "Available" 
+                         }
+                    }
+                    "RollBack" { 
+                         $pType = "RollBack"; 
+                         if ($DeploymentPurpose -eq "Default") {
+                            $DeploymentPurpose = "Available" 
+                         }
+                    }
+                    "UpdateWithConfigMgr" { 
+                         $pType = "UpdateWithConfigMgr"; 
+                         if ($DeploymentPurpose -eq "Default") {
+                            $DeploymentPurpose = "Required"  }
+                         }
+                    "UpdateWithTask" { 
+                         $pType = "UpdateWithTask"; 
+                         if ($DeploymentPurpose -eq "Default") {
+                            $DeploymentPurpose = "Required"  
+                         }
+                    }
                 }
 
                 $Program = Get-CMProgram | Where {$_.Comment -eq $pType }
