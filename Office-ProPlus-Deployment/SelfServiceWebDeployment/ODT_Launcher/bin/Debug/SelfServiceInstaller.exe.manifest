@@ -4,7 +4,7 @@
   <description asmv2:publisher="Microsoft" co.v1:suiteName="Self Service Office Installer" asmv2:product="SelfServiceInstaller" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="SelfServiceInstaller" version="1.0.0.0" publicKeyToken="7E4875A70752AF6E" language="neutral" processorArchitecture="msil" />
+    <assemblyIdentity name="SelfServiceInstaller" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
     <commandLine file="SelfServiceInstaller.exe" parameters="" />
   </entryPoint>
   <co.v1:useManifestForTrust xmlns="urn:schemas-microsoft-com:asm.v1" />
@@ -44,14 +44,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SelfServiceInstaller.exe" size="17408">
-      <assemblyIdentity name="SelfServiceInstaller" version="1.0.0.0" publicKeyToken="7E4875A70752AF6E" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SelfServiceInstaller.exe" size="16896">
+      <assemblyIdentity name="SelfServiceInstaller" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>a1yRZCQeZ0D8cvU/qr149dl0EgA9vdeQ1sKZDkho2VE=</dsig:DigestValue>
+        <dsig:DigestValue>uxUXK5mc2W7yiHbFqw13/Yq0/gzDvGZbZUoyAeuNLPs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

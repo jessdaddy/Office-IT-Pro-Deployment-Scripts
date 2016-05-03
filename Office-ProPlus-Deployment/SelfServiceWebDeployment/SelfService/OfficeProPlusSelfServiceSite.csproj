@@ -204,16 +204,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App\setup.exe" />
+    <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\1360297695_18325.ico" />
+    <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\Microsoft.CIE.UI.Run.exe" />
+    <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\Microsoft.CIE.UI.Run.exe.config" />
+    <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\Project\SelfServiceInstaller.exe" />
+    <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\Project\SelfServiceInstaller.exe.config" />
+    <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\Project\SelfServiceInstaller.pdb" />
+    <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\SelfServiceInstaller.exe.manifest" />
+    <Content Include="App\OfficeSelfServiceInstaller.application" />
     <Content Include="Content\imgs\Custom-Back-Arrow.png" />
     <Content Include="Content\imgs\illustration%402x.png" />
     <Content Include="Content\imgs\illustration.png" />
     <Content Include="Content\Office2016Setup.exe" />
     <Content Include="Content\taggle.css" />
-    <Content Include="App\Application Files\SelfServiceInstaller_1_0_0_25\SelfServiceInstaller.application" />
-    <Content Include="App\Application Files\SelfServiceInstaller_1_0_0_25\SelfServiceInstaller.exe.config.deploy" />
-    <Content Include="App\Application Files\SelfServiceInstaller_1_0_0_25\SelfServiceInstaller.exe.deploy" />
-    <Content Include="App\Application Files\SelfServiceInstaller_1_0_0_25\SelfServiceInstaller.exe.manifest" />
     <None Include="Scripts\jquery-2.2.2.intellisense.js" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
@@ -242,7 +245,6 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="App\SelfServiceInstaller.application" />
     <Content Include="Scripts\FileSaver.js" />
     <Content Include="Scripts\FileSaver.min.js" />
     <Content Include="Scripts\jquery.fabric.js" />
