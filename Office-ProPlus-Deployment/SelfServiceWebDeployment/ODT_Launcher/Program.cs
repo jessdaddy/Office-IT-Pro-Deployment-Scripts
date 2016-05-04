@@ -47,13 +47,13 @@ namespace ODT_Launcher
                 }
 
                 var queryString = Support.GetQueryStringParams(url);
+                if (!queryString.Any())
+                {
+                    queryString = Support.GetArguments(Environment.GetCommandLineArgs());
+                }
 
                 var xmlServerPath = queryString.FirstOrDefault(q => q.Name.ToLower() == "xml")?.Value;
                 var setupServerPath = queryString.FirstOrDefault(q => q.Name.ToLower() == "installer")?.Value;
-
-                //Console.WriteLine(xmlServerPath);
-                //Console.WriteLine(setupServerPath);
-                //Console.WriteLine();
 
                 var currentDirectory = Environment.ExpandEnvironmentVariables("%temp%");
                 installDir = currentDirectory + @"\OfficeProPlusSelfService";

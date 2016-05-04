@@ -26,11 +26,33 @@ namespace ODT_Launcher
             if (url.Contains("?")) url = url.Split('?')[1];
 
             var qscoll = HttpUtility.ParseQueryString(url);
+
             return qscoll.AllKeys.Select(s => new QueryStringItem()
             {
                 Name = s,
                 Value = qscoll[s]
             }).ToList();
+        }
+
+        public static List<QueryStringItem> GetArguments(string[] args)
+        {
+            var returnList = new List<QueryStringItem>();
+            if (args == null) return returnList;
+
+            foreach (var arg in args)
+            {
+                if (!arg.Contains("=")) continue;
+                var key = arg.Split('=')[0];
+                var value = arg.Split('=')[1];
+
+                returnList.Add(new QueryStringItem()
+                {
+                    Name = key,
+                    Value = value
+                });
+            }
+
+            return returnList;
         }
 
         public static void FileDownloader(string remoteFile, string localFile)
@@ -68,7 +90,6 @@ namespace ODT_Launcher
             }
             catch { }
         }
-
 
         public static List<ExecutingScenario> GetRunningScenarioTasks()
         {

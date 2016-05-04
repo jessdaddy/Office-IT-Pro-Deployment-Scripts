@@ -44,14 +44,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SelfServiceInstaller.exe" size="16896">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SelfServiceInstaller.exe" size="17408">
       <assemblyIdentity name="SelfServiceInstaller" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>uxUXK5mc2W7yiHbFqw13/Yq0/gzDvGZbZUoyAeuNLPs=</dsig:DigestValue>
+        <dsig:DigestValue>aCOz5sgN9xbtHy8nWe/0skTArBu7aRfmZpF3GD10ng0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
