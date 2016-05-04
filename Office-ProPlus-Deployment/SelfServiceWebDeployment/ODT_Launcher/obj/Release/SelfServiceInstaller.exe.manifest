@@ -4,7 +4,7 @@
   <description asmv2:publisher="Microsoft" co.v1:suiteName="Self Service Office Installer" asmv2:product="SelfServiceInstaller" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="SelfServiceInstaller" version="1.0.0.0" publicKeyToken="7E4875A70752AF6E" language="neutral" processorArchitecture="msil" />
+    <assemblyIdentity name="SelfServiceInstaller" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
     <commandLine file="SelfServiceInstaller.exe" parameters="" />
   </entryPoint>
   <co.v1:useManifestForTrust xmlns="urn:schemas-microsoft-com:asm.v1" />
@@ -44,17 +44,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SelfServiceInstaller.exe" size="16896">
-      <assemblyIdentity name="SelfServiceInstaller" version="1.0.0.0" publicKeyToken="7E4875A70752AF6E" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SelfServiceInstaller.exe" size="16384">
+      <assemblyIdentity name="SelfServiceInstaller" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>ptF649F7xFL1EycfAh0nkRCwAC3gRGc1dFXbnFgXyiY=</dsig:DigestValue>
+        <dsig:DigestValue>UBM/+fdU06HZZPvZtUlXMCXEyLaI28vWrraOGbXw0kM=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
+  <file name="bin\Release\app.publish\SelfServiceInstaller.exe" size="16384">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>UBM/+fdU06HZZPvZtUlXMCXEyLaI28vWrraOGbXw0kM=</dsig:DigestValue>
+    </hash>
+  </file>
   <file name="SelfServiceInstaller.exe.config" size="187">
     <hash>
       <dsig:Transforms>
