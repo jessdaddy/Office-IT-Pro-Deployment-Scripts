@@ -25,8 +25,11 @@ namespace ODT_Launcher
         {
             try
             {
+                Console.WriteLine("args: " + args.Count());
+                foreach (var arg in args) { Console.WriteLine("argument: "+ arg); }
+                Console.ReadLine();
                 var install = new InstallOffice();
-                install.RunProgram();
+                //install.RunProgram();
             }
             catch (Exception ex)
             {

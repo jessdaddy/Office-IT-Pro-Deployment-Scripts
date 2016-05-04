@@ -44,17 +44,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SelfServiceInstaller.exe" size="16896">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SelfServiceInstaller.exe" size="17408">
       <assemblyIdentity name="SelfServiceInstaller" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>uxUXK5mc2W7yiHbFqw13/Yq0/gzDvGZbZUoyAeuNLPs=</dsig:DigestValue>
+        <dsig:DigestValue>dg0U+/YnyjlQlzgfA0yvVBcJBtia6Zdu+jEBpcKQwrw=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
+  <file name="bin\Release\app.publish\SelfServiceInstaller.exe" size="16896">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>rx4iMpFhlrAst+m85A859kOlPEyjSzGry19JxpF17RU=</dsig:DigestValue>
+    </hash>
+  </file>
   <file name="SelfServiceInstaller.exe.config" size="187">
     <hash>
       <dsig:Transforms>
