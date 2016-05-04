@@ -158,7 +158,7 @@ function generateXML() {
                     manifestPath = xhr.manifest;
 
 
-                    window.open(exePath + "?xml=" + xmlConfigPath + "&installer=" + setupPath);
+                    window.open(exePath + "?xml=" + xmlConfigPath + "&installer="+setupPath);
 
                     $('#directDL').attr({ target: "_blank", href: exePath });
                     buildQueryString();

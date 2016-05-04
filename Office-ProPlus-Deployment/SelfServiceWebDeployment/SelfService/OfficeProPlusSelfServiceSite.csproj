@@ -207,11 +207,11 @@
     <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\1360297695_18325.ico" />
     <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\Microsoft.CIE.UI.Run.exe" />
     <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\Microsoft.CIE.UI.Run.exe.config" />
+    <None Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\Project\SelfServiceInstaller.exe.config" />
     <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\Project\SelfServiceInstaller.exe" />
-    <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\Project\SelfServiceInstaller.exe.config" />
     <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\Project\SelfServiceInstaller.pdb" />
     <Content Include="App\ApplicationFiles\SelfServiceInstaller_2_0_0_4\SelfServiceInstaller.exe.manifest" />
-    <Content Include="App\OfficeSelfServiceInstaller.application" />
+    <Content Include="App\SelfServiceInstaller.application" />
     <Content Include="Content\imgs\Custom-Back-Arrow.png" />
     <Content Include="Content\imgs\illustration%402x.png" />
     <Content Include="Content\imgs\illustration.png" />
