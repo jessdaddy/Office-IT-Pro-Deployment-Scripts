@@ -51,10 +51,19 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>aCOz5sgN9xbtHy8nWe/0skTArBu7aRfmZpF3GD10ng0=</dsig:DigestValue>
+        <dsig:DigestValue>NrEXc8QNwYqqdzTH/6LK2IU8K/Np+rNcpzfDE1OEgh8=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
+  <file name="bin\Release\app.publish\SelfServiceInstaller.exe" size="16896">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>rx4iMpFhlrAst+m85A859kOlPEyjSzGry19JxpF17RU=</dsig:DigestValue>
+    </hash>
+  </file>
   <file name="SelfServiceInstaller.exe.config" size="187">
     <hash>
       <dsig:Transforms>

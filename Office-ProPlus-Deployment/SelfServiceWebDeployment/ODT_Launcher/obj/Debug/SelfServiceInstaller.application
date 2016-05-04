@@ -7,14 +7,14 @@
     <framework targetVersion="4.5" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="SelfServiceInstaller.exe.manifest" size="3778">
+    <dependentAssembly dependencyType="install" codebase="SelfServiceInstaller.exe.manifest" size="4205">
       <assemblyIdentity name="SelfServiceInstaller.exe" version="1.0.0.26" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>jZIpz0k+G1RwJCMamDDaqBOO+Xon/hVow48SXkTMwcM=</dsig:DigestValue>
+        <dsig:DigestValue>JuQI0jlscsQ/cvgF9On98aZ2eckKnkjJIkVRwPujCmI=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

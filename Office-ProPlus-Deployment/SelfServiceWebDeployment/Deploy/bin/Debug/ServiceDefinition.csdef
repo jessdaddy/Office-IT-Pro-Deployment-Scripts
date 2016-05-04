@@ -30,10 +30,10 @@
     </Imports>
     <Contents>
       <Content destination=".\">
-        <SourceDirectory path="D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\Deploy\rcf\Debug\OfficeProPlusSelfServiceSiteContent\" />
+        <SourceDirectory path="C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\Deploy\rcf\Debug\OfficeProPlusSelfServiceSiteContent\" />
       </Content>
       <Content destination=".\">
-        <SourceDirectory path="D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\Deploy\ecf\OfficeProPlusSelfServiceSiteContent\" />
+        <SourceDirectory path="C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\Deploy\ecf\OfficeProPlusSelfServiceSiteContent\" />
       </Content>
     </Contents>
   </WebRole>
