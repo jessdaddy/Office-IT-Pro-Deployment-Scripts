@@ -158,7 +158,7 @@ function generateXML() {
                     manifestPath = xhr.manifest;
 
 
-                    window.open(exePath + "?xml=" + xmlConfigPath + "&installer="+setupPath);
+                    window.open(exePath + "?xml=" + xmlConfigPath + "&installer=" + setupPath);
 
                     $('#directDL').attr({ target: "_blank", href: exePath });
                     buildQueryString();
@@ -462,6 +462,31 @@ function getHelp() {
                     </div>");
                 });
             }
+    });
+}
+
+function getBanner() {
+
+    $.ajax({
+        type: "GET",
+        url: "SelfServiceConfig.xml",
+        datatype: "xml",
+        success:
+            function (xml) {
+                $(xml).find('Banner').find('Item').each(function () {
+
+                    var text = $(this).find('Text').text();
+                    var title = $(this).find('Title').text();
+
+                    $('#bannerText').text(text);
+                    $('#bannerTitle').text(title);
+
+                });
+            },
+        error:
+                function (xhr) {
+                    console.log(xhr.responseText);
+                }
     });
 }
 
@@ -838,7 +863,7 @@ function resizeWindow() {
     //$("#productContainer").width(winWidth - 50);
 }
 
-$(document).resize(function() {
+$(document).resize(function () {
     resizeWindow();
 });
 
@@ -852,6 +877,7 @@ $(document).ready(function () {
     });
 
     setVersion('2016');
+    getBanner();
     getCompanyInfo();
     getLocations(addLocationClick);
     getFilters();

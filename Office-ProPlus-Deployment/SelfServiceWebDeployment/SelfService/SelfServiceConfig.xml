@@ -1,5 +1,11 @@
 ﻿<SelfServiceSite>
   <Company LogoSrc="" Name="Contoso"/>
+  <Banner>
+    <Item>
+      <Title>What's Office Self Service Deployment?</Title>
+      <Text>Microsoft Office ProPlus self service deployment enables users to self install Microsoft Office 365 ProPlus.</Text>
+    </Item>
+  </Banner>
   <Help>
     <Item>
       <Question>The Download For Office 365 Won't Start.</Question>
