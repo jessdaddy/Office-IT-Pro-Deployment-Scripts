@@ -116,7 +116,10 @@ Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v3
         [string[]] $Languages = ("en-us"),
 
         [Parameter()]
-        [Bitness] $Bitness = 0
+        [Bitness] $Bitness = 0,
+
+        [Parameter()]
+        [string] $Version = $NULL
         
     )
 
@@ -136,6 +139,10 @@ Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v3
             $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
             $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel
             $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
+
+            if ($Version) {
+               $latestVersion = $Version
+            }
 
             Download-OfficeProPlusChannels -TargetDirectory $OfficeFilesPath  -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true -Languages $Languages -Bitness $Bitness
 
