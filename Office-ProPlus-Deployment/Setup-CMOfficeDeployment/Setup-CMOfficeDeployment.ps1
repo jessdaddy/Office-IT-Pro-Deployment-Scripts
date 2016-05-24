@@ -474,15 +474,22 @@ Create-CMOfficeDeploymentProgram -Channels Deferred
                  [string]$CommandLine = ""
                  [string]$ProgramName = ""
 
+                 [string]$channelShortName = $channel
+                 if ($channel -eq "FirstReleaseCurrent") {
+                    $channelShortName = "FRCC"
+                 }
+                 if ($channel -eq "FirstReleaseDeferred") {
+                    $channelShortName = "FRDC"
+                 }
+
                  if ($DeploymentType -eq "DeployWithScript") {
-                     $ProgramName = "Deploy $channel Channel With Script - $platform-Bit"
+                     $ProgramName = "Deploy $channelShortName Channel With Script - $platform-Bit"
                      $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
                                     "-NoProfile -WindowStyle Hidden -Command .\CM-OfficeDeploymentScript.ps1 -Channel $channel -SourceFileFolder SourceFiles -Bitness $platform"
 
                  } elseif ($DeploymentType -eq "DeployWithConfigurationFile") {
-                     $ProgramName = "Deploy $channel Channel With Configuration File - $platform-Bit"
+                     $ProgramName = "Deploy $channelShortName Channel with Config File - $platform-Bit"
                      $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
-
                  }
 
                  [string]$packageId = $null
@@ -1268,7 +1275,7 @@ Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -
 
                                     Update-CMDistributionPoint -PackageId $package.PackageId
 
-                                    Write-Host "Deployment created for: $packageName ($ProgramName)"
+                                    Write-Host "`tDeployment created for: $packageName ($ProgramName)"
                                 } else {
                                     Write-Host "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName" -ForegroundColor White -BackgroundColor Red
                                 }
@@ -1284,7 +1291,7 @@ Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -
                                 }
                             }  
                         } else {
-                          Write-Host "Deployment already exists for: $packageName ($ProgramName)"
+                          Write-Host "`tDeployment already exists for: $packageName ($ProgramName)"
                         }
                    } else {
                         Write-Host "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName" -ForegroundColor White -BackgroundColor Red
