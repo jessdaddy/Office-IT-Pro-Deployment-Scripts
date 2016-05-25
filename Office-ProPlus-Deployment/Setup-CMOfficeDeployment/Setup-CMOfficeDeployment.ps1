@@ -89,6 +89,28 @@ Add-Type -TypeDefinition $deploymentPurpose -ErrorAction SilentlyContinue
 function Download-CMOfficeChannelFiles() {
 <#
 
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
+
+
+.DESCRIPTION
+
+
+.PARAMETER $Channels
+
+
+.PARAMETER $OfficeFilesPath
+
+
+.PARAMETER $Languages
+
+
+.PARAMETER $Bitness
+
+
+.PARAMETER $Version
+
+
 
 .EXAMPLE
 Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles
@@ -157,6 +179,38 @@ Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v3
  
 function Create-CMOfficePackage {
 <#
+
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
+
+
+.DESCRIPTION
+
+
+.PARAMETER $Channels
+
+
+.PARAMETER $Bitness
+
+
+.PARAMETER $OfficeSourceFilesPath
+
+
+.PARAMETER $MoveSourceFiles
+
+
+.PARAMETER $CustomPackageShareName
+
+
+.PARAMETER $UpdateOnlyChangedBits
+
+
+.PARAMETER $SiteCode
+
+
+.PARAMETER $CMPSModulePath
+
+
 
 .EXAMPLE
 Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:\OfficeChannelFiles
@@ -292,6 +346,40 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
 }
 
 function Update-CMOfficePackage {
+<#
+
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
+
+
+.DESCRIPTION
+
+
+.PARAMETER $Channels
+
+
+.PARAMETER $OfficeSourceFilesPath
+
+
+.PARAMETER $MoveSourceFiles
+
+
+.PARAMETER $SiteCode
+
+
+.PARAMETER $CMPSModulePath
+
+
+.PARAMETER $UpdateDistributionPoints
+
+
+
+.EXAMPLE
+Update-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:\OfficeChannelFiles
+
+
+
+#>   
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -430,6 +518,36 @@ function Update-CMOfficePackage {
 
 function Create-CMOfficeDeploymentProgram {
 <#
+
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
+
+
+.DESCRIPTION
+
+
+.PARAMETER $Channels
+
+
+.PARAMETER $Bitness
+
+
+.PARAMETER $DeploymentType
+
+
+.PARAMETER $ScriptName
+
+
+.PARAMETER $SiteCode 
+
+
+.PARAMETER $CMPSModulePath
+
+
+.PARAMETER $ConfigurationXml
+
+
+.PARAMETER $CustomName
 
 .EXAMPLE
 Create-CMOfficeDeploymentProgram -Channels Deferred
@@ -605,12 +723,16 @@ function Create-CMOfficeChannelChangeProgram {
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
 
+
 .DESCRIPTION
 
-.PARAMETER $Channels
-.PARAMETER $SiteCode
 
+.PARAMETER $Channels
+
+
+.PARAMETER $SiteCode
 The 3 Letter Site ID.
+
 
 .PARAMETER CMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
@@ -932,22 +1054,55 @@ Creates an Office 365 ProPlus program.
 .DESCRIPTION
 Creates an Office 365 ProPlus program that will create a scheduled task on clients in the target collection.
 
-.PARAMETER UpdateToVersion
+.PARAMETER $WaitForUpdateToFinish
+
+
+.PARAMETER $EnableUpdateAnywhere
+
+
+.PARAMETER $ForceAppShutdown
+
+
+.PARAMETER  $UpdatePromptUser
+
+
+.PARAMETER $DisplayLevel
+
+
+.PARAMETER $UpdateToVersion
+
+
+.PARAMETER $UseRandomStartTime
+
+
+.PARAMETER $RandomTimeStart
+
+
+.PARAMETER $RandomTimeEnd
+
+
+.PARAMETER $StartTime
+
+
+.PARAMETER $LogPath
+
+
+.PARAMETER $LogName
+
+
+.PARAMETER $ValidateUpdateSourceFiles
 
 
 .PARAMETER $SiteCode
 
 
-.PARAMETER
+.PARAMETER $CMPSModulePath
 
 
-.PARAMETER
+.PARAMETER $UseScriptLocationAsUpdateSource
 
 
-.PARAMETER
 
-
-.PARAMETER
 
 
 .EXAMPLE
@@ -1087,6 +1242,18 @@ function Distribute-CMOfficePackage {
 Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
 
 .DESCRIPTION
+
+
+.PARAMETER $Channels
+
+
+.PARAMETER $DistributionPoint
+
+
+.PARAMETER $DistributionPointGroupName
+
+
+.PARAMETER $DeploymentExpiryDurationInDays
 
 
 .PARAMETER $SiteCode
