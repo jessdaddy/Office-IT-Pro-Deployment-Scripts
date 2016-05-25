@@ -90,26 +90,30 @@ function Download-CMOfficeChannelFiles() {
 <#
 
 .SYNOPSIS
-Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
+Downloads the Office Click-to-Run files into the specified folder for package creation.
 
 
 .DESCRIPTION
 
 
 .PARAMETER $Channels
+The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
 
 .PARAMETER $OfficeFilesPath
+This is the location where the source files will be downloaded to
 
 
 .PARAMETER $Languages
+All office languages are supported in the ll-cc format "en-us"
 
 
 .PARAMETER $Bitness
+Downloads the bitness of Office Click-to-Run "v32, v64, Both"
 
 
 .PARAMETER $Version
-
+You can specify the version to download. 16.0.6868.2062. Version information can be found here https://technet.microsoft.com/en-us/library/mt592918.aspx
 
 
 .EXAMPLE
@@ -181,34 +185,33 @@ function Create-CMOfficePackage {
 <#
 
 .SYNOPSIS
-Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
-
-
-.DESCRIPTION
+Automates the configuration of System Center Configuration Manager (CM) to create an Office Click-To-Run Package
 
 
 .PARAMETER $Channels
-
+The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
 .PARAMETER $Bitness
-
+Downloads the bitness of Office Click-to-Run "v32, v64, Both"
 
 .PARAMETER $OfficeSourceFilesPath
-
+This is the location where the source files are available at
 
 .PARAMETER $MoveSourceFiles
-
+This moves the files from the Source location to the location specified
 
 .PARAMETER $CustomPackageShareName
-
+This sets a custom package share to use
 
 .PARAMETER $UpdateOnlyChangedBits
 
 
 .PARAMETER $SiteCode
+The site code you would like to create the package on. If left blank it will default to the current site
 
 
 .PARAMETER $CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
 
 
 
@@ -356,6 +359,7 @@ Automates the configuration of System Center Configuration Manager (CM) to confi
 
 
 .PARAMETER $Channels
+The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
 
 .PARAMETER $OfficeSourceFilesPath
@@ -368,6 +372,7 @@ Automates the configuration of System Center Configuration Manager (CM) to confi
 
 
 .PARAMETER $CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
 
 
 .PARAMETER $UpdateDistributionPoints
@@ -520,16 +525,15 @@ function Create-CMOfficeDeploymentProgram {
 <#
 
 .SYNOPSIS
-Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
-
-
-.DESCRIPTION
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Deployment
 
 
 .PARAMETER $Channels
+The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
 
 .PARAMETER $Bitness
+Downloads the bitness of Office Click-to-Run "v32, v64, Both"
 
 
 .PARAMETER $DeploymentType
@@ -542,6 +546,7 @@ Automates the configuration of System Center Configuration Manager (CM) to confi
 
 
 .PARAMETER $CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
 
 
 .PARAMETER $ConfigurationXml
@@ -721,24 +726,20 @@ Create-CMOfficeDeploymentProgram -Channels Deferred
 function Create-CMOfficeChannelChangeProgram {
  <#
 .SYNOPSIS
-Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
-
-
-.DESCRIPTION
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run channel change program
 
 
 .PARAMETER $Channels
-
+The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
 .PARAMETER $SiteCode
 The 3 Letter Site ID.
-
 
 .PARAMETER CMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
 
 .Example
-Create-CMOfficeRollBackProgram -Sitecode S01 -Channels Current
+Create-CMOfficeChannelChangeProgram -Sitecode S01 -Channels Current
 #>
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
@@ -813,7 +814,7 @@ Create-CMOfficeRollBackProgram -Sitecode S01 -Channels Current
 function Create-CMOfficeRollBackProgram {
  <#
 .SYNOPSIS
-Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run rollback program
 
 .DESCRIPTION
 
@@ -931,7 +932,7 @@ function Create-CMOfficeUpdateProgram {
 
 
 .PARAMETER $CMPSModulePath
-
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
 
 .PARAMETER $UseScriptLocationAsUpdateSource
 
@@ -1097,7 +1098,7 @@ Creates an Office 365 ProPlus program that will create a scheduled task on clien
 
 
 .PARAMETER $CMPSModulePath
-
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
 
 .PARAMETER $UseScriptLocationAsUpdateSource
 
@@ -1245,6 +1246,7 @@ Automates the configuration of System Center Configuration Manager (CM) to confi
 
 
 .PARAMETER $Channels
+The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
 
 .PARAMETER $DistributionPoint
@@ -1363,7 +1365,7 @@ Deploys the Office 365 ProPlus program to a collection.
 Required. The target CM Collection ID.
 
 .PARAMETER Channel
-The update channel.
+The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
 .PARAMETER ProgramType
 Required. The type of program that will be deployed.
