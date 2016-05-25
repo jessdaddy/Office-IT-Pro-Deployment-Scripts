@@ -237,15 +237,17 @@ process {
               $primaryOfficeProduct = $true
            }
 
-           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+           $clickToRunComponent = $regProv.GetDWORDValue($HKLM, $path, "ClickToRunComponent").uValue
            $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
+           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
 
            $cltrUpdatedEnabled = $NULL
            $cltrUpdateUrl = $NULL
            $clientCulture = $NULL;
 
            [string]$clickToRun = $false
-           if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
+
+           if ($clickToRunComponent) {
                $clickToRun = $true
                if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
                   $primaryOfficeProduct = $true
@@ -292,98 +294,72 @@ process {
 
 }
 
-function Remove-OfficeInstall{
+Function Remove-OfficeInstall{
+  [CmdletBinding(SupportsShouldProcess=$true)]
+  param(
 
-    $scriptPath = GetScriptPath
-$scriptPath
-    $c2rVBS = "$scriptPath\OffScrubc2r.vbs"
-    $03VBS = "$scriptPath\OffScrub03.vbs"
-    $07VBS = "$scriptPath\OffScrub07.vbs"
-    $10VBS = "$scriptPath\OffScrub10.vbs"
-    $15MSIVBS = "$scriptPath\OffScrub_O15msi.vbs"
-    $16MSIVBS = "$scriptPath\OffScrub_O16msi.vbs"
+  )
 
-    $versionTest = Get-OfficeVersion
-    $c2r = $versionTest.ClicktoRun
+  Process {
+    $c2rVBS = "OffScrubc2r.vbs"
+    $03VBS = "OffScrub03.vbs"
+    $07VBS = "OffScrub07.vbs"
+    $10VBS = "OffScrub10.vbs"
+    $15MSIVBS = "OffScrub_O15msi.vbs"
+    $16MSIVBS = "OffScrub_O16msi.vbs"
 
-    if($c2r -eq $true){
-            $ActionFile = $c2rVBS
-        }else{
+     $scriptPath = "."
+
+     if ($PSScriptRoot) {
+       $scriptPath = $PSScriptRoot
+     } else {
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+     }
+
+    $officeVersions = Get-OfficeVersion | select *
+    $ActionFiles = @()
+
+    foreach ($officeVersion in $officeVersions) {
+        if($officeVersion.ClicktoRun.ToLower() -ne "true"){
             #Set script file based on office version, if no office detected continue to next computer skipping this one.
-            switch -wildcard ($versionTest.Version)
+            switch -wildcard ($officeVersion.Version)
             {
                 "11.*"
                 {
-                    $ActionFile = $03VBS
+                    $ActionFiles += "$scriptPath\$03VBS"
                 }
                 "12.*"
                 {
-                    $ActionFile = $07VBS
+                    $ActionFiles += "$scriptPath\$07VBS"
                 }
                 "14.*"
                 {
-                    $ActionFile = $10VBS
+                    $ActionFiles += "$scriptPath\$10VBS"
                 }
                 "15.*"
                 {
-                    $ActionFile = $15MSIVBS
-                }
-                "16.*"
-                {
-                    $ActionFile = $16MSIVBS
+                    $ActionFiles += "$scriptPath\$15MSIVBS"
                 }
                 default 
                 {
-                    "Did not detect Office on target computer ($computer)."
                     continue
                 }
             }
         }
+    }
 
-        $time = Get-Date -Format g
-        Write-Host ""
-        Write-Host ""$time": Removing Office products..."
+    foreach ($ActionFile in $ActionFiles) {
+      Write-Host "Removing Office products..."
 
-        wscript $ActionFile
+      wscript $ActionFile
 
-        Do{
-            Start-Sleep -Seconds 5
-            $cscriptProcess = Get-Process cscript -ErrorAction Ignore
-        }
-        Until($cscriptProcess -eq $null)
-       
-        if($cscriptProcess -eq $null){
-            Stop-Process -Name cmd -ErrorAction Ignore
-            
-            $time = Get-Date -Format g
-            Write-Host ""
-            Write-Host ""$time": Searching for remaining registry keys..."
+      Do{
+        Start-Sleep -Seconds 5
+        $cscriptProcess = Get-Process cscript -ErrorAction Ignore
+      }
+      Until($cscriptProcess -eq $null)
+    }
 
-            $Hives = Get-ChildItem Microsoft.PowerShell.Core\Registry::
 
-            $OfficeRegistries = foreach($Hive in $Hives){
-                Get-ChildItem "$($Hive.PSPath)" -Recurse -ErrorAction SilentlyContinue | ? PSPath -like *\Software\Microsoft\Office
-            }
-            foreach($Item in $OfficeRegistries){
-                $time = Get-Date -Format g
-                Write-Host ""
-                Write-Host ""$time": Removing registry key $Item"
-                Remove-Item $Item.PSPath -Recurse -Force -ErrorAction SilentlyContinue
-            }
-
-            $time = Get-Date -Format g
-            Write-Host ""
-            Write-Host ""$time": All Office products have been removed."
-        }
-
-        #.\Nuke-OfficeRegistry.ps1
-
-}
-
-function GetScriptPath() {
-   if ($PSScriptRoot) {
-     return $PSScriptRoot
-   } else {
-     return ".\"
-   }
+  }
 }
