@@ -601,6 +601,23 @@ Create-CMOfficeDeploymentProgram -Channels Deferred
 }
 
 function Create-CMOfficeChannelChangeProgram {
+ <#
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
+
+.DESCRIPTION
+
+.PARAMETER $Channels
+.PARAMETER $SiteCode
+
+The 3 Letter Site ID.
+
+.PARAMETER CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
+
+.Example
+Create-CMOfficeRollBackProgram -Sitecode S01 -Channels Current
+#>
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -672,6 +689,22 @@ function Create-CMOfficeChannelChangeProgram {
 }
 
 function Create-CMOfficeRollBackProgram {
+ <#
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
+
+.DESCRIPTION
+
+
+.PARAMETER $SiteCode
+The 3 Letter Site ID.
+
+.PARAMETER CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
+
+.Example
+Create-CMOfficeRollBackProgram -Sitecode S01
+#>  
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -745,22 +778,40 @@ function Create-CMOfficeUpdateProgram {
 .DESCRIPTION
 
 
-.PARAMETER
+.PARAMETER $WaitForUpdateToFinish
 
 
-.PARAMETER
+.PARAMETER $EnableUpdateAnywhere
 
 
-.PARAMETER
+.PARAMETER $ForceAppShutdown
 
 
-.PARAMETER
+.PARAMETER  $UpdatePromptUser
 
 
-.PARAMETER
+.PARAMETER $DisplayLevel
 
 
-.PARAMETER
+.PARAMETER $UpdateToVersion
+
+
+.PARAMETER $LogPath
+
+
+.PARAMETER $LogName
+
+
+.PARAMETER $ValidateUpdateSourceFiles
+
+
+.PARAMETER $SiteCode
+
+
+.PARAMETER $CMPSModulePath
+
+
+.PARAMETER $UseScriptLocationAsUpdateSource
 
 
 .EXAMPLE
