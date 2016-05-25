@@ -92,29 +92,23 @@ function Download-CMOfficeChannelFiles() {
 .SYNOPSIS
 Downloads the Office Click-to-Run files into the specified folder for package creation.
 
-
 .DESCRIPTION
 
 
 .PARAMETER $Channels
 The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
-
 .PARAMETER $OfficeFilesPath
 This is the location where the source files will be downloaded to
-
 
 .PARAMETER $Languages
 All office languages are supported in the ll-cc format "en-us"
 
-
 .PARAMETER $Bitness
 Downloads the bitness of Office Click-to-Run "v32, v64, Both"
 
-
 .PARAMETER $Version
 You can specify the version to download. 16.0.6868.2062. Version information can be found here https://technet.microsoft.com/en-us/library/mt592918.aspx
-
 
 .EXAMPLE
 Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles
@@ -187,38 +181,31 @@ function Create-CMOfficePackage {
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (CM) to create an Office Click-To-Run Package
 
-
-.PARAMETER $Channels
+.PARAMETER Channels
 The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
-.PARAMETER $Bitness
+.PARAMETER Bitness
 Downloads the bitness of Office Click-to-Run "v32, v64, Both"
 
-.PARAMETER $OfficeSourceFilesPath
+.PARAMETER OfficeSourceFilesPath
 This is the location where the source files are available at
 
-.PARAMETER $MoveSourceFiles
+.PARAMETER MoveSourceFiles
 This moves the files from the Source location to the location specified
 
-.PARAMETER $CustomPackageShareName
+.PARAMETER CustomPackageShareName
 This sets a custom package share to use
 
-.PARAMETER $UpdateOnlyChangedBits
+.PARAMETER UpdateOnlyChangedBits
 
-
-.PARAMETER $SiteCode
+.PARAMETER SiteCode
 The site code you would like to create the package on. If left blank it will default to the current site
 
-
-.PARAMETER $CMPSModulePath
+.PARAMETER CMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
-
-
 
 .EXAMPLE
 Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:\OfficeChannelFiles
-
-
 
 #>
     [CmdletBinding(SupportsShouldProcess=$true)]
@@ -354,29 +341,26 @@ function Update-CMOfficePackage {
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
 
-
 .DESCRIPTION
 
 
-.PARAMETER $Channels
+.PARAMETER Channels
 The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
 
-.PARAMETER $OfficeSourceFilesPath
+.PARAMETER OfficeSourceFilesPath
 
 
-.PARAMETER $MoveSourceFiles
+.PARAMETER MoveSourceFiles
 
 
-.PARAMETER $SiteCode
+.PARAMETER SiteCode
 
 
 .PARAMETER $CMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
 
-
 .PARAMETER $UpdateDistributionPoints
-
 
 
 .EXAMPLE
@@ -530,7 +514,6 @@ Automates the configuration of System Center Configuration Manager (CM) to confi
 
 .PARAMETER $Channels
 The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
-
 
 .PARAMETER $Bitness
 Downloads the bitness of Office Click-to-Run "v32, v64, Both"
@@ -896,46 +879,38 @@ Create-CMOfficeRollBackProgram -Sitecode S01
 function Create-CMOfficeUpdateProgram {
 <#
 .SYNOPSIS
-
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run rollback program
 
 .DESCRIPTION
+Creates an Office 365 ProPlus update program.
 
+.PARAMETER WaitForUpdateToFinish
+The PowerShell service will continue to run until the update has finished.
 
-.PARAMETER $WaitForUpdateToFinish
+.PARAMETER EnableUpdateAnywhere
+Attempts to update Office 365 ProPlus using the existing update source. If the update source is not available (mobile users) then
+the script will failover to the CDN as an update source.
 
+.PARAMETER ForceAppShutdown
+If set to $true Office apps will close automatically.
 
-.PARAMETER $EnableUpdateAnywhere
+.PARAMETER UpdatePromptUser
+If set to $true the user will be prompted to update.
 
+.PARAMETER DisplayLevel
+If ste to $true the update will be visible.
 
-.PARAMETER $ForceAppShutdown
+.PARAMETER UpdateToVersion
+The version to update to.
 
+.PARAMETER SiteCode
+The 3 letter site code.
 
-.PARAMETER  $UpdatePromptUser
-
-
-.PARAMETER $DisplayLevel
-
-
-.PARAMETER $UpdateToVersion
-
-
-.PARAMETER $LogPath
-
-
-.PARAMETER $LogName
-
-
-.PARAMETER $ValidateUpdateSourceFiles
-
-
-.PARAMETER $SiteCode
-
-
-.PARAMETER $CMPSModulePath
+.PARAMETER CMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
 
-.PARAMETER $UseScriptLocationAsUpdateSource
-
+.PARAMETER UseScriptLocationAsUpdateSource
+The location where the script is ran will be the location of the update source files.
 
 .EXAMPLE
 Create-CMOfficeUpdateProgram
@@ -1055,59 +1030,43 @@ Creates an Office 365 ProPlus program.
 .DESCRIPTION
 Creates an Office 365 ProPlus program that will create a scheduled task on clients in the target collection.
 
-.PARAMETER $WaitForUpdateToFinish
+.PARAMETER WaitForUpdateToFinish
+The PowerShell service will continue to run until the update has finished.
 
+.PARAMETER EnableUpdateAnywhere
+Attempts to update Office 365 ProPlus using the existing update source. If the update source is not available (mobile users) then
+the script will failover to the CDN as an update source.
 
-.PARAMETER $EnableUpdateAnywhere
+.PARAMETER ForceAppShutdown
+If set to $true Office apps will close automatically.
 
+.PARAMETER UpdatePromptUser
+If set to $true the user will be prompted to update.
 
-.PARAMETER $ForceAppShutdown
+.PARAMETER DisplayLevel
+If ste to $true the update will be visible.
 
+.PARAMETER UpdateToVersion
+The version to update to.
 
-.PARAMETER  $UpdatePromptUser
+.PARAMETER UseRandomStartTime
+A random start time for the scheduled task.
 
+.PARAMETER RandomTimeEnd 
+A random end time for the scheduled task.
 
-.PARAMETER $DisplayLevel
+.PARAMETER StartTime
+The actual start time for the scheduled task.
 
+.PARAMETER SiteCode
+The 3 letter site code.
 
-.PARAMETER $UpdateToVersion
+.PARAMETER CMPSModulePath 
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is 
+installed in a non standard path.
 
-
-.PARAMETER $UseRandomStartTime
-
-
-.PARAMETER $RandomTimeStart
-
-
-.PARAMETER $RandomTimeEnd
-
-
-.PARAMETER $StartTime
-
-
-.PARAMETER $LogPath
-
-
-.PARAMETER $LogName
-
-
-.PARAMETER $ValidateUpdateSourceFiles
-
-
-.PARAMETER $SiteCode
-
-
-.PARAMETER $CMPSModulePath
-Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
-
-.PARAMETER $UseScriptLocationAsUpdateSource
-
-
-
-
-
-.EXAMPLE
-Create-CMOfficeUpdateAsTaskProgram
+.PARAMETER UseScriptLocationAsUpdateSource
+The location where the script is ran will be the location of the update source files.
 
 .EXAMPLE
 Create-CMOfficeUpdateAsTaskProgram -UpdateToVersion 16.0.6001.1078
@@ -1245,20 +1204,20 @@ Automates the configuration of System Center Configuration Manager (CM) to confi
 .DESCRIPTION
 
 
-.PARAMETER $Channels
+.PARAMETER Channels
 The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
 
-.PARAMETER $DistributionPoint
+.PARAMETER DistributionPoint
 
 
-.PARAMETER $DistributionPointGroupName
+.PARAMETER DistributionPointGroupName
 
 
-.PARAMETER $DeploymentExpiryDurationInDays
+.PARAMETER DeploymentExpiryDurationInDays
 
 
-.PARAMETER $SiteCode
+.PARAMETER SiteCode
 The 3 Letter Site ID.
 
 .PARAMETER CMPSModulePath
