@@ -351,13 +351,17 @@ Function Remove-OfficeInstall{
     foreach ($ActionFile in $ActionFiles) {
       Write-Host "Removing Office products..."
 
-      wscript $ActionFile
+      if (Test-Path -Path $ActionFile) {
+          wscript $ActionFile
 
-      Do{
-        Start-Sleep -Seconds 5
-        $cscriptProcess = Get-Process cscript -ErrorAction Ignore
+          Do{
+            Start-Sleep -Seconds 5
+            $cscriptProcess = Get-Process wscript -ErrorAction Ignore
+          }
+          Until($cscriptProcess -eq $null)
+      } else {
+        throw "Required file missing: $ActionFile"
       }
-      Until($cscriptProcess -eq $null)
     }
 
 
