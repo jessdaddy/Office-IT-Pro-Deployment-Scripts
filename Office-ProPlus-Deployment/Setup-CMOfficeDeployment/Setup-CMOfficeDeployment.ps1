@@ -1070,6 +1070,12 @@ The location where the script is ran will be the location of the update source f
 
 .EXAMPLE
 Create-CMOfficeUpdateAsTaskProgram -UpdateToVersion 16.0.6001.1078
+Creates an Office 365 ProPlus program called 'Update Office 365 With Scheduled Task' that will update the client to version 16.0.6001.1078.
+
+.EXAMPLE
+Create-CMOfficeUpdateAsTaskProgram -WaitForUpdateToFinish $true -EnableUpdateAnywhere $true -ForceAppShutdown $false -UpdatePromptUser $true -DisplayLevel $true -StartTime 12:00
+Creates an Office 365 ProPlus program called 'Update Office 365 With Scheduled Task'. The program will run on clients in the target collection every Tuesday. The client will
+be prompted before updating and will display the progress. 
 
 #>
     [CmdletBinding(SupportsShouldProcess=$true)]
@@ -1202,20 +1208,16 @@ function Distribute-CMOfficePackage {
 Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
 
 .DESCRIPTION
-
+Distributes the Office 365 ProPlus package to the specified Distribution Point or Distribution Point Group.
 
 .PARAMETER Channels
 The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
-
 .PARAMETER DistributionPoint
-
+The distribution point name.
 
 .PARAMETER DistributionPointGroupName
-
-
-.PARAMETER DeploymentExpiryDurationInDays
-
+The distribution point group name.
 
 .PARAMETER SiteCode
 The 3 Letter Site ID.
@@ -1227,7 +1229,9 @@ Allows the user to specify that full path to the ConfigurationManager.psd1 Power
 Sets which distribution points will be used, and distributes the package.
 
 .Example
-Setup-CMOfficeProPlusPackage -Path \\CM-CM\OfficeDeployment -PackageName "Office ProPlus Deployment" -ProgramName "Office2016Setup.exe" -distributionPoint CM-CM.CONTOSO.COM -source \\CM-CM\updates -branch Current
+Distribute-CMOfficePackage -DistirbutionPoint cm.contoso.com
+Distributes the package 'Office 365 ProPlus' to the distribution point cm.contoso.com
+
 #>
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
@@ -1315,21 +1319,22 @@ Setup-CMOfficeProPlusPackage -Path \\CM-CM\OfficeDeployment -PackageName "Office
 function Deploy-CMOfficeProgram {
 <#
 .SYNOPSIS
-Deploys the Office 365 ProPlus program to a collection.
+Automates the configuration of System Center Configuration Manager (CM) to configure Office 365 ProPlus program deployments.
 
 .DESCRIPTION
-Deploys the Office 365 ProPlus program to a collection.
+Creates a deployment for the Office 365 ProPlus program created from the functions Create-CMOfficeDeploymentProgram, Create-CMOfficeChannelChangeProgram
+Create-CMOfficeRollBackProgram, Create-CMOfficeUpdateProgram, and Create-CMOfficeUpdateAsTaskProgram.
 
 .PARAMETER Collection
-Required. The target CM Collection ID.
+Required. The target ConfigMgr Collection ID.
 
 .PARAMETER Channel
-The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
+The target update channel; Current, Deferred, FirstReleaseDeferred, or FirstReleaseCurrent.
 
 .PARAMETER ProgramType
 Required. The type of program that will be deployed.
 DeployWithScript
-
+    A script will be used to configure the Office 365 ProPlus installation.
 DeployWithConfigurationFile
     A configuration xml file will be used to install Office.
 ChangeChannel
@@ -1357,53 +1362,61 @@ Allows the user to specify that full path to the ConfigurationManager.psd1 Power
 
 .EXAMPLE
 Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType DeployWithScript
-
-
-.EXAMPLE
-Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType DeployWithScript
-
+Creates an Office 365 ProPlus deployment for the program 'Office 365 ProPlus (Deploy Deferred Channel With Script - 32-Bit) that will be required to download on clients in the
+target collection 'Office Update'.
 
 .EXAMPLE
-Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType DeployWithConfigurationFile
-
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType DeployWithScript -Channel Current -DeploymentPurpose Available
+Creates an Office 365 ProPlus deployment for the program 'Office 365 ProPlus (Deploy Current Channel With Script - 32-Bit) that will be available in the software 
+center on clients in the target collection 'Office Update'.
 
 .EXAMPLE
 Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType DeployWithConfigurationFile
-
-
-.EXAMPLE
-Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType ChangeChannel
-
+Creates an Office 365 ProPlus deployment for the program 'Office 365 ProPlus (Deploy Deffered Channel with Config File - 32-Bit). The deployment will be a 
+required installation on clients in the target collection.
 
 .EXAMPLE
-Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType ChangeChannel
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType DeployWithConfigurationFile -Channel FirstReleaseDeferred -DeploymentPurpose Available
+Creates an Office 365 ProPlus deployment for the program 'Deploy FRDC Channel with Config File' that will be available in the software center on clients in the target 
+collection 'Office Update'. The deployment will install Office 365 ProPlus FirstReleaseDeferred using an xml configuration file.
 
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType ChangeChannel -Channel Current
+Creates a deployment for the program 'Office 365 ProPlus (Change Channel to Current) that will be available in the software center on 
+clients in the target collection 'Office Update'. 
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType ChangeChannel -Channel FirstReleaseDeferred
+Creates a deployment for the program 'Office 365 ProPlus (Change Channel to FirstReleaseDeferred) that will be available in the software center for 
+clients in the target collection 'Office Update'.
 
 .EXAMPLE
 Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType RollBack
-
+Creates a deployment for the program 'Office 365 ProPlus (Rollback)' that will be required to download for clients in the
+target collection 'Office Update'.
 
 .EXAMPLE
-Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType RollBack
-
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType RollBack -DeploymentPurpose Available
+Creates a deployment for the program 'Office 365 ProPlus (Rollback)' that will be available in the software center for clients in the
+target collection 'Office Update'.
 
 .Example
 Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithConfigMgr -DeploymentPurpose Available -Channel Deferred
 Deploys the Package created by the Setup-CMOfficeProPlusPackage function to Collection ID "Office Update".
 
-
 .EXAMPLE
 Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithConfigMgr -DeploymentPurpose Available -Channel Deferred -Bitness v32
 Deploys the Package created by the Setup-CMOfficeProPlusPackage function to Collection ID "Office Update" and will be referenced as 32 bit.
 
-
 .EXAMPLE
 Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask
-Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -Channel FirstReleaseDeferred
+Creates a deployment for the program 'Office 365 ProPlus (Update Office 365 With Scheduled Task)' that will be required to download on clients in the
+target collection 'Office Update'. 
 
 .EXAMPLE
-Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask
 Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -Channel Deferred -DeploymentPurpose Available
+Creates a deployment for the program 'Office 365 ProPlus (Update Office 365 With Scheduled Task)' that will be available in the software center for 
+clients in the target collection 'Office Update'.
 
 #>
     [CmdletBinding()]	
