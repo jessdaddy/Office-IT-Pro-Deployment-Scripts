@@ -88,12 +88,11 @@ Add-Type -TypeDefinition $deploymentPurpose -ErrorAction SilentlyContinue
 
 function Download-CMOfficeChannelFiles() {
 <#
-
 .SYNOPSIS
 Downloads the Office Click-to-Run files into the specified folder for package creation.
 
 .DESCRIPTION
-
+Downloads the Office 365 ProPlus installation files to a specified file path.
 
 .PARAMETER Channels
 The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
@@ -174,7 +173,7 @@ Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v3
        }
     }
 }
- 
+
 function Create-CMOfficePackage {
 <#
 
@@ -337,7 +336,6 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
 
 function Update-CMOfficePackage {
 <#
-
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (CM) to update the Office Click-To-Run package
 
@@ -348,13 +346,13 @@ Automates the configuration of System Center Configuration Manager (CM) to updat
 The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
 .PARAMETER OfficeSourceFilesPath
-This is the location where the source files are available at
+The location of the source files.
 
 .PARAMETER MoveSourceFiles
-This moves the files from the Source location to the location specified
+This moves the files from the Source location to the location specified.
 
 .PARAMETER SiteCode
-The site code you would like to create the package on. If left blank it will default to the current site
+The site code you would like to create the package on. If left blank it will default to the current site.
 
 .PARAMETER CMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
@@ -509,9 +507,11 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 
 function Create-CMOfficeDeploymentProgram {
 <#
-
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Deployment
+
+.DESCRIPTION
+Creates a program that can be deployed to clients in a target collection to install Office 365 ProPlus.
 
 .PARAMETER Channels
 The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
@@ -535,15 +535,13 @@ Allows the user to specify that full path to the ConfigurationManager.psd1 Power
 Sets the configuration file to be used for the instalation.
 
 .PARAMETER CustomName
+Replaces the default program name with a custom name. The custom name will also need to be provided when running the Deploy-CMOfficeProgram function.
 
 .EXAMPLE
 Create-CMOfficeDeploymentProgram -Channels Deferred -DeploymentType DeployWithScript
 
 .EXAMPLE
 Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithConfigurationFile -ScriptName engineering.xml
-
-
-
 
 #>
     [CmdletBinding(SupportsShouldProcess=$true)]
@@ -715,6 +713,9 @@ function Create-CMOfficeChannelChangeProgram {
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run channel change program
 
+.DESCRIPTION
+Creates an Office 365 ProPlus program that will change the channel of the client in a target collection.
+
 .PARAMETER Channels
 The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
 
@@ -801,6 +802,9 @@ function Create-CMOfficeRollBackProgram {
  <#
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run rollback program
+
+.DESCRIPTION
+Creates an Office 365 ProPlus program that will look at the update source and install the previous version.
 
 .PARAMETER $SiteCode
 The 3 Letter Site ID.
@@ -1359,6 +1363,9 @@ required to be installed on the clients of the collection.
 
 .PARAMETER CMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
+
+.PARAMETER CustomName
+Replaces the default program name with a custom name if it was provided while running Create-CMOfficeDeploymentProgram
 
 .EXAMPLE
 Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType DeployWithScript
